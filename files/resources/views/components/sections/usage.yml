@@ -1,0 +1,68 @@
+# The visual editor's contract for usage.blade.php.
+# The chart's bars come from the usageBars collection.
+title: Usage split
+description: The drawn spend chart beside the argument for usage tracking
+fields:
+    heading:
+        type: text
+        label: Heading
+        default: "See every token you spend."
+    body:
+        type: textarea
+        label: One paragraph
+        rows: 3
+        default: "Spend, tokens and latency by model, key and policy — live, and exportable as a row per request. The bill stops being a surprise."
+    pointOne:
+        type: textarea
+        label: First point
+        rows: 2
+        default: "Per-key budgets with alerts at 50, 80 and 100 percent, and a soft-stop that downgrades instead of failing."
+    pointTwo:
+        type: textarea
+        label: Second point
+        rows: 2
+        default: "Quality scores from a judge you pick, on your own traffic, so the router learns what good looks like for you."
+    linkText:
+        type: text
+        label: Text link
+        default: "Usage and limits"
+    link:
+        type: url
+        label: Text link URL
+        default: "/docs/usage-and-limits"
+    mockTitle:
+        type: text
+        label: Chart title
+        default: "Spend by model"
+    mockPeriod:
+        type: text
+        label: Chart period
+        default: "September, to date"
+    mockTotal:
+        type: text
+        label: Chart total
+        default: "$4,322"
+    mockDelta:
+        type: text
+        label: Chart change line
+        default: "−31% vs. August at the same point"
+    bars:
+        type: repeater
+        label: Bars
+        description: Height is a percentage of the chart, as text — "88%".
+        add_button_label: "Add bar"
+        item_label: model
+        source: collections.usageBars
+        sub_fields:
+            model:
+                type: text
+                label: Model
+                default: "Model"
+            spend:
+                type: text
+                label: Spend
+                default: "$0"
+            height:
+                type: text
+                label: Height
+                default: "20%"

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <style>
+        .tri { fill: #111114 }
+        .beam { stroke: #f4f4f6; stroke-width: 2; stroke-linecap: round }
+        @media (prefers-color-scheme: dark) { .tri { fill: #f4f4f6 } .beam { stroke: #111114 } }
+    </style>
+    <path class="tri" d="M16 3 30 28H2Z"/>
+    <path class="beam" d="M12 19h10M12 23h7"/>
+</svg>

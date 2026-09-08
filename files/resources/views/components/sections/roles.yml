@@ -1,0 +1,36 @@
+# The visual editor's contract for roles.blade.php.
+title: Open roles
+description: A heading, one line and one row per role
+fields:
+    heading:
+        type: text
+        label: Heading
+        default: "Open roles"
+    body:
+        type: textarea
+        label: One line
+        rows: 2
+        default: "Small team, real traffic, no growth theatre. Write to us with something you have shipped."
+    applyText:
+        type: text
+        label: Apply link text
+        default: "Apply"
+    items:
+        type: repeater
+        label: Roles
+        add_button_label: "Add role"
+        item_label: title
+        source: collections.roles
+        sub_fields:
+            title:
+                type: text
+                label: Title
+                default: "New role"
+            place:
+                type: text
+                label: Place
+                default: "Remote"
+            url:
+                type: url
+                label: Apply link
+                default: "mailto:hello@prism.example"

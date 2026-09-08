@@ -1,0 +1,6 @@
+[
+    { "when": "task is summarize", "then": "prefer cheapest above quality 75" },
+    { "when": "p95 latency over 800 ms", "then": "fall back to the next provider" },
+    { "when": "context over 400K tokens", "then": "route to gemini-3.1-pro" },
+    { "when": "key spend over $200 today", "then": "downgrade to fast tier and alert" }
+]

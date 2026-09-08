@@ -1,0 +1,5 @@
+[
+    { "title": "Agents", "body": "Give an agent one key and let each step pick its own model — planning on a frontier model, tool calls on a fast one.", "example": "model: \"prism/auto\"" },
+    { "title": "Batch pipelines", "body": "Route a million overnight classifications to whatever is cheapest above your quality floor, with the bill capped in advance.", "example": "policy: \"cheapest-above-80\"" },
+    { "title": "Consumer chat", "body": "Keep first-token time under 300 ms at peak by spilling over to the next provider before anyone notices.", "example": "fallback: [\"meta\", \"google\"]" }
+]

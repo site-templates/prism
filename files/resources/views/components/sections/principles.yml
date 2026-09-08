@@ -1,0 +1,24 @@
+# The visual editor's contract for principles.blade.php.
+title: Principles
+description: A heading and three hairline-divided principles
+fields:
+    heading:
+        type: text
+        label: Heading
+        default: "Three things we will not change."
+    items:
+        type: repeater
+        label: Principles
+        add_button_label: "Add principle"
+        item_label: title
+        source: collections.principles
+        sub_fields:
+            title:
+                type: text
+                label: Title
+                default: "New principle"
+            body:
+                type: textarea
+                label: One paragraph
+                rows: 3
+                default: ""

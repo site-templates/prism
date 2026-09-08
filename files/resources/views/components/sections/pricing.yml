@@ -1,0 +1,74 @@
+# The visual editor's contract for pricing.blade.php.
+# Tiers come from the plans collection; each tier's lines from planLines,
+# matched on the plan key.
+title: Pricing
+description: Three tiers — the recommended one outlined — with their lines and buttons
+fields:
+    recommendedLabel:
+        type: text
+        label: Recommended badge
+        default: "Most teams"
+    footnote:
+        type: textarea
+        label: Footnote
+        rows: 2
+        default: "Provider cost is passed through at list price on every plan. Annual billing takes two months off the platform fee."
+    items:
+        type: repeater
+        label: Tiers
+        add_button_label: "Add tier"
+        item_label: name
+        source: collections.plans
+        sub_fields:
+            key:
+                type: text
+                label: Key
+                description: Lines with this plan key belong to the tier.
+                default: "new"
+            name:
+                type: text
+                label: Name
+                default: "New tier"
+            blurb:
+                type: text
+                label: One line
+                default: ""
+            price:
+                type: text
+                label: Price
+                default: "$0"
+            period:
+                type: text
+                label: Under the price
+                default: "per month"
+            recommended:
+                type: toggle
+                label: Recommended
+                default: "0"
+            buttonText:
+                type: text
+                label: Button text
+                default: "Get started"
+            buttonLink:
+                type: url
+                label: Button link
+                default: "/docs/quickstart"
+    lines:
+        type: repeater
+        label: Tier lines
+        add_button_label: "Add line"
+        item_label: text
+        source: collections.planLines
+        sub_fields:
+            plan:
+                type: select
+                label: Tier
+                options:
+                    free: Free
+                    team: Team
+                    enterprise: Enterprise
+                default: "team"
+            text:
+                type: text
+                label: Line
+                default: "New line"

@@ -1,0 +1,7 @@
+[
+    { "date": "2026-09-04", "dateFormatted": "Sep 4, 2026", "title": "Claude Fable 5.1 and GPT-5.6 mini join the pool", "body": "Both are routable today under prism/auto. Fable 5.1 lands at the top of the quality table for reasoning tasks; GPT-5.6 mini takes the fast tier's second slot behind Llama 4 Maverick." },
+    { "date": "2026-08-27", "dateFormatted": "Aug 27, 2026", "title": "Per-key spend alerts", "body": "Set a daily or monthly budget on any key and get an email or webhook at 50, 80 and 100 percent. Keys can now downgrade to the fast tier instead of hard-stopping when they hit the cap." },
+    { "date": "2026-08-19", "dateFormatted": "Aug 19, 2026", "title": "Policies as files", "body": "Routing policies can be committed to your repo as YAML and pushed with the CLI. The dashboard editor still works and writes the same format." },
+    { "date": "2026-08-11", "dateFormatted": "Aug 11, 2026", "title": "Median overhead down to 38 ms", "body": "The router now holds warm connections to every provider region and skips the scoring lookup for pinned models. p50 overhead dropped from 61 ms to 38 ms." },
+    { "date": "2026-08-01", "dateFormatted": "Aug 1, 2026", "title": "EU data residency", "body": "Team and Enterprise keys can be pinned to the Frankfurt region. Requests, logs and scoring samples never leave the EU." }
+]

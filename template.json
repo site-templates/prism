@@ -1,0 +1,20 @@
+{
+    "name": "Prism",
+    "dialect": "blade",
+    "description": "A light, grained AI-model-router landing — a mega-menu header, an iridescent serif hero whose prompt composer re-ranks a live routing table, a dark endpoint band, a model catalog, pricing, docs, a changelog and a blog.",
+    "icon": "🔺",
+    "repo": "https://github.com/site-templates/prism",
+    "order": 61,
+    "category": "landing",
+    "theme": "light",
+    "accent": "#0f766e",
+    "pages": [
+        "Home",
+        "Models",
+        "Pricing",
+        "Docs",
+        "Blog",
+        "Changelog",
+        "Company"
+    ]
+}

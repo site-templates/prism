@@ -1,0 +1,17 @@
+# The visual editor's contract for page-header.blade.php.
+title: Page header
+description: The serif headline and one paragraph that open an inner page
+fields:
+    heading:
+        type: text
+        label: Headline
+        default: "Page"
+    body:
+        type: textarea
+        label: One paragraph
+        rows: 2
+        default: ""
+    showBeams:
+        type: toggle
+        label: Show the beams
+        default: "1"

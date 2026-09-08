@@ -1,0 +1,100 @@
+# The visual editor's contract for models-table.blade.php.
+# Filter chips come from the families collection; rows from models.
+title: Models table
+description: Filter chips and the full table of every model in the pool
+fields:
+    note:
+        type: textarea
+        label: Note under the table
+        rows: 3
+        default: "Prices are per million tokens at list rate, per provider. Latency is median time to first token over the last hour. Quality is the pool score on our benchmark traffic."
+    colModel:
+        type: text
+        label: Column — model
+        default: "Model"
+    colContext:
+        type: text
+        label: Column — context
+        default: "Context"
+    colInput:
+        type: text
+        label: Column — input price
+        default: "Input"
+    colOutput:
+        type: text
+        label: Column — output price
+        default: "Output"
+    colLatency:
+        type: text
+        label: Column — latency
+        default: "Latency"
+    colQuality:
+        type: text
+        label: Column — quality
+        default: "Quality"
+    families:
+        type: repeater
+        label: Filter chips
+        description: The key matches each model's family; "all" shows every row.
+        add_button_label: "Add chip"
+        item_label: label
+        source: collections.families
+        sub_fields:
+            key:
+                type: text
+                label: Key
+                default: "all"
+            label:
+                type: text
+                label: Chip text
+                default: "All models"
+    items:
+        type: repeater
+        label: Models
+        add_button_label: "Add model"
+        item_label: name
+        source: collections.models
+        sub_fields:
+            name:
+                type: text
+                label: Model
+                default: "New model"
+            id:
+                type: text
+                label: Model id
+                default: "provider/model"
+            provider:
+                type: text
+                label: Provider
+                default: ""
+            family:
+                type: select
+                label: Family
+                options:
+                    frontier: Frontier
+                    open: Open weights
+                    fast: Fast and cheap
+                default: "frontier"
+            context:
+                type: text
+                label: Context window
+                default: "128K"
+            inputPrice:
+                type: text
+                label: Input price per million
+                default: "$1.00"
+            outputPrice:
+                type: text
+                label: Output price per million
+                default: "$4.00"
+            latency:
+                type: text
+                label: Latency
+                default: "500 ms"
+            score:
+                type: number
+                label: Quality score
+                min: 0
+                max: 100
+                step: 1
+                default: "80"

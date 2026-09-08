@@ -1,0 +1,5 @@
+[
+    { "title": "Pass-through pricing", "body": "We make money on the platform fee, never on your tokens. The moment we take a cut per token, our incentives point the wrong way." },
+    { "title": "The log is the product", "body": "Every route decision is written down with its reason. A router you cannot audit is a router you cannot trust with production." },
+    { "title": "Boring on purpose", "body": "The API is OpenAI-compatible and stays that way. We change what is behind the endpoint, not the endpoint." }
+]

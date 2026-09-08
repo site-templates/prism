@@ -1,0 +1,5 @@
+[
+    { "title": "Score", "body": "Every model in the pool is scored on your last ten thousand requests, per task type, by a judge model you pick." },
+    { "title": "Rank", "body": "Your policy orders the pool — cheapest above a quality floor, fastest, best, or longest context — per request." },
+    { "title": "Route", "body": "The request goes to the top model. If it degrades, the next one takes it. You see which, and why, in the log." }
+]

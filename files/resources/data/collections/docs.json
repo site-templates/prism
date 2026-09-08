@@ -1,0 +1,34 @@
+[
+    {
+        "slug": "quickstart",
+        "title": "Quickstart",
+        "section": "Getting started",
+        "description": "Your first routed request in under five minutes.",
+        "link": "/docs/quickstart",
+        "content": "<p>Prism is an OpenAI-compatible endpoint. If your code talks to OpenAI today, changing two lines makes it talk to every model in the pool.</p>\n<h2>1. Get a key</h2>\n<p>Create a key in the dashboard. Keys are scoped to a project and carry their own budget, rate limit and default policy.</p>\n<h2>2. Point your client at Prism</h2>\n<pre><code>from openai import OpenAI\n\nclient = OpenAI(\n    base_url=\"https://api.prism.example/v1\",\n    api_key=\"pk_live_…\",\n)\n\nreply = client.chat.completions.create(\n    model=\"prism/auto\",\n    messages=[{\"role\": \"user\", \"content\": \"Summarize this transcript…\"}],\n)</code></pre>\n<p>The model id <code>prism/auto</code> hands the choice to your key's default policy. Any catalog id — <code>anthropic/claude-sonnet-5</code>, say — pins that model and the router steps aside.</p>\n<h2>3. Read the log</h2>\n<p>Every response carries an <code>x-prism-route</code> header naming the model that answered and the policy that chose it. The same record, with cost and latency, is in the dashboard within a second.</p>\n<h2>Next</h2>\n<p>Write a <a href=\"/docs/routing-policies\">routing policy</a>, turn on <a href=\"/docs/fallbacks-and-retries\">fallbacks</a>, and set a <a href=\"/docs/usage-and-limits\">budget</a> on the key before it goes to production.</p>"
+    },
+    {
+        "slug": "routing-policies",
+        "title": "Routing policies",
+        "section": "Routing",
+        "description": "Route by cost, speed, quality or context — in a file you can commit.",
+        "link": "/docs/routing-policies",
+        "content": "<p>A policy is an ordered list of rules. The first rule whose <code>when</code> matches decides the model; if none match, the default rule does.</p>\n<h2>Shape</h2>\n<pre><code>name: production\nrules:\n  - when: task == \"summarize\"\n    then: cheapest_above(quality: 80)\n  - when: context_tokens > 400_000\n    then: model(\"google/gemini-3.1-pro\")\n  - when: p95_latency > 800ms\n    then: fallback_next\ndefault: best_quality(max_input_price: 5.00)</code></pre>\n<h2>Selectors</h2>\n<table><thead><tr><th>Selector</th><th>Picks</th></tr></thead><tbody>\n<tr><td><code>cheapest_above(quality)</code></td><td>The lowest blended price with a score at or above the floor</td></tr>\n<tr><td><code>fastest(within_quality)</code></td><td>The lowest p50 first-token latency within N points of the best score</td></tr>\n<tr><td><code>best_quality(max_input_price)</code></td><td>The highest score that costs no more than the cap</td></tr>\n<tr><td><code>longest_context</code></td><td>The largest context window in the pool</td></tr>\n<tr><td><code>model(id)</code></td><td>Exactly that model</td></tr>\n</tbody></table>\n<h2>Task detection</h2>\n<p>The <code>task</code> field is inferred from the request unless you set the <code>x-prism-task</code> header. Detection is a small classifier that runs in the router, adds under a millisecond, and is logged so you can check it.</p>\n<h2>Committing policies</h2>\n<p>Policies are YAML. Keep them in your repo and push with <code>prism policies push</code>; the dashboard editor reads and writes the same format.</p>"
+    },
+    {
+        "slug": "fallbacks-and-retries",
+        "title": "Fallbacks and retries",
+        "section": "Routing",
+        "description": "Automatic retries across providers when one degrades, including mid-stream.",
+        "link": "/docs/fallbacks-and-retries",
+        "content": "<p>Fallbacks are on by default for every policy. A request that fails, times out or lands in a degraded provider region is retried on the next eligible model in the same call.</p>\n<h2>What counts as degraded</h2>\n<ul><li>A 5xx or 429 from the provider</li><li>First-token latency above the policy's threshold for a two-minute window</li><li>An error rate above 2% in the same window</li></ul>\n<p>Degradation is measured per provider region across all Prism traffic, so a region can be skipped before your own requests hit it.</p>\n<h2>Streaming</h2>\n<p>When a stream drops, the router resumes the completion on the next model with the tokens already delivered as context. The client sees one stream. The log records two legs, each with its own cost.</p>\n<h2>Limits</h2>\n<p>A request is retried at most three times. Each retry counts against the key's rate limit. Set <code>fallbacks: off</code> in the policy to disable them for a rule, or send <code>x-prism-fallbacks: off</code> per request.</p>\n<h2>Recovery</h2>\n<p>A recovered region is ramped back — 1%, 10%, then 100% of eligible traffic — over roughly ten minutes as long as its numbers hold.</p>"
+    },
+    {
+        "slug": "usage-and-limits",
+        "title": "Usage and limits",
+        "section": "Operating",
+        "description": "Per-key budgets, rate limits, spend alerts and the usage export.",
+        "link": "/docs/usage-and-limits",
+        "content": "<p>Every key carries a budget and a rate limit. Both are enforced in the router before a request reaches a provider, so an overrun never becomes a surprise invoice.</p>\n<h2>Budgets</h2>\n<p>Set a daily or monthly cap in dollars. At 50, 80 and 100 percent the key fires an alert to email or a webhook. At 100 percent you choose: hard-stop with a 402, or downgrade to the fast tier and keep serving.</p>\n<h2>Rate limits</h2>\n<p>Requests per minute and tokens per minute, per key. Prism's own limits are additive to each provider's; when a provider limit is the binding one, the router spreads load across providers before it returns a 429.</p>\n<h2>The usage view</h2>\n<p>Spend, tokens and requests by model, key, policy and day. Every number in the dashboard is also a row in the export: <code>GET /v1/usage?from=…&amp;to=…&amp;group=model</code> returns CSV or JSON.</p>\n<h2>Retention</h2>\n<table><thead><tr><th>Plan</th><th>History</th></tr></thead><tbody>\n<tr><td>Free</td><td>7 days</td></tr><tr><td>Team</td><td>90 days</td></tr><tr><td>Enterprise</td><td>Custom, up to 3 years</td></tr>\n</tbody></table>"
+    }
+]

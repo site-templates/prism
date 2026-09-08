@@ -1,0 +1,74 @@
+# The visual editor's contract for posts.blade.php.
+# Rows come from the posts collection — the same entries the blog pages read.
+title: Blog list
+description: A heading, an optional line, the all-posts link and one hairline row per post
+fields:
+    heading:
+        type: text
+        label: Heading
+        default: "From the blog"
+    showIntro:
+        type: toggle
+        label: Show the line under the heading
+        default: "1"
+    intro:
+        type: textarea
+        label: Line under the heading
+        rows: 2
+        default: "Benchmarks, routing notes and what we learned running traffic for other teams."
+    linkText:
+        type: text
+        label: Link text
+        default: "All posts"
+    link:
+        type: url
+        label: Link
+        default: "/blog"
+    items:
+        type: repeater
+        label: Posts
+        add_button_label: "Add post"
+        item_label: title
+        source: collections.posts
+        sub_fields:
+            title:
+                type: text
+                label: Title
+                default: "New post"
+            slug:
+                type: text
+                label: Slug
+                default: "new-post"
+            link:
+                type: url
+                label: Link
+                default: "/blog/new-post"
+            dateFormatted:
+                type: text
+                label: Date
+                default: "Jan 1, 2026"
+            readTime:
+                type: text
+                label: Read time
+                default: "4 min read"
+            category:
+                type: text
+                label: Category
+                default: "Routing notes"
+            description:
+                type: textarea
+                label: Summary
+                rows: 2
+                default: ""
+            author:
+                type: text
+                label: Author
+                default: ""
+            authorRole:
+                type: text
+                label: Author role
+                default: ""
+            avatar:
+                type: image
+                label: Author photo
+                default: "https://assets.ui.sh/avatars/1.webp?size=160"

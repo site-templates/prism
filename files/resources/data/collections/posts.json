@@ -1,0 +1,41 @@
+[
+    {
+        "slug": "what-a-router-should-never-do",
+        "title": "What a model router should never do",
+        "category": "Routing notes",
+        "description": "Three rules we wrote before the first line of code, and the one we broke anyway.",
+        "dateFormatted": "Sep 2, 2026",
+        "readTime": "6 min read",
+        "author": "Ines Calloway",
+        "authorRole": "Co-founder",
+        "avatar": "https://assets.ui.sh/avatars/14.webp?size=160",
+        "link": "/blog/what-a-router-should-never-do",
+        "content": "<p>A router sits between your product and every model you pay for. That position is powerful, and power in the request path is dangerous. Before we wrote any code we wrote down what Prism would never do, and taped the list above the desk.</p>\n<h2>Never route silently</h2>\n<p>Every decision the router makes is written to the log with its reason: which policy fired, which models were considered, why the winner won, and what it cost. If a fallback fired, the log says so and says why. A router you cannot audit is a router you cannot put in front of paying customers.</p>\n<h2>Never take a cut per token</h2>\n<p>The moment a router earns more when you spend more, its incentives point the wrong way. Prism charges a flat platform fee and passes provider prices through at list. When we find you a model that is six times cheaper, we make exactly the same money as before.</p>\n<h2>Never change the endpoint</h2>\n<p>The API is OpenAI-compatible and stays that way. We change what is <em>behind</em> the endpoint — new models, new providers, better scoring — never the shape your code depends on.</p>\n<h2>The rule we broke</h2>\n<p>We had a fourth: never re-order a response. Then we shipped streaming fallbacks, where a second provider picks up a stream the first one dropped mid-sentence. The client sees one stream; the log sees two. It is the right trade, and it is the only place the router does anything you did not literally ask for. We wrote it down, too.</p>"
+    },
+    {
+        "slug": "benchmarking-summaries-across-twelve-models",
+        "title": "We ran 40,000 summaries through twelve models. Here is what it cost.",
+        "category": "Benchmarks",
+        "description": "The cheapest model that clears a quality floor is rarely the one you would guess.",
+        "dateFormatted": "Aug 21, 2026",
+        "readTime": "8 min read",
+        "author": "Teo Marchetti",
+        "authorRole": "Research",
+        "avatar": "https://assets.ui.sh/avatars/7.webp?size=160",
+        "link": "/blog/benchmarking-summaries-across-twelve-models",
+        "content": "<p>Summarization is the workload most teams start with and the one most teams overpay for. We took forty thousand real call transcripts — anonymised, with permission — and ran every one through the twelve models in the Prism pool.</p>\n<h2>How we judged quality</h2>\n<p>A frontier model graded each summary against the transcript on coverage, faithfulness and length, one to a hundred. We spot-checked four hundred grades by hand; the judge and the humans disagreed by more than ten points on 3% of them.</p>\n<h2>The table</h2>\n<table><thead><tr><th>Model</th><th>Quality</th><th>Cost per 1,000 summaries</th></tr></thead><tbody>\n<tr><td>Claude Sonnet 5</td><td>91</td><td>$27.40</td></tr>\n<tr><td>GPT-5.6</td><td>90</td><td>$38.10</td></tr>\n<tr><td>DeepSeek V4 Pro</td><td>86</td><td>$9.60</td></tr>\n<tr><td>Gemini 3.1 Flash</td><td>84</td><td>$4.20</td></tr>\n<tr><td>Llama 4 Maverick</td><td>79</td><td>$5.90</td></tr>\n</tbody></table>\n<h2>What it means</h2>\n<p>If your quality floor is eighty, Gemini 3.1 Flash does the job for a sixth of what a frontier model costs. If your floor is ninety, only two models clear it and the cheaper one is 28% cheaper. The router's job is to know which floor you set and stop paying above it.</p>\n<p>Set <code>policy: cheapest-above-80</code> and this whole table becomes a line in your log.</p>"
+    },
+    {
+        "slug": "fallbacks-that-do-not-wake-you-up",
+        "title": "Fallbacks that do not wake you up",
+        "category": "Engineering",
+        "description": "How the router decides a provider is degrading before your users do, and what it does next.",
+        "dateFormatted": "Aug 7, 2026",
+        "readTime": "5 min read",
+        "author": "Rowan Achebe",
+        "authorRole": "Infrastructure",
+        "avatar": "https://assets.ui.sh/avatars/21.webp?size=160",
+        "link": "/blog/fallbacks-that-do-not-wake-you-up",
+        "content": "<p>Provider incidents rarely arrive as a clean outage. They arrive as a p95 that doubles at two in the morning, then a trickle of 529s, then a status page that catches up an hour later. A fallback that waits for the status page is a fallback that already paged you.</p>\n<h2>The signal</h2>\n<p>Prism watches first-token latency and error rate per provider region over a sliding two-minute window, using every request it routes — yours and everyone else's. When a region drifts past your policy's threshold, new requests skip it. Nothing waits for a human.</p>\n<h2>The hand-off</h2>\n<p>For a non-streaming call the retry is invisible: the second provider answers the same request. For a streaming call the router resumes the completion on the second provider with the tokens already sent as context, so the client sees one stream. The log records both legs.</p>\n<h2>Coming back</h2>\n<p>Recovery is gradual. A region that degraded gets one percent of eligible traffic, then ten, then all of it, as long as its numbers hold. A provider that flaps does not get to flap your users.</p>"
+    }
+]

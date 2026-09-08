@@ -1,0 +1,50 @@
+# The visual editor's contract for footer.blade.php.
+# The link columns come from resources/data/site.json (footer_columns).
+title: Footer
+description: The mark, one paragraph, the status line, four link columns and the legal row
+fields:
+    brand:
+        type: text
+        label: Site name
+        default: "Prism"
+    blurb:
+        type: textarea
+        label: One paragraph
+        rows: 3
+        default: "One OpenAI-compatible endpoint in front of every model you pay for, with a log that says why each request went where it went."
+    statusText:
+        type: text
+        label: Status line
+        default: "All providers operational"
+    statusLink:
+        type: url
+        label: Status link
+        default: "/changelog"
+    copyright:
+        type: text
+        label: Copyright
+        default: "© 2026 Prism Labs, Inc."
+    legalLeft:
+        type: text
+        label: Legal row, middle
+        default: "Pass-through pricing"
+    legalRight:
+        type: text
+        label: Legal row, right
+        default: "Frankfurt · Virginia · Oregon"
+    columns:
+        type: repeater
+        label: Link columns
+        add_button_label: "Add column"
+        item_label: text
+        nestable: true
+        source: site.footer_columns
+        sub_fields:
+            text:
+                type: text
+                label: Label
+                default: "New column"
+            url:
+                type: url
+                label: Link
+                default: "/"

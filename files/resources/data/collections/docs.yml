@@ -1,0 +1,16 @@
+# Column types for docs.json — the source of truth the builder reads.
+# The content column is rich text and opens in the rich editor; title and
+# description show in the sidebar, the index and the article header.
+fields:
+    slug:
+        type: text
+    title:
+        type: text
+    description:
+        type: textarea
+    section:
+        type: text
+    link:
+        type: url
+    content:
+        type: richtext

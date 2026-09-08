@@ -1,0 +1,6 @@
+[
+    { "value": "140+", "label": "Models behind one endpoint" },
+    { "value": "11", "label": "Providers, one invoice" },
+    { "value": "99.99%", "label": "Routed uptime, trailing 90 days" },
+    { "value": "38 ms", "label": "Median routing overhead" }
+]

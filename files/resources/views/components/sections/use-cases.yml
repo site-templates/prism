@@ -1,0 +1,28 @@
+# The visual editor's contract for use-cases.blade.php.
+title: Use cases
+description: A heading and three hairline-divided uses, each with a title, a sentence and a mono example
+fields:
+    heading:
+        type: text
+        label: Heading
+        default: "Built for the workloads that actually run."
+    items:
+        type: repeater
+        label: Uses
+        add_button_label: "Add use"
+        item_label: title
+        source: collections.useCases
+        sub_fields:
+            title:
+                type: text
+                label: Title
+                default: "New use"
+            body:
+                type: textarea
+                label: One sentence
+                rows: 2
+                default: ""
+            example:
+                type: text
+                label: Mono example
+                default: ""

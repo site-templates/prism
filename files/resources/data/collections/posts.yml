@@ -1,0 +1,26 @@
+# Column types for posts.json — the source of truth the builder reads.
+# The content column is rich text and opens in the rich editor; the rest show
+# on the listing and in the post's own header.
+fields:
+    slug:
+        type: text
+    title:
+        type: text
+    description:
+        type: textarea
+    category:
+        type: text
+    dateFormatted:
+        type: text
+    readTime:
+        type: text
+    author:
+        type: text
+    authorRole:
+        type: text
+    avatar:
+        type: image
+    link:
+        type: url
+    content:
+        type: richtext

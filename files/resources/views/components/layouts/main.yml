@@ -1,0 +1,19 @@
+# The visual editor's contract for layouts/main.blade.php — the page shell.
+title: Page
+description: The document head — title and description — around the header, the page and the footer
+fields:
+    title:
+        type: text
+        label: Page title
+        description: Shown in the browser tab, followed by the site name.
+        default: "Home"
+    description:
+        type: textarea
+        label: Meta description
+        rows: 2
+        default: ""
+    current:
+        type: text
+        label: Current page path
+        description: The header link matching this path reads as the current page.
+        default: "/"

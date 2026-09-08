@@ -1,0 +1,55 @@
+# The visual editor's contract for policies.blade.php.
+# The rules in the drawn file come from the policyRules collection.
+title: Policies split
+description: The argument for policies beside a drawn policy file
+fields:
+    heading:
+        type: text
+        label: Heading
+        default: "Route by policy, not by hand."
+    body:
+        type: textarea
+        label: One paragraph
+        rows: 3
+        default: "A policy is a short file of rules: what to prefer, when to fall back, where the budget stops. Commit it beside your code and every request obeys it."
+    pointOne:
+        type: textarea
+        label: First point
+        rows: 2
+        default: "Cheapest above a quality floor, fastest within a margin, best under a price cap — or a pinned model."
+    pointTwo:
+        type: textarea
+        label: Second point
+        rows: 2
+        default: "Fallbacks fire inside the same call, even mid-stream, and the log records both legs."
+    linkText:
+        type: text
+        label: Text link
+        default: "Read the policy reference"
+    link:
+        type: url
+        label: Text link URL
+        default: "/docs/routing-policies"
+    mockTitle:
+        type: text
+        label: File name
+        default: "production.policy.yml"
+    mockFooter:
+        type: text
+        label: File footer line
+        default: "Pushed 4 minutes ago · 2,318 requests routed since"
+    rules:
+        type: repeater
+        label: Rules
+        add_button_label: "Add rule"
+        item_label: when
+        source: collections.policyRules
+        sub_fields:
+            when:
+                type: text
+                label: When
+                default: "condition"
+            then:
+                type: text
+                label: Then
+                default: "action"

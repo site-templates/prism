@@ -1,0 +1,70 @@
+[
+    {
+        "plan": "free",
+        "text": "Every model in the pool"
+    },
+    {
+        "plan": "free",
+        "text": "One routing policy"
+    },
+    {
+        "plan": "free",
+        "text": "1M routed tokens a month"
+    },
+    {
+        "plan": "free",
+        "text": "Seven days of usage history"
+    },
+    {
+        "plan": "free",
+        "text": "Community support"
+    },
+    {
+        "plan": "team",
+        "text": "Unlimited routing policies"
+    },
+    {
+        "plan": "team",
+        "text": "Automatic fallbacks across providers"
+    },
+    {
+        "plan": "team",
+        "text": "Per-key budgets and spend alerts"
+    },
+    {
+        "plan": "team",
+        "text": "Ninety days of usage history"
+    },
+    {
+        "plan": "team",
+        "text": "Quality scoring on your own traffic"
+    },
+    {
+        "plan": "team",
+        "text": "Email support within a day"
+    },
+    {
+        "plan": "enterprise",
+        "text": "Everything in Team"
+    },
+    {
+        "plan": "enterprise",
+        "text": "Bring your own provider keys"
+    },
+    {
+        "plan": "enterprise",
+        "text": "Data residency in the EU or US"
+    },
+    {
+        "plan": "enterprise",
+        "text": "SAML SSO and audit log"
+    },
+    {
+        "plan": "enterprise",
+        "text": "99.99% uptime agreement"
+    },
+    {
+        "plan": "enterprise",
+        "text": "A named engineer"
+    }
+]

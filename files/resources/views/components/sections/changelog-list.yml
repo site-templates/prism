@@ -1,0 +1,28 @@
+# The visual editor's contract for changelog-list.blade.php.
+title: Changelog
+description: One dated row per release
+fields:
+    items:
+        type: repeater
+        label: Entries
+        add_button_label: "Add entry"
+        item_label: title
+        source: collections.changelog
+        sub_fields:
+            date:
+                type: text
+                label: Date (YYYY-MM-DD)
+                default: "2026-01-01"
+            dateFormatted:
+                type: text
+                label: Date, as shown
+                default: "Jan 1, 2026"
+            title:
+                type: text
+                label: Title
+                default: "New release"
+            body:
+                type: textarea
+                label: Paragraph
+                rows: 3
+                default: ""

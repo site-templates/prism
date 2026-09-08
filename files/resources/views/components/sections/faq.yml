@@ -1,0 +1,24 @@
+# The visual editor's contract for faq.blade.php.
+title: Questions
+description: A heading beside disclosure rows that open one at a time
+fields:
+    heading:
+        type: text
+        label: Heading
+        default: "Questions, answered."
+    items:
+        type: repeater
+        label: Questions
+        add_button_label: "Add question"
+        item_label: question
+        source: collections.faqs
+        sub_fields:
+            question:
+                type: text
+                label: Question
+                default: "New question?"
+            answer:
+                type: textarea
+                label: Answer
+                rows: 3
+                default: ""

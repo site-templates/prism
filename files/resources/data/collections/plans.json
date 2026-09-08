@@ -1,0 +1,32 @@
+[
+    {
+        "key": "free",
+        "name": "Free",
+        "blurb": "For trying the router on a side project.",
+        "price": "$0",
+        "period": "plus provider cost at list price",
+        "recommended": "0",
+        "buttonText": "Get an API key",
+        "buttonLink": "/docs/quickstart"
+    },
+    {
+        "key": "team",
+        "name": "Team",
+        "blurb": "For products in production with a budget to keep.",
+        "price": "$49",
+        "period": "per month, plus provider cost at list price",
+        "recommended": "1",
+        "buttonText": "Start a 14-day trial",
+        "buttonLink": "/docs/quickstart"
+    },
+    {
+        "key": "enterprise",
+        "name": "Enterprise",
+        "blurb": "For fleets that need contracts and control.",
+        "price": "Custom",
+        "period": "annual, with volume pricing on provider cost",
+        "recommended": "0",
+        "buttonText": "Talk to us",
+        "buttonLink": "mailto:hello@prism.example"
+    }
+]

@@ -1,0 +1,7 @@
+[
+    { "question": "Do you mark up provider prices?", "answer": "No. You pay each provider's list price per token, passed through on one invoice. Prism charges the flat platform fee and nothing per token." },
+    { "question": "What happens when a provider goes down?", "answer": "Your policy's next model takes the request within the same call. The log records the fallback and why it fired, and the status page shows the incident." },
+    { "question": "Can I pin a specific model?", "answer": "Yes. Send any model id from the catalog instead of prism/auto and the router steps aside. Fallbacks still apply if you keep them on." },
+    { "question": "Is my data used to train anything?", "answer": "Never. Prompts and completions pass through in memory and are stored only if you turn on request logging, for as long as your plan's history window." },
+    { "question": "How does quality scoring work?", "answer": "A sample of your own requests is re-run through a judge model you pick, per task type. Scores update nightly and only affect routing when your policy asks for them." }
+]

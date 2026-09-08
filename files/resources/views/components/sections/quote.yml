@@ -1,0 +1,21 @@
+# The visual editor's contract for quote.blade.php.
+title: Testimonial
+description: One large serif quote with the speaker beneath it
+fields:
+    quote:
+        type: textarea
+        label: Quote
+        rows: 4
+        default: "We cut our model bill by a third in the first week and nobody on the team noticed a quality change. The log is what sold me: I can see why every request went where it went."
+    name:
+        type: text
+        label: Name
+        default: "Priya Anand"
+    role:
+        type: text
+        label: Role
+        default: "Head of Platform, Loamworks"
+    avatar:
+        type: image
+        label: Photo
+        default: "https://assets.ui.sh/avatars/3.webp?size=160"

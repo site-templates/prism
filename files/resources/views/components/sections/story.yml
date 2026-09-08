@@ -1,0 +1,34 @@
+# The visual editor's contract for story.blade.php.
+title: Story
+description: A serif heading, two paragraphs and four facts
+fields:
+    heading:
+        type: text
+        label: Heading
+        default: "We built the router we could not buy."
+    paraOne:
+        type: textarea
+        label: First paragraph
+        rows: 4
+        default: "In 2025 the three of us were running a support product on four models from three providers, with a spreadsheet deciding which. Every price change meant a deploy. Every outage meant a page at 3 a.m. and a manual switch."
+    paraTwo:
+        type: textarea
+        label: Second paragraph
+        rows: 4
+        default: "Prism started as the script that replaced the spreadsheet. It became a company when other teams asked for the script. Today it routes requests for a few hundred products, charges a flat fee, and still writes down why every request went where it went."
+    factOne:
+        type: text
+        label: Fact one
+        default: "Founded 2025"
+    factTwo:
+        type: text
+        label: Fact two
+        default: "Berlin and remote"
+    factThree:
+        type: text
+        label: Fact three
+        default: "14 people"
+    factFour:
+        type: text
+        label: Fact four
+        default: "Bootstrapped"

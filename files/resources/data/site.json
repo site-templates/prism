@@ -1,0 +1,75 @@
+{
+    "name": "Prism",
+    "tagline": "One key. Every model.",
+    "email": "hello@prism.example",
+    "nav_links": [
+        {
+            "text": "Product",
+            "url": "/models",
+            "children": [
+                { "text": "Router", "url": "/#router", "description": "One endpoint that picks the right model per request" },
+                { "text": "Models", "url": "/models", "description": "Every model in the pool, with live prices and latency" },
+                { "text": "Policies", "url": "/#policies", "description": "Route by cost, speed, quality or context — in a file" },
+                { "text": "Usage", "url": "/#usage", "description": "Every token, every model, every dollar, in one view" },
+                { "text": "Fallbacks", "url": "/docs/fallbacks-and-retries", "description": "Automatic retries across providers when one degrades" },
+                { "text": "Keys and limits", "url": "/docs/usage-and-limits", "description": "Per-key budgets, rate limits and spend alerts" }
+            ]
+        },
+        {
+            "text": "Developers",
+            "url": "/docs",
+            "children": [
+                { "text": "Documentation", "url": "/docs", "description": "Quickstart, routing policies, fallbacks, limits" },
+                { "text": "Quickstart", "url": "/docs/quickstart", "description": "Your first routed request in under five minutes" },
+                { "text": "Changelog", "url": "/changelog", "description": "New models and features, shipped weekly" },
+                { "text": "Blog", "url": "/blog", "description": "Benchmarks, routing notes and what we learned" }
+            ]
+        },
+        { "text": "Pricing", "url": "/pricing" },
+        { "text": "Company", "url": "/company" }
+    ],
+    "footer_columns": [
+        {
+            "text": "Product",
+            "url": "/models",
+            "children": [
+                { "text": "Router", "url": "/#router" },
+                { "text": "Models", "url": "/models" },
+                { "text": "Policies", "url": "/#policies" },
+                { "text": "Usage", "url": "/#usage" },
+                { "text": "Pricing", "url": "/pricing" }
+            ]
+        },
+        {
+            "text": "Developers",
+            "url": "/docs",
+            "children": [
+                { "text": "Documentation", "url": "/docs" },
+                { "text": "Quickstart", "url": "/docs/quickstart" },
+                { "text": "Routing policies", "url": "/docs/routing-policies" },
+                { "text": "Fallbacks and retries", "url": "/docs/fallbacks-and-retries" },
+                { "text": "Changelog", "url": "/changelog" }
+            ]
+        },
+        {
+            "text": "Company",
+            "url": "/company",
+            "children": [
+                { "text": "About", "url": "/company" },
+                { "text": "Blog", "url": "/blog" },
+                { "text": "Careers", "url": "/company#roles" },
+                { "text": "Contact", "url": "mailto:hello@prism.example" }
+            ]
+        },
+        {
+            "text": "Legal",
+            "url": "/company",
+            "children": [
+                { "text": "Terms", "url": "/company" },
+                { "text": "Privacy", "url": "/company" },
+                { "text": "Data processing", "url": "/company" },
+                { "text": "Sub-processors", "url": "/company" }
+            ]
+        }
+    ]
+}

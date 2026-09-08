@@ -1,0 +1,13 @@
+# The visual editor's contract for layouts/doc.blade.php — the shell every
+# docs article opens in. The dynamic docs page fills the rest from the entry.
+title: Docs page
+description: The sticky article list, the section label, the serif title and the body column
+fields:
+    indexText:
+        type: text
+        label: Index link text
+        default: "Documentation"
+    indexLink:
+        type: url
+        label: Index link
+        default: "/docs"

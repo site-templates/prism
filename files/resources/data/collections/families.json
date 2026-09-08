@@ -1,0 +1,6 @@
+[
+    { "key": "all", "label": "All models" },
+    { "key": "frontier", "label": "Frontier" },
+    { "key": "open", "label": "Open weights" },
+    { "key": "fast", "label": "Fast and cheap" }
+]

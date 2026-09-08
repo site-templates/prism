@@ -1,0 +1,951 @@
+/*
+    Prism — the whole design system, in one file.
+
+    Every colour, face and edge this template uses is declared once, here, in
+    the theme block. Section markup never writes a raw hex or a bg-zinc-* class:
+    it writes bg-canvas, bg-surface, text-ink, text-muted, border-line,
+    text-accent, font-display, font-mono. Retune a token below and the whole
+    site follows.
+
+    The system is a cool, grained light page: an off-white canvas with a fine
+    film grain, white cards with a hairline, near-black ink, and one teal for
+    the things that are live — links, the routed model, the focus ring. The
+    primary button is ink, not a colour. Four pastel beams — periwinkle, pink,
+    cyan, amber — stream diagonally behind the hero and the closing call, and
+    nowhere else. One dark band leaves the canvas: the endpoint section.
+*/
+
+@theme {
+    /* Surfaces, from the page ground up. Cool off-white, white on it, a tint for wells. */
+    --color-canvas: #f4f4f6;
+    --color-surface: #ffffff;
+    --color-raised: #ebebee;
+    --color-well: #f8f8fa;
+
+    /* Text tiers on the canvas: ink 17:1, muted 6.1:1, faint 4.9:1. */
+    --color-ink: #111114;
+    --color-ink-lift: #2a2a30;
+    --color-muted: #5b5b66;
+    --color-faint: #68687a;
+
+    /* Hairlines are alpha, so they sit correctly on the canvas and on white. */
+    --color-line: rgb(17 17 20 / 0.08);
+    --color-line-strong: rgb(17 17 20 / 0.16);
+
+    /*
+        The one chromatic accent. Teal marks what is live: links, the routed
+        row's pill, the pressed chip, status dots, chart bars, the focus ring.
+        5.1:1 as text on the canvas; white on it 4.9:1. Never a button fill.
+    */
+    --color-accent: #0f766e;
+    --color-accent-lift: #0d9488;
+    --color-accent-ink: #ffffff;
+    --color-accent-wash: rgb(15 118 110 / 0.1);
+
+    /* The dark band: the endpoint section, the mega-menu promo card, and nowhere else. */
+    --color-band: #111114;
+    --color-band-ink: #f4f4f6;
+    --color-band-muted: #a1a1aa;
+    --color-band-faint: #8a8a94;
+    --color-band-line: rgb(255 255 255 / 0.12);
+    --color-band-raised: rgb(255 255 255 / 0.06);
+
+    /* The four beams that stream behind the hero. Pastel, blurred, never as text. */
+    --color-beam-1: #c7d2fe;
+    --color-beam-2: #fbcfe8;
+    --color-beam-3: #a5f3fc;
+    --color-beam-4: #fde68a;
+
+    /* Source Serif for display, Inter for text and UI, Geist Mono for data and code. */
+    --font-display: "Source Serif 4", ui-serif, Georgia, "Times New Roman", serif;
+    --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    /* 1152px — the page container. */
+    --container-page: 72rem;
+
+    /* Two shadow recipes: the card that stands on the canvas, and the composer / menu that float. */
+    --shadow-card: 0 1px 2px rgb(17 17 20 / 0.04), 0 8px 24px -12px rgb(17 17 20 / 0.12);
+    --shadow-float: 0 1px 2px rgb(17 17 20 / 0.05), 0 12px 40px -12px rgb(17 17 20 / 0.18), 0 32px 80px -32px rgb(17 17 20 / 0.16);
+
+    /* One easing for everything that moves: quick out, long soft settle. */
+    --ease-glide: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/*
+    Tailwind's cascade layers: these rules sit in base and components so that
+    every utility in the markup (hidden, text-ink, max-lg:hidden) still wins
+    over them — an unlayered .btn-solid would beat lg:hidden.
+*/
+@layer base {
+    html {
+        background-color: var(--color-canvas);
+        color-scheme: light;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    /* One stray wide element must never give the whole page a sideways scroll. */
+    body {
+        overflow-x: clip;
+        font-feature-settings: "cv11", "ss01";
+        letter-spacing: -0.006em;
+    }
+
+    /* Anchored sections land below the sticky header instead of underneath it. */
+    [id] {
+        scroll-margin-top: 6rem;
+    }
+
+    ::selection {
+        background-color: var(--color-ink);
+        color: var(--color-canvas);
+    }
+
+    /* A teal ring instead of the browser's default halo. Keyboard users only. */
+    :focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 3px;
+        border-radius: 4px;
+    }
+
+    /*
+        Comfortable thumbs. On touch screens a text link grows a 44px hit area
+        through padding cancelled by a negative margin, so nothing in the layout
+        moves and nothing is smaller than a fingertip.
+    */
+    @media (pointer: coarse) {
+        .text-link {
+            padding-block: 0.75rem;
+            margin-block: -0.75rem;
+        }
+
+        .chip {
+            min-height: 2.75rem;
+        }
+
+        .brand {
+            padding-block: 0.375rem;
+            margin-block: -0.375rem;
+        }
+    }
+}
+
+@layer components {
+    /* ── Type ──────────────────────────────────────────────────────────────── */
+
+    /*
+        The display is Source Serif at 400 with its optical size following the
+        rendered size, set tight: tracking -0.02em and leading 1.05 so a
+        headline stacks as a block. The serif carries the headlines only; Inter
+        carries everything a visitor reads or presses.
+    */
+    .display-hero {
+        font-size: clamp(2.75rem, 5.2vw, 4.75rem);
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+        font-weight: 400;
+        font-optical-sizing: auto;
+    }
+
+    .display-page {
+        font-size: clamp(2.5rem, 4.4vw, 4rem);
+        line-height: 1.06;
+        letter-spacing: -0.02em;
+        font-weight: 400;
+    }
+
+    .display-section {
+        font-size: clamp(1.875rem, 3vw, 2.625rem);
+        line-height: 1.1;
+        letter-spacing: -0.015em;
+        font-weight: 400;
+    }
+
+    .display-quote {
+        font-size: clamp(1.5rem, 2.6vw, 2.375rem);
+        line-height: 1.3;
+        letter-spacing: -0.01em;
+        font-weight: 400;
+    }
+
+    .display-stat {
+        font-size: clamp(2rem, 3vw, 2.75rem);
+        line-height: 1;
+        letter-spacing: -0.02em;
+        font-weight: 400;
+        font-variant-numeric: tabular-nums lining-nums;
+    }
+
+    .title-card {
+        font-size: 1.125rem;
+        line-height: 1.35;
+        letter-spacing: -0.012em;
+        font-weight: 500;
+    }
+
+    /* The one paragraph under a heading: larger and lighter. */
+    .lede {
+        font-size: 1.125rem;
+        line-height: 1.55;
+        letter-spacing: -0.008em;
+        font-weight: 400;
+    }
+
+    @media (min-width: 40rem) {
+        .lede {
+            font-size: 1.25rem;
+        }
+    }
+
+    /* Figures in columns: tables, prices, latencies. */
+    .num {
+        font-variant-numeric: tabular-nums lining-nums;
+    }
+
+    /* Data set in mono: model ids, prices, code. 13px, tabular. */
+    .data {
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        font-variant-numeric: tabular-nums lining-nums;
+        letter-spacing: 0;
+    }
+
+    /* ── Grain and beams ───────────────────────────────────────────────────── */
+
+    /*
+        The film grain is one tiny SVG noise tile, multiplied at low opacity over
+        whatever sits under it. .grain goes on any relatively-positioned block.
+    */
+    .grain::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.55;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.55 0 0 0 0 0.55 0 0 0 0 0.58 0 0 0 0.16 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+        background-size: 160px 160px;
+    }
+
+    /*
+        The beams: four blurred diagonal bands of pastel light, the way a prism
+        throws a spectrum across a wall. They live behind the hero and the
+        closing call only. Pure CSS — no image, zero bytes, recolour by token.
+    */
+    .beams {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+    }
+
+    .beams::before,
+    .beams::after {
+        content: "";
+        position: absolute;
+        inset: -30% -20%;
+        filter: blur(40px);
+        opacity: 0.8;
+    }
+
+    .beams::before {
+        background:
+            linear-gradient(115deg, transparent 18%, var(--color-beam-1) 26%, transparent 34%),
+            linear-gradient(115deg, transparent 44%, var(--color-beam-3) 51%, transparent 58%),
+            linear-gradient(115deg, transparent 66%, var(--color-beam-2) 73%, transparent 80%);
+    }
+
+    .beams::after {
+        background:
+            linear-gradient(115deg, transparent 30%, var(--color-beam-4) 35%, transparent 40%),
+            linear-gradient(115deg, transparent 56%, var(--color-beam-2) 60%, transparent 64%),
+            linear-gradient(115deg, transparent 82%, var(--color-beam-1) 86%, transparent 90%);
+        opacity: 0.55;
+    }
+
+    /* The beams fade out toward the section's bottom edge so the canvas takes over cleanly. */
+    .beams-fade {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(to bottom, transparent 55%, var(--color-canvas) 100%);
+    }
+
+    /* ── Header ────────────────────────────────────────────────────────────── */
+
+    /*
+        The bar is white with a hairline underneath, sticky, and blurs what
+        scrolls under it. The blur sits on the chrome wrapper, not on #header:
+        a backdrop-filter would make the header the containing block for the
+        fixed phone sheet and collapse it to the header's own height.
+    */
+    .header-chrome {
+        background-color: rgb(255 255 255 / 0.85);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 1px 0 var(--color-line);
+    }
+
+    .nav-link {
+        transition: color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .nav-link[aria-current="page"] {
+        color: var(--color-ink);
+    }
+
+    /*
+        The mega menu. The panel is hidden until the trigger's li carries
+        data-open (main.js: hover with an intent delay, click on touch, Escape
+        closes). It scales in from the trigger over 150ms.
+    */
+    [data-dropdown-panel] {
+        display: none;
+        opacity: 0;
+        translate: 0 -4px;
+        scale: 0.98;
+        transform-origin: top center;
+        transition: opacity 0.15s ease, translate 0.15s var(--ease-glide), scale 0.15s var(--ease-glide);
+    }
+
+    [data-dropdown][data-open] [data-dropdown-panel] {
+        display: block;
+    }
+
+    [data-dropdown][data-open][data-shown] [data-dropdown-panel] {
+        opacity: 1;
+        translate: 0 0;
+        scale: 1;
+    }
+
+    [data-dropdown][data-open] .dropdown-caret {
+        rotate: 180deg;
+    }
+
+    .dropdown-caret {
+        transition: rotate 0.15s ease;
+    }
+
+    /* The phone menu panel: closed by default, main.js toggles data-menu-open and sets its top to the header's bottom edge. */
+    #mobile-menu {
+        display: none;
+        top: var(--header-bottom, 7rem);
+    }
+
+    #header[data-menu-open] #mobile-menu {
+        display: flex;
+    }
+
+    #header[data-menu-open] .menu-icon-open,
+    #header:not([data-menu-open]) .menu-icon-close {
+        display: none;
+    }
+
+    /* The announcement bar, dismissed with data-dismissed (main.js remembers it for the session). */
+    #announce[data-dismissed] {
+        display: none;
+    }
+
+    /* ── Buttons ───────────────────────────────────────────────────────────── */
+
+    /*
+        A binary system of action: an action is either the one ink-filled
+        button or a hairline ghost. No coloured button anywhere. Both share the
+        8px radius. .btn-sm is the header size, .btn-lg the hero.
+    */
+    .btn-solid,
+    .btn-ghost,
+    .btn-band {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        height: 2.75rem;
+        padding: 0 1.25rem;
+        border-radius: 0.5rem;
+        font-size: 0.9375rem;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+        transition: translate 0.18s var(--ease-glide), background-color 0.15s ease;
+    }
+
+    .btn-solid {
+        background-color: var(--color-ink);
+        color: var(--color-canvas);
+    }
+
+    .btn-solid:hover {
+        background-color: var(--color-ink-lift);
+        translate: 0 -1px;
+    }
+
+    .btn-solid:active {
+        background-color: var(--color-ink);
+        translate: 0 1px;
+    }
+
+    .btn-ghost {
+        color: var(--color-ink);
+        background-color: var(--color-surface);
+        box-shadow: inset 0 0 0 1px var(--color-line-strong);
+    }
+
+    .btn-ghost:hover {
+        background-color: var(--color-well);
+        translate: 0 -1px;
+    }
+
+    .btn-ghost:active {
+        translate: 0 1px;
+    }
+
+    /* The button that stands on the dark band: canvas-coloured, ink text. */
+    .btn-band {
+        color: var(--color-band);
+        background-color: var(--color-band-ink);
+    }
+
+    .btn-band:hover {
+        background-color: var(--color-surface);
+        translate: 0 -1px;
+    }
+
+    .btn-band:active {
+        translate: 0 1px;
+    }
+
+    .btn-sm {
+        height: 2.25rem;
+        padding: 0 0.875rem;
+        font-size: 0.875rem;
+    }
+
+    .btn-lg {
+        height: 3rem;
+        padding: 0 1.5rem;
+        font-size: 1rem;
+    }
+
+    /* The arrow every button and link carries nudges forward on hover. */
+    .btn-solid .arrow,
+    .btn-ghost .arrow,
+    .btn-band .arrow,
+    .text-link .arrow {
+        transition: translate 0.15s var(--ease-glide);
+    }
+
+    .btn-solid:hover .arrow,
+    .btn-ghost:hover .arrow,
+    .btn-band:hover .arrow,
+    .text-link:hover .arrow {
+        translate: 0.125rem 0;
+    }
+
+    /* Text links underline on hover. */
+    .text-link {
+        text-decoration-thickness: 1px;
+        text-underline-offset: 4px;
+    }
+
+    .text-link:hover {
+        text-decoration-line: underline;
+    }
+
+    /* ── Frames ────────────────────────────────────────────────────────────── */
+
+    /*
+        One frame for every drawn mock and every card: white, a hairline, the
+        12px radius and the one soft shadow.
+    */
+    .frame {
+        border-radius: 0.75rem;
+        background-color: var(--color-surface);
+        box-shadow: inset 0 0 0 1px var(--color-line), var(--shadow-card);
+    }
+
+    /* A card that links lifts by two pixels; a card that doesn't stays put. */
+    .lift {
+        transition: translate 0.18s var(--ease-glide);
+    }
+
+    .lift:hover {
+        translate: 0 -2px;
+    }
+
+    /* ── The composer and the router console ───────────────────────────────── */
+
+    /*
+        Prism's signature. A prompt composer — the 20px white card, the
+        textarea, the send button, four chips — and under it the routing
+        console, a table of models. Pressing a chip fills the prompt, re-ranks
+        the rows (main.js moves them with a FLIP transition) and hands the top
+        row the teal Routed pill. The first chip ships pressed and the rows
+        ship in its order, so the whole thing reads complete before any script.
+    */
+    .composer {
+        border-radius: 1.25rem;
+        background-color: var(--color-surface);
+        box-shadow: inset 0 0 0 1px var(--color-line), var(--shadow-float);
+    }
+
+    .composer textarea {
+        resize: none;
+        field-sizing: content;
+        min-height: 3.5rem;
+    }
+
+    .composer textarea::placeholder {
+        color: var(--color-faint);
+    }
+
+    .composer textarea:focus-visible {
+        outline: none;
+    }
+
+    .composer:has(textarea:focus-visible) {
+        box-shadow: inset 0 0 0 1px var(--color-line-strong), var(--shadow-float);
+    }
+
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        min-height: 2.125rem;
+        padding: 0 0.875rem;
+        border-radius: 9999px;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: var(--color-muted);
+        background-color: var(--color-surface);
+        box-shadow: inset 0 0 0 1px var(--color-line-strong);
+        white-space: nowrap;
+        transition: color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .chip:hover {
+        color: var(--color-ink);
+        background-color: var(--color-well);
+    }
+
+    .chip[aria-pressed="true"] {
+        color: var(--color-ink);
+        background-color: var(--color-raised);
+        box-shadow: inset 0 0 0 1px var(--color-ink);
+    }
+
+    /* The console rows: a hairline between each, the routed one tinted. */
+    .console-row {
+        transition: background-color 0.3s ease;
+    }
+
+    .console-row[data-routed] {
+        background-color: var(--color-accent-wash);
+    }
+
+    .console-row .routed-pill {
+        display: none;
+    }
+
+    .console-row[data-routed] .routed-pill {
+        display: inline-flex;
+    }
+
+    /* The reason line under the console settles in from one step below when it changes. */
+    .console-reason {
+        transition: opacity 0.2s ease, translate 0.2s var(--ease-glide);
+    }
+
+    .console-reason[data-updating] {
+        opacity: 0;
+        translate: 0 0.25rem;
+    }
+
+    /* The quality bar in the console and the models table: a hairline track, teal fill at --score. */
+    .score {
+        --score: 0%;
+        position: relative;
+        height: 0.25rem;
+        width: 4rem;
+        border-radius: 9999px;
+        background-color: var(--color-raised);
+        overflow: hidden;
+    }
+
+    .score::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        width: var(--score);
+        border-radius: 9999px;
+        background-color: var(--color-accent);
+        transition: width 0.6s var(--ease-glide);
+    }
+
+    /* The live dot: a teal point with a soft pulse. Reduced motion stills it. */
+    .live-dot {
+        position: relative;
+        display: inline-block;
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 9999px;
+        background-color: var(--color-accent);
+    }
+
+    .live-dot::after {
+        content: "";
+        position: absolute;
+        inset: -0.25rem;
+        border-radius: 9999px;
+        border: 1px solid var(--color-accent);
+        opacity: 0;
+        animation: live-pulse 2.4s var(--ease-glide) infinite;
+    }
+
+    @keyframes live-pulse {
+        0% { scale: 0.6; opacity: 0.7; }
+        70%, 100% { scale: 1.3; opacity: 0; }
+    }
+
+    /* ── Drawn mocks ───────────────────────────────────────────────────────── */
+
+    /* The usage chart: bars grow to --h from the baseline. */
+    .bar {
+        --h: 20%;
+        height: var(--h);
+        transition: height 0.8s var(--ease-glide);
+    }
+
+    html.js [data-reveal]:not(.is-visible) .bar {
+        height: 4%;
+    }
+
+    /* A code block on the dark band. */
+    .code {
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        line-height: 1.7;
+        tab-size: 2;
+        font-variant-ligatures: none;
+    }
+
+    .code .tok-key { color: var(--color-band-muted); }
+    .code .tok-str { color: var(--color-beam-3); }
+    .code .tok-fn { color: var(--color-band-ink); }
+    .code .tok-cm { color: var(--color-band-faint); }
+
+    /* ── Pricing ───────────────────────────────────────────────────────────── */
+
+    /* The recommended tier wears an ink hairline; its button is the section's one filled action. */
+    .tier[data-recommended] {
+        box-shadow: inset 0 0 0 1px var(--color-ink), var(--shadow-card);
+    }
+
+    /* ── Tables ────────────────────────────────────────────────────────────── */
+
+    .table-row {
+        transition: background-color 0.15s ease;
+    }
+
+    .table-row:hover {
+        background-color: var(--color-well);
+    }
+
+    /* A filter hides rows whose data-family doesn't match the pressed chip (main.js). */
+    .table-row[hidden] {
+        display: none;
+    }
+
+    /* ── FAQ ───────────────────────────────────────────────────────────────── */
+
+    details summary::-webkit-details-marker {
+        display: none;
+    }
+
+    details .faq-answer {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.32s var(--ease-glide);
+    }
+
+    details[open] .faq-answer {
+        grid-template-rows: 1fr;
+    }
+
+    details .faq-answer > * {
+        overflow: hidden;
+    }
+
+    details[open] .faq-sign {
+        rotate: 45deg;
+    }
+
+    .faq-sign {
+        transition: rotate 0.25s var(--ease-glide);
+    }
+
+    /* ── Forms ─────────────────────────────────────────────────────────────── */
+
+    .field {
+        width: 100%;
+        min-height: 2.75rem;
+        padding: 0.625rem 0.875rem;
+        border-radius: 0.5rem;
+        background-color: var(--color-surface);
+        color: var(--color-ink);
+        box-shadow: inset 0 0 0 1px var(--color-line-strong);
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    .field::placeholder {
+        color: var(--color-faint);
+    }
+
+    .field:focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 0;
+    }
+
+    /* ── Motion ────────────────────────────────────────────────────────────── */
+
+    /*
+        The hero cascades in on load: the headline group first, the composer a
+        beat later, the console after that. Only when JavaScript is present.
+    */
+    html.js .arrive,
+    html.js .arrive-late,
+    html.js .arrive-last {
+        animation: arrive 0.8s var(--ease-glide) both;
+    }
+
+    html.js .arrive-late {
+        animation-delay: 0.12s;
+    }
+
+    html.js .arrive-last {
+        animation-delay: 0.24s;
+    }
+
+    @keyframes arrive {
+        from { opacity: 0; translate: 0 0.75rem; }
+        to { opacity: 1; translate: 0 0; }
+    }
+
+    /*
+        Whole blocks fade and rise once as they scroll into view — never each row
+        inside one. Only when JavaScript is present: without it nothing is hidden.
+    */
+    html.js [data-reveal] {
+        opacity: 0;
+        translate: 0 0.75rem;
+        transition:
+            opacity 0.7s var(--ease-glide),
+            translate 0.7s var(--ease-glide);
+    }
+
+    html.js [data-reveal].is-visible {
+        opacity: 1;
+        translate: 0 0;
+    }
+
+    html.js .stagger > *:nth-child(2) { transition-delay: 0.08s; }
+    html.js .stagger > *:nth-child(3) { transition-delay: 0.16s; }
+    html.js .stagger > *:nth-child(4) { transition-delay: 0.24s; }
+
+    /* The console rows carry a transform while main.js FLIPs them into their new order. */
+    .console-row[data-flip] {
+        transition: translate 0.35s var(--ease-glide), background-color 0.3s ease;
+    }
+
+    /* ── Prose ─────────────────────────────────────────────────────────────── */
+
+    /*
+        Blog posts and docs arrive as raw HTML from their collections, so the
+        reading styles live here rather than on each tag.
+    */
+    .prose {
+        color: var(--color-muted);
+        font-size: 1.0625rem;
+        line-height: 1.75;
+    }
+
+    .prose > * + * {
+        margin-top: 1.25em;
+    }
+
+    .prose h2,
+    .prose h3,
+    .prose h4 {
+        font-family: var(--font-display);
+        color: var(--color-ink);
+        font-weight: 400;
+        letter-spacing: -0.015em;
+        text-wrap: balance;
+    }
+
+    .prose h2 {
+        font-size: 1.875rem;
+        line-height: 1.15;
+        margin-top: 2.25em;
+    }
+
+    .prose h3 {
+        font-size: 1.5rem;
+        line-height: 1.25;
+        margin-top: 1.75em;
+    }
+
+    .prose h2 + *,
+    .prose h3 + * {
+        margin-top: 0.75em;
+    }
+
+    .prose strong {
+        color: var(--color-ink);
+        font-weight: 500;
+    }
+
+    .prose a {
+        color: var(--color-accent);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        text-decoration-thickness: 1px;
+    }
+
+    .prose a:hover {
+        color: var(--color-accent-lift);
+    }
+
+    .prose ul,
+    .prose ol {
+        padding-left: 1.25em;
+    }
+
+    .prose ul {
+        list-style: disc;
+    }
+
+    .prose ol {
+        list-style: decimal;
+    }
+
+    .prose li + li {
+        margin-top: 0.5em;
+    }
+
+    .prose li::marker {
+        color: var(--color-faint);
+    }
+
+    .prose blockquote {
+        margin-left: 0;
+        padding-left: 1.25rem;
+        border-left: 1px solid var(--color-line-strong);
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        line-height: 1.5;
+        color: var(--color-ink);
+    }
+
+    .prose code {
+        font-family: var(--font-mono);
+        font-size: 0.875em;
+        color: var(--color-ink);
+        background-color: var(--color-raised);
+        padding: 0.125rem 0.375rem;
+        border-radius: 0.25rem;
+    }
+
+    .prose pre {
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        line-height: 1.7;
+        color: var(--color-band-ink);
+        background-color: var(--color-band);
+        padding: 1.25rem 1.5rem;
+        border-radius: 0.75rem;
+        overflow-x: auto;
+    }
+
+    .prose pre code {
+        font-size: inherit;
+        color: inherit;
+        background: none;
+        padding: 0;
+    }
+
+    .prose img {
+        border-radius: 0.75rem;
+        box-shadow: inset 0 0 0 1px var(--color-line);
+    }
+
+    .prose hr {
+        border: 0;
+        border-top: 1px solid var(--color-line);
+        margin-top: 2.5em;
+    }
+
+    .prose table {
+        width: 100%;
+        font-size: 0.9375rem;
+        border-collapse: collapse;
+    }
+
+    .prose th {
+        text-align: left;
+        font-weight: 500;
+        color: var(--color-ink);
+        padding: 0.5rem 0.75rem 0.5rem 0;
+        border-bottom: 1px solid var(--color-line-strong);
+    }
+
+    .prose td {
+        padding: 0.625rem 0.75rem 0.625rem 0;
+        border-bottom: 1px solid var(--color-line);
+        vertical-align: top;
+    }
+
+    /* ── Reduced motion ────────────────────────────────────────────────────── */
+
+    /*
+        Everything resolves to its resting, fully visible state. No cascade, no
+        reveal, no FLIP, no pulse.
+    */
+    @media (prefers-reduced-motion: reduce) {
+        html.js .arrive,
+        html.js .arrive-late,
+        html.js .arrive-last {
+            animation: none;
+        }
+
+        html.js [data-reveal] {
+            opacity: 1;
+            translate: 0 0;
+            transition: none;
+        }
+
+        html.js [data-reveal]:not(.is-visible) .bar {
+            height: var(--h);
+        }
+
+        .live-dot::after {
+            animation: none;
+        }
+
+        .console-row[data-flip],
+        .score::after,
+        .bar,
+        .console-reason,
+        [data-dropdown-panel],
+        .faq-answer,
+        .faq-sign,
+        .btn-solid,
+        .btn-ghost,
+        .btn-band,
+        .lift,
+        .arrow {
+            transition: none;
+        }
+    }
+}

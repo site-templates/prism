@@ -1,0 +1,87 @@
+# The visual editor's contract for nav.blade.php.
+# The page links come from resources/data/site.json (nav_links) — nest links
+# under an item to turn it into a mega-menu — so editing them changes every page.
+title: Header
+description: The announcement line, the mark, the page links and mega-menus, log in and the one ink button
+fields:
+    brand:
+        type: text
+        label: Site name
+        description: Sits beside the mark, and is what screen readers announce.
+        default: "Prism"
+    showAnnounce:
+        type: toggle
+        label: Show announcement line
+        default: "1"
+    announceText:
+        type: text
+        label: Announcement
+        default: "Prism now speaks MCP — route every model from inside Claude."
+    announceLinkText:
+        type: text
+        label: Announcement link text
+        default: "Read more"
+    announceLink:
+        type: url
+        label: Announcement link
+        default: "/changelog"
+    signInText:
+        type: text
+        label: Log-in text
+        default: "Log in"
+    signInLink:
+        type: url
+        label: Log-in link
+        default: "#"
+    ctaText:
+        type: text
+        label: Button text
+        default: "Get API key"
+    ctaLink:
+        type: url
+        label: Button link
+        default: "/docs/quickstart"
+    promoLabel:
+        type: text
+        label: Mega-menu card title
+        default: "See the router at work"
+    promoBody:
+        type: textarea
+        label: Mega-menu card text
+        rows: 2
+        default: "A two-minute walkthrough of policies, fallbacks and the log."
+    promoButtonText:
+        type: text
+        label: Mega-menu card button
+        default: "Watch the demo"
+    promoLink:
+        type: url
+        label: Mega-menu card link
+        default: "/#router"
+    current:
+        type: text
+        label: Current page path
+        description: Set by each page — the matching link reads as current.
+        default: "/"
+    links:
+        type: repeater
+        label: Page links
+        description: "Nest links under an item to turn it into a mega-menu."
+        add_button_label: "Add link"
+        item_label: text
+        nestable: true
+        source: site.nav_links
+        sub_fields:
+            text:
+                type: text
+                label: Label
+                default: "New link"
+            url:
+                type: url
+                label: Link
+                default: "/"
+            description:
+                type: text
+                label: Description
+                description: "One line under a mega-menu item. Top-level links ignore it."
+                default: ""

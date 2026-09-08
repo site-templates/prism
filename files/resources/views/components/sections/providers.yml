@@ -1,0 +1,23 @@
+# The visual editor's contract for providers.blade.php.
+title: Providers strip
+description: One line and the provider names, set as quiet wordmarks
+fields:
+    heading:
+        type: text
+        label: Line
+        default: "Eleven providers. One invoice, at their list price."
+    items:
+        type: repeater
+        label: Providers
+        add_button_label: "Add provider"
+        item_label: name
+        source: collections.providers
+        sub_fields:
+            name:
+                type: text
+                label: Provider
+                default: "New provider"
+            initial:
+                type: text
+                label: Initial
+                default: "P"

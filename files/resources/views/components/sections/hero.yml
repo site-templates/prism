@@ -1,0 +1,164 @@
+# The visual editor's contract for hero.blade.php.
+# The chips come from the routes collection, the console rows from console,
+# the provider dots from providers.
+title: Hero
+description: The serif headline over the beams, the provider dots, the prompt composer with its chips and the routing console
+fields:
+    heading:
+        type: text
+        label: Headline
+        default: "One key. Every model."
+    body:
+        type: textarea
+        label: One paragraph
+        rows: 3
+        default: "Prism sits in front of every model you pay for and routes each request to the right one — cheapest, fastest, best, or the one that fits the whole document."
+    worksWith:
+        type: text
+        label: Provider row label
+        default: "Works with"
+    placeholder:
+        type: text
+        label: Prompt placeholder
+        default: "Describe what you are building…"
+    sendLabel:
+        type: text
+        label: Send button label
+        description: Read by screen readers and shown on hover.
+        default: "Route this prompt"
+    reason:
+        type: textarea
+        label: Reason line
+        description: Shown under the console before a chip is pressed — match the first chip's reason.
+        rows: 2
+        default: "Routed to Gemini 3.1 Flash — 6× cheaper than a frontier model at equal quality on summaries."
+    consoleTitle:
+        type: text
+        label: Console title
+        default: "Routing console"
+    consoleNote:
+        type: text
+        label: Console note
+        default: "Ranked for this prompt · live prices"
+    showSecondary:
+        type: toggle
+        label: Show text link
+        default: "1"
+    secondaryText:
+        type: text
+        label: Text link
+        default: "How routing works"
+    secondaryLink:
+        type: url
+        label: Text link URL
+        default: "/models#scoring"
+    routes:
+        type: repeater
+        label: Chips
+        description: Each chip fills the prompt, re-ranks the console by its key and shows its reason.
+        add_button_label: "Add chip"
+        item_label: label
+        source: collections.routes
+        sub_fields:
+            key:
+                type: select
+                label: Ranks by
+                options:
+                    cheap: Cheapest
+                    fast: Fastest
+                    code: Best at code
+                    long: Longest context
+                default: "cheap"
+            label:
+                type: text
+                label: Chip text
+                default: "New chip"
+            prompt:
+                type: textarea
+                label: Example prompt
+                rows: 2
+                default: ""
+            reason:
+                type: textarea
+                label: Reason line
+                rows: 2
+                default: ""
+    models:
+        type: repeater
+        label: Console rows
+        description: Ranks are 1–5 per chip; rows ship in the first chip's order.
+        add_button_label: "Add model"
+        item_label: name
+        source: collections.console
+        sub_fields:
+            name:
+                type: text
+                label: Model
+                default: "New model"
+            id:
+                type: text
+                label: Model id
+                default: "provider/model"
+            provider:
+                type: text
+                label: Provider
+                default: ""
+            latency:
+                type: text
+                label: Latency
+                default: "500 ms"
+            price:
+                type: text
+                label: Price per million input tokens
+                default: "$1.00"
+            score:
+                type: number
+                label: Quality score
+                min: 0
+                max: 100
+                step: 1
+                default: "80"
+            rankCheap:
+                type: number
+                label: Rank — cheapest
+                min: 1
+                max: 20
+                step: 1
+                default: "1"
+            rankFast:
+                type: number
+                label: Rank — fastest
+                min: 1
+                max: 20
+                step: 1
+                default: "1"
+            rankCode:
+                type: number
+                label: Rank — code
+                min: 1
+                max: 20
+                step: 1
+                default: "1"
+            rankLong:
+                type: number
+                label: Rank — context
+                min: 1
+                max: 20
+                step: 1
+                default: "1"
+    providers:
+        type: repeater
+        label: Provider dots
+        add_button_label: "Add provider"
+        item_label: name
+        source: collections.providers
+        sub_fields:
+            name:
+                type: text
+                label: Provider
+                default: "New provider"
+            initial:
+                type: text
+                label: Initial
+                description: One or two letters shown in the dot.
+                default: "P"

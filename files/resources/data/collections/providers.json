@@ -1,0 +1,34 @@
+[
+    {
+        "name": "OpenAI",
+        "initial": "O"
+    },
+    {
+        "name": "Anthropic",
+        "initial": "A"
+    },
+    {
+        "name": "Google",
+        "initial": "G"
+    },
+    {
+        "name": "Meta",
+        "initial": "M"
+    },
+    {
+        "name": "Mistral",
+        "initial": "Mi"
+    },
+    {
+        "name": "DeepSeek",
+        "initial": "D"
+    },
+    {
+        "name": "xAI",
+        "initial": "X"
+    },
+    {
+        "name": "Alibaba",
+        "initial": "Q"
+    }
+]

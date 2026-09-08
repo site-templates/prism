@@ -1,0 +1,33 @@
+# The visual editor's contract for docs-index.blade.php.
+# Rows come from the docs collection — the same entries the article pages read.
+title: Docs index
+description: One row per article — section, title, description
+fields:
+    items:
+        type: repeater
+        label: Articles
+        add_button_label: "Add article"
+        item_label: title
+        source: collections.docs
+        sub_fields:
+            section:
+                type: text
+                label: Section
+                default: "Getting started"
+            title:
+                type: text
+                label: Title
+                default: "New article"
+            slug:
+                type: text
+                label: Slug
+                default: "new-article"
+            link:
+                type: url
+                label: Link
+                default: "/docs/new-article"
+            description:
+                type: textarea
+                label: One line
+                rows: 2
+                default: ""

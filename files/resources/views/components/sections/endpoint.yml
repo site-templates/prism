@@ -1,0 +1,42 @@
+# The visual editor's contract for endpoint.blade.php.
+# The four figures come from the stats collection; the code block is fixed
+# markup — edit it in the file.
+title: Endpoint band
+description: The dark band — heading, paragraph and button beside the code block, four figures under them
+fields:
+    heading:
+        type: text
+        label: Heading
+        default: "Every model behind one endpoint."
+    body:
+        type: textarea
+        label: One paragraph
+        rows: 3
+        default: "Prism is OpenAI-compatible. Change the base URL and the model id, keep everything else, and the whole catalog is one request away."
+    ctaText:
+        type: text
+        label: Button text
+        default: "Read the quickstart"
+    ctaLink:
+        type: url
+        label: Button link
+        default: "/docs/quickstart"
+    fileName:
+        type: text
+        label: Code block file name
+        default: "route.py"
+    stats:
+        type: repeater
+        label: Figures
+        add_button_label: "Add figure"
+        item_label: label
+        source: collections.stats
+        sub_fields:
+            value:
+                type: text
+                label: Figure
+                default: "0"
+            label:
+                type: text
+                label: Caption
+                default: ""

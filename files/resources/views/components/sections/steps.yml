@@ -1,0 +1,29 @@
+# The visual editor's contract for steps.blade.php.
+title: How it works
+description: A heading beside three numbered steps
+fields:
+    heading:
+        type: text
+        label: Heading
+        default: "How a request finds its model."
+    body:
+        type: textarea
+        label: One line
+        rows: 2
+        default: "Three steps, a few milliseconds, and a line in the log for each."
+    items:
+        type: repeater
+        label: Steps
+        add_button_label: "Add step"
+        item_label: title
+        source: collections.steps
+        sub_fields:
+            title:
+                type: text
+                label: Title
+                default: "New step"
+            body:
+                type: textarea
+                label: One sentence
+                rows: 2
+                default: ""

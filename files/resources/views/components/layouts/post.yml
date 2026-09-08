@@ -1,0 +1,13 @@
+# The visual editor's contract for layouts/post.blade.php — the reading shell
+# every blog post opens in. The dynamic blog page fills these from the entry.
+title: Post page
+description: The back link, the category and date row, the serif title, the author row and the body column
+fields:
+    backText:
+        type: text
+        label: Back link text
+        default: "All posts"
+    backLink:
+        type: url
+        label: Back link
+        default: "/blog"

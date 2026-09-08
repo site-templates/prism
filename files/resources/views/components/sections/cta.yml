@@ -1,0 +1,33 @@
+# The visual editor's contract for cta.blade.php.
+title: Closing call
+description: The beams return behind a serif heading, one line and two buttons
+fields:
+    heading:
+        type: text
+        label: Heading
+        default: "Point your client at Prism. Keep everything else."
+    body:
+        type: textarea
+        label: One line
+        rows: 2
+        default: "Free for a million routed tokens a month. Provider prices at list, on one invoice."
+    ctaText:
+        type: text
+        label: Button text
+        default: "Get an API key"
+    ctaLink:
+        type: url
+        label: Button link
+        default: "/docs/quickstart"
+    showSecondary:
+        type: toggle
+        label: Show second button
+        default: "1"
+    secondaryText:
+        type: text
+        label: Second button text
+        default: "See pricing"
+    secondaryLink:
+        type: url
+        label: Second button link
+        default: "/pricing"
