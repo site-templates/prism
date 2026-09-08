@@ -50,11 +50,11 @@
     --color-band-line: rgb(255 255 255 / 0.12);
     --color-band-raised: rgb(255 255 255 / 0.06);
 
-    /* The four beams that stream behind the hero. Pastel, blurred, never as text. */
-    --color-beam-1: #c7d2fe;
-    --color-beam-2: #fbcfe8;
-    --color-beam-3: #a5f3fc;
-    --color-beam-4: #fde68a;
+    /* The four beams the mesh is painted from — Stripe's spectrum: violet, coral, sky, gold. Never as text. */
+    --color-beam-1: #a960ee;
+    --color-beam-2: #ff6a7a;
+    --color-beam-3: #7cd4ff;
+    --color-beam-4: #ffcb57;
 
     /* Source Serif for display, Inter for text and UI, Geist Mono for data and code. */
     --font-display: "Source Serif 4", ui-serif, Georgia, "Times New Roman", serif;
@@ -290,6 +290,28 @@
         opacity: 0.55;
     }
 
+    /*
+        The hero's sky: the mesh fills the top of the page and ends in a
+        diagonal edge, the way Stripe cuts its gradient, with the composer
+        floating over the edge. The grain rides inside it.
+    */
+    .hero-sky {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 86%);
+    }
+
+    @media (max-width: 63.99rem) {
+        .hero-sky {
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 92%);
+        }
+    }
+
+    .hero-sky .beams {
+        z-index: 0;
+    }
+
     /* The beams fade out toward the section's bottom edge so the canvas takes over cleanly. */
     .beams-fade {
         position: absolute;
@@ -518,9 +540,9 @@
     .composer {
         padding: 0.5rem;
         border-radius: 1.75rem;
-        background-color: rgb(255 255 255 / 0.55);
-        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.7), var(--shadow-float);
-        backdrop-filter: blur(20px);
+        background-color: rgb(255 255 255 / 0.6);
+        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.8), var(--shadow-float);
+        backdrop-filter: blur(24px);
     }
 
     .composer-card {
@@ -532,7 +554,7 @@
     .composer textarea {
         resize: none;
         field-sizing: content;
-        min-height: 11rem;
+        min-height: 9.5rem;
         line-height: 1.4;
     }
 
@@ -592,7 +614,12 @@
         display: inline-flex;
     }
 
-    /* The reason line under the console settles in from one step below when it changes. */
+    /* The route strip's lines swap with the pressed chip (main.js); the reason settles in from one step below. */
+    .route-strip [data-route-result][hidden] {
+        display: none;
+    }
+
+    /* The reason line under the route strip settles in from one step below when it changes. */
     .console-reason {
         transition: opacity 0.2s ease, translate 0.2s var(--ease-glide);
     }

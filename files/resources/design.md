@@ -8,12 +8,13 @@ is live: the routed model, links, status dots, the focus ring. The primary
 button is ink, never a colour. Headlines are set in Source Serif at 400 —
 large, tight, unhurried — over Inter for everything a visitor reads or
 presses, and Geist Mono for the data: model ids, prices, latencies, code.
-Four pastel beams — periwinkle, pink, cyan, amber — drift behind the hero
-and the closing call as a slow, wavy WebGL mesh gradient (the CSS beams stand
-in without WebGL), the way a prism throws a spectrum across a wall, and
-nowhere else. One dark band leaves the canvas: the endpoint
-section. The hero is the signature: a prompt composer whose chips re-rank a
-live routing console under it.
+Four beams — Stripe's violet, coral, sky and gold — drift behind the hero as
+a wavy WebGL mesh gradient that fills the top of the page and ends in a
+diagonal edge (the CSS beams stand in without WebGL); softer echoes of it sit
+behind inner-page headers and the closing call, and nowhere else. One dark
+band leaves the canvas: the endpoint section. The hero is the signature: a
+two-line serif headline beside a prompt composer whose chips fill the prompt
+and name the model the request would route to.
 
 Adjectives: exact, calm, light, technical, quietly confident.
 Anti-adjectives: hype, glow, neon.
@@ -32,7 +33,7 @@ Anti-adjectives: hype, glow, neon.
 | Line | `--color-line` | `rgb(17 17 20 / 0.08)` | Every hairline; `--color-line-strong` at 0.16 for edges that must be seen. |
 | Accent | `--color-accent` | `#0f766e` | Teal: links, the Routed pill, the pressed chip ring, live dots, score bars, the focus ring. Never a button fill. |
 | Band | `--color-band` | `#111114` | The endpoint section and the mega-menu promo card. Ink `#f4f4f6`, muted `#a1a1aa`. |
-| Beams | `--color-beam-1…4` | `#c7d2fe` `#fbcfe8` `#a5f3fc` `#fde68a` | The hero and closing-call backdrop only. Never text. |
+| Beams | `--color-beam-1…4` | `#a960ee` `#ff6a7a` `#7cd4ff` `#ffcb57` | The mesh gradient: hero sky, page headers, closing call. Blended toward white by the shader. Never text. |
 
 Accent budget: at most three teal things in any viewport. Never a teal
 button. Never a beam colour as text or a fill.
@@ -67,16 +68,18 @@ button. Never a beam colour as text or a fill.
 - **Frame:** `.frame` — white, hairline, 12px, `--shadow-card` — for every
   drawn mock and card. `.lift` on frames that link.
 - **The composer:** `.composer` — a translucent 28px shell holding the white
-  `.composer-card` (tall 2xl-placeholder textarea, round ink send button
-  bottom-right) with the chip row in the shell's band beneath it.
+  `.composer-card` (tall textarea, round ink send button bottom-right), the
+  chip row in the shell's band, and the `.route-strip` under a hairline: one
+  line per chip naming the rank-1 model from the console collection
+  (`[data-route-result]`, the pressed chip's shown) plus the reason line.
 - **Chips:** `.chip` pills, 40px; `aria-pressed="true"` is the ink fill with
   canvas text. Used by the composer and the models filter.
 - **Provider marks:** 32px circles in each provider's brand colour (a `color`
   field on the providers collection — data, not a token) with a white initial
   and ring, overlapping like the tables.so integration row.
-- **The console:** `[data-console]` — hairline rows of model · provider ·
-  latency · price · `.score` bar; `data-routed` tints the row and shows the
-  teal pill; `.console-reason` is the line under it. Rows FLIP when re-ranked.
+- **The hero sky:** `.hero-sky` — absolute, `clip-path` diagonal edge (86% on
+  the left, 100% on the right; 92% on phones), grain inside, the mesh canvas
+  under it. The composer floats over the edge.
 - **Mocks:** `x-mocks.policy` (a rules file), `x-mocks.usage` (a bar chart),
   `x-mocks.promo` (the tiny console in the mega-menu card). Drawn on white
   with `.data` figures; zero images.
@@ -84,8 +87,9 @@ button. Never a beam colour as text or a fill.
   one-line description each, a dark promo card on the right, 150ms scale-in.
 - **Tables:** on the canvas, hairline rows only, `whitespace-nowrap`
   headings, sideways scroll on phones.
-- **Beams and grain:** `.beams` (with its `canvas[data-mesh]`) + `.beams-fade`
-  inside a `.grain` section — the hero, the closing call, inner-page headers.
+- **Beams and grain:** `.beams` (with its `canvas[data-mesh]`) inside
+  `.hero-sky` on the home page; `.beams` + `.beams-fade` inside a `.grain`
+  section on inner-page headers and the closing call.
   main.js paints the mesh at half resolution, only on screen, one still frame
   under reduced motion; `.has-mesh` hides the CSS fallback beams.
 
@@ -133,10 +137,10 @@ at equal quality on summaries"). Sentences are short. Never "powerful",
     --color-band-faint: #8a8a94;
     --color-band-line: rgb(255 255 255 / 0.12);
     --color-band-raised: rgb(255 255 255 / 0.06);
-    --color-beam-1: #c7d2fe;
-    --color-beam-2: #fbcfe8;
-    --color-beam-3: #a5f3fc;
-    --color-beam-4: #fde68a;
+    --color-beam-1: #a960ee;
+    --color-beam-2: #ff6a7a;
+    --color-beam-3: #7cd4ff;
+    --color-beam-4: #ffcb57;
     --font-display: "Source Serif 4", ui-serif, Georgia, serif;
     --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
     --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;

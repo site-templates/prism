@@ -3,24 +3,24 @@
         "key": "cheap",
         "label": "Cheapest for summaries",
         "prompt": "Summarize this forty-page customer call transcript into five bullet points a sales lead can read in a minute.",
-        "reason": "Routed to Gemini 3.1 Flash — 6× cheaper than a frontier model at equal quality on summaries."
+        "reason": "6× cheaper than a frontier model at equal quality on summaries."
     },
     {
         "key": "fast",
         "label": "Fastest for chat",
         "prompt": "Reply to a customer asking where their order is. Warm, two sentences, include the tracking link.",
-        "reason": "Routed to Llama 4 Maverick — 210 ms to first token, the lowest p50 in the pool right now."
+        "reason": "210 ms to first token, the lowest p50 in the pool right now."
     },
     {
         "key": "code",
         "label": "Best at code",
         "prompt": "Refactor this Python function to use async I/O, add type hints, and keep the public signature.",
-        "reason": "Routed to Claude Sonnet 5 — top of the pool on code, with GPT-5.6 standing by as the fallback."
+        "reason": "Top of the pool on code, with GPT-5.6 standing by as the fallback."
     },
     {
         "key": "long",
         "label": "Longest context",
         "prompt": "Read this nine-hundred-page procurement contract and list every termination clause with its page number.",
-        "reason": "Routed to Gemini 3.1 Pro — two million tokens of context, the only model that fits the whole document."
+        "reason": "Two million tokens of context — the only model that fits the whole document."
     }
 ]

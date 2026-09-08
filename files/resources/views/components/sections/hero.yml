@@ -1,18 +1,42 @@
 # The visual editor's contract for hero.blade.php.
-# The chips come from the routes collection, the console rows from console,
-# the provider dots from providers.
+# The chips come from the routes collection, the route-strip results from
+# console (the rank-1 model per chip), the provider marks from providers.
 title: Hero
-description: The serif headline over the beams, the provider dots, the prompt composer with its chips and the routing console
+description: The two-line serif headline, paragraph, buttons and provider marks beside the prompt composer, over the mesh gradient
 fields:
     heading:
         type: text
-        label: Headline
-        default: "One key. Every model."
+        label: Headline, first line
+        default: "One key."
+    headingTwo:
+        type: text
+        label: Headline, second line
+        default: "Every model."
     body:
         type: textarea
         label: One paragraph
         rows: 3
         default: "One OpenAI-compatible key in front of every model. Each request goes to the right one — cheapest, fastest, best, or the one that fits the whole document."
+    ctaText:
+        type: text
+        label: Button text
+        default: "Get an API key"
+    ctaLink:
+        type: url
+        label: Button link
+        default: "/docs/quickstart"
+    showSecondary:
+        type: toggle
+        label: Show text link
+        default: "1"
+    secondaryText:
+        type: text
+        label: Text link
+        default: "See every model"
+    secondaryLink:
+        type: url
+        label: Text link URL
+        default: "/models"
     worksWith:
         type: text
         label: Provider row label
@@ -26,32 +50,16 @@ fields:
         label: Send button label
         description: Read by screen readers and shown on hover.
         default: "Route this prompt"
+    routedLabel:
+        type: text
+        label: Route strip label
+        default: "Routed to"
     reason:
         type: textarea
         label: Reason line
-        description: Shown under the console before a chip is pressed — match the first chip's reason.
+        description: Shown under the route strip before a chip is pressed — match the first chip's reason.
         rows: 2
-        default: "Routed to Gemini 3.1 Flash — 6× cheaper than a frontier model at equal quality on summaries."
-    consoleTitle:
-        type: text
-        label: Console title
-        default: "Routing console"
-    consoleNote:
-        type: text
-        label: Console note
-        default: "Ranked for this prompt · live prices"
-    showSecondary:
-        type: toggle
-        label: Show text link
-        default: "1"
-    secondaryText:
-        type: text
-        label: Text link
-        default: "How routing works"
-    secondaryLink:
-        type: url
-        label: Text link URL
-        default: "/models#scoring"
+        default: "6× cheaper than a frontier model at equal quality on summaries."
     routes:
         type: repeater
         label: Chips
@@ -85,8 +93,8 @@ fields:
                 default: ""
     models:
         type: repeater
-        label: Console rows
-        description: Ranks are 1–5 per chip; rows ship in the first chip's order.
+        label: Route results
+        description: The model ranked 1 for a chip is what its route strip names.
         add_button_label: "Add model"
         item_label: name
         source: collections.console

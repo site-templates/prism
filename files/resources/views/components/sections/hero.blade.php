@@ -1,65 +1,84 @@
 @props([
-    'heading' => 'One key. Every model.',
+    'heading' => 'One key.',
+    'headingTwo' => 'Every model.',
     'body' => 'One OpenAI-compatible key in front of every model. Each request goes to the right one — cheapest, fastest, best, or the one that fits the whole document.',
+    'ctaText' => 'Get an API key',
+    'ctaLink' => '/docs/quickstart',
+    'showSecondary' => '1',
+    'secondaryText' => 'See every model',
+    'secondaryLink' => '/models',
     'worksWith' => 'Works with',
     'placeholder' => 'Describe what you are building…',
     'sendLabel' => 'Route this prompt',
-    'reason' => 'Routed to Gemini 3.1 Flash — 6× cheaper than a frontier model at equal quality on summaries.',
-    'consoleTitle' => 'Routing console',
-    'consoleNote' => 'Ranked for this prompt · live prices',
-    'showSecondary' => '1',
-    'secondaryText' => 'How routing works',
-    'secondaryLink' => '/models#scoring',
+    'routedLabel' => 'Routed to',
+    'reason' => '6× cheaper than a frontier model at equal quality on summaries.',
     'routes',
     'models',
     'providers',
 ])
 <!--
-    The opening. A centered serif headline over the grained canvas with the
-    mesh gradient drifting behind it (a WebGL canvas main.js paints from the
-    beam tokens; the CSS beams stand in when WebGL is unavailable), one
-    paragraph, and the provider marks in their brand colours. Then Prism's
-    signature: the composer — a soft grey shell holding a tall white prompt
-    card with the round send button, and the four chips in the shell's band
-    beneath it — and, joined by a hairline, the routing console: five models
-    ranked for the pressed chip. Pressing a chip fills the prompt, re-orders
-    the rows (main.js) and hands the top row the teal Routed pill; the reason
-    line under the table says why. The first chip ships pressed and the rows
-    ship in its order, so it reads complete before any script runs. Chips
-    come from the routes collection, the rows from console, the marks from
-    providers.
+    The opening, the way Stripe sets it: a vivid mesh gradient (a WebGL canvas
+    main.js paints from the beam tokens; the CSS beams stand in without WebGL)
+    filling the top of the page and ending in a diagonal edge, the two-line
+    serif headline, one paragraph, the ink button and a text link, and the
+    provider marks on the left; on the right, floating over the edge, Prism's
+    signature — the composer: a soft shell holding the white prompt card with
+    the round send button, the four chips in the shell's band, and under them
+    the route strip naming the model this prompt would go to. Pressing a chip
+    fills the prompt and swaps the strip (main.js). The first chip ships
+    pressed with its result shown, so it reads complete before any script.
+    Chips come from the routes collection, the results from console (the
+    rank-1 model per chip), the marks from providers.
 -->
-<section id="router" class="grain relative overflow-hidden pt-20 pb-24 md:pt-32 md:pb-32">
-    <div class="beams" aria-hidden="true"><canvas data-mesh></canvas></div>
-    <div class="beams-fade" aria-hidden="true"></div>
+<section id="router" class="relative overflow-hidden pt-16 pb-20 md:pt-24 md:pb-28">
+    <div class="hero-sky grain" aria-hidden="true">
+        <div class="beams"><canvas data-mesh></canvas></div>
+    </div>
 
     <div class="relative z-10 mx-auto max-w-page px-6">
-        <div class="arrive flex flex-col items-center text-center">
-            <h1 class="display-hero max-w-[20ch] font-display text-balance text-ink">{{ $heading }}</h1>
-            <p class="lede mt-7 max-w-[58ch] text-pretty text-muted">{{ $body }}</p>
-            <p class="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-base text-muted">
-                <span>{{ $worksWith }}</span>
-                <span class="flex -space-x-2" aria-label="Providers">
-                    @foreach ($providers as $provider)
-                    <span title="{{ $provider->name }}" style="background-color: {{ $provider->color }}" class="flex size-8 items-center justify-center rounded-full text-[0.6875rem] font-semibold text-surface ring-2 ring-surface">{{ $provider->initial }}</span>
-                    @endforeach
-                </span>
-            </p>
-        </div>
+        <div class="grid gap-x-12 gap-y-14 lg:grid-cols-[minmax(0,11fr)_minmax(0,9fr)] lg:items-center">
 
-        <!-- The composer: a grey shell, the white prompt card inside it, the chips in the band beneath -->
-        <div class="arrive-late mx-auto mt-14 max-w-3xl md:mt-16">
-            <form class="composer" action="/docs/quickstart" method="get" data-composer>
+            <div class="arrive">
+                <h1 class="display-hero font-display text-balance text-ink"><span class="block">{{ $heading }}</span><span class="block">{{ $headingTwo }}</span></h1>
+                <p class="lede mt-8 max-w-[44ch] text-pretty text-muted">{{ $body }}</p>
+                <div class="mt-10 flex flex-wrap items-center gap-x-7 gap-y-4">
+                    <a href="{{ $ctaLink }}" class="btn-solid btn-lg">
+                        {{ $ctaText }}
+                        <svg viewBox="0 0 16 16" class="arrow size-4 shrink-0 fill-current" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M6.22 4.22a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06l-3.25 3.25a.75.75 0 0 1-1.06-1.06L8.94 8 6.22 5.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/>
+                        </svg>
+                    </a>
+                    @if ($showSecondary)
+                    <a href="{{ $secondaryLink }}" class="text-link inline-flex items-center gap-1.5 text-base font-medium text-ink">
+                        {{ $secondaryText }}
+                        <svg viewBox="0 0 16 16" class="arrow size-4 shrink-0 fill-current" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M6.22 4.22a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06l-3.25 3.25a.75.75 0 0 1-1.06-1.06L8.94 8 6.22 5.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/>
+                        </svg>
+                    </a>
+                    @endif
+                </div>
+                <p class="mt-10 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted">
+                    <span>{{ $worksWith }}</span>
+                    <span class="flex -space-x-2" aria-label="Providers">
+                        @foreach ($providers as $provider)
+                        <span title="{{ $provider->name }}" style="background-color: {{ $provider->color }}" class="flex size-8 items-center justify-center rounded-full text-[0.6875rem] font-semibold text-surface ring-2 ring-canvas">{{ $provider->initial }}</span>
+                        @endforeach
+                    </span>
+                </p>
+            </div>
+
+            <!-- The composer: shell, white prompt card, chips, the route strip -->
+            <form class="composer arrive-late lg:justify-self-end lg:w-full lg:max-w-[34rem]" action="/docs/quickstart" method="get" data-composer>
                 <div class="composer-card relative">
                     <label for="prompt" class="sr-only">Your prompt</label>
-                    <textarea id="prompt" name="prompt" rows="4" placeholder="{{ $placeholder }}" class="block w-full bg-transparent px-7 pt-7 pb-20 text-xl text-ink md:text-2xl" data-composer-input></textarea>
-                    <button type="submit" aria-label="{{ $sendLabel }}" title="{{ $sendLabel }}" class="btn-solid absolute right-5 bottom-5 size-12 rounded-full p-0">
+                    <textarea id="prompt" name="prompt" rows="4" placeholder="{{ $placeholder }}" class="block w-full bg-transparent px-6 pt-6 pb-18 text-xl text-ink" data-composer-input></textarea>
+                    <button type="submit" aria-label="{{ $sendLabel }}" title="{{ $sendLabel }}" class="btn-solid absolute right-4 bottom-4 size-11 rounded-full p-0">
                         <svg viewBox="0 0 16 16" class="size-4 fill-current" aria-hidden="true">
                             <path fill-rule="evenodd" d="M8 14a.75.75 0 0 1-.75-.75V4.56L4.03 7.78a.75.75 0 0 1-1.06-1.06l4.5-4.5a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 1 1-1.06 1.06L8.75 4.56v8.69A.75.75 0 0 1 8 14Z" clip-rule="evenodd"/>
                         </svg>
                     </button>
                 </div>
-                <div class="flex flex-wrap items-center gap-2.5 px-3 pt-3 pb-1">
+                <div class="flex flex-wrap items-center gap-2 px-2 pt-2.5">
                     @foreach ($routes as $route)
                     @if ($loop->first)
                     <button type="button" class="chip" aria-pressed="true" data-route="{{ $route->key }}" data-prompt="{{ $route->prompt }}" data-reason="{{ $route->reason }}">{{ $route->label }}</button>
@@ -68,57 +87,47 @@
                     @endif
                     @endforeach
                 </div>
+
+                <!-- The route strip: one line per chip, the pressed chip's shown. Each names the rank-1 model for its key. -->
+                <div class="route-strip mx-2 mt-3 border-t border-line px-1 pt-3 pb-1">
+                    @foreach ($models as $model)
+                    @if ($model->rankCheap == '1')
+                    <p class="flex flex-wrap items-baseline gap-x-2 text-sm text-muted" data-route-result="cheap">
+                        <span class="live-dot self-center" aria-hidden="true"></span>
+                        <span>{{ $routedLabel }}</span>
+                        <span class="font-medium text-ink">{{ $model->name }}</span>
+                        <span class="num text-faint">{{ $model->latency }} · {{ $model->price }}/M</span>
+                    </p>
+                    @endif
+                    @if ($model->rankFast == '1')
+                    <p class="flex flex-wrap items-baseline gap-x-2 text-sm text-muted" data-route-result="fast" hidden>
+                        <span class="live-dot self-center" aria-hidden="true"></span>
+                        <span>{{ $routedLabel }}</span>
+                        <span class="font-medium text-ink">{{ $model->name }}</span>
+                        <span class="num text-faint">{{ $model->latency }} · {{ $model->price }}/M</span>
+                    </p>
+                    @endif
+                    @if ($model->rankCode == '1')
+                    <p class="flex flex-wrap items-baseline gap-x-2 text-sm text-muted" data-route-result="code" hidden>
+                        <span class="live-dot self-center" aria-hidden="true"></span>
+                        <span>{{ $routedLabel }}</span>
+                        <span class="font-medium text-ink">{{ $model->name }}</span>
+                        <span class="num text-faint">{{ $model->latency }} · {{ $model->price }}/M</span>
+                    </p>
+                    @endif
+                    @if ($model->rankLong == '1')
+                    <p class="flex flex-wrap items-baseline gap-x-2 text-sm text-muted" data-route-result="long" hidden>
+                        <span class="live-dot self-center" aria-hidden="true"></span>
+                        <span>{{ $routedLabel }}</span>
+                        <span class="font-medium text-ink">{{ $model->name }}</span>
+                        <span class="num text-faint">{{ $model->latency }} · {{ $model->price }}/M</span>
+                    </p>
+                    @endif
+                    @endforeach
+                    <p class="console-reason mt-1.5 text-sm text-pretty text-faint" data-console-reason>{{ $reason }}</p>
+                </div>
             </form>
 
-            <!-- The hairline that joins the composer to the console -->
-            <div class="flex justify-center" aria-hidden="true">
-                <span class="block h-10 w-px bg-line-strong"></span>
-            </div>
-
-            <!-- The routing console -->
-            <div class="arrive-last frame overflow-hidden" data-console>
-                <div class="flex items-center gap-3 border-b border-line px-6 py-3.5">
-                    <span class="live-dot shrink-0" aria-hidden="true"></span>
-                    <p class="text-sm font-medium text-ink">{{ $consoleTitle }}</p>
-                    <p class="ml-auto text-xs text-faint">{{ $consoleNote }}</p>
-                </div>
-                <ol role="list" class="divide-y divide-line">
-                    @foreach ($models as $model)
-                    @if ($loop->first)
-                    <li class="console-row grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-6 py-4 sm:grid-cols-[minmax(0,5fr)_minmax(0,2fr)_minmax(0,2fr)_minmax(0,2fr)_minmax(0,3fr)]" data-routed data-rank-cheap="{{ $model->rankCheap }}" data-rank-fast="{{ $model->rankFast }}" data-rank-code="{{ $model->rankCode }}" data-rank-long="{{ $model->rankLong }}">
-                    @else
-                    <li class="console-row grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-6 py-4 sm:grid-cols-[minmax(0,5fr)_minmax(0,2fr)_minmax(0,2fr)_minmax(0,2fr)_minmax(0,3fr)]" data-rank-cheap="{{ $model->rankCheap }}" data-rank-fast="{{ $model->rankFast }}" data-rank-code="{{ $model->rankCode }}" data-rank-long="{{ $model->rankLong }}">
-                    @endif
-                        <div class="flex min-w-0 items-center gap-3">
-                            <span class="routed-pill items-center rounded-full bg-accent px-2 py-0.5 text-xs font-medium text-accent-ink">Routed</span>
-                            <span class="min-w-0">
-                                <span class="block truncate text-base font-medium text-ink">{{ $model->name }}</span>
-                                <span class="data block truncate text-faint">{{ $model->id }}</span>
-                            </span>
-                        </div>
-                        <p class="text-sm text-muted max-sm:hidden">{{ $model->provider }}</p>
-                        <p class="num text-sm text-muted max-sm:hidden">{{ $model->latency }}</p>
-                        <p class="num text-sm text-muted max-sm:hidden">{{ $model->price }}<span class="text-faint">/M</span></p>
-                        <div class="flex items-center justify-end gap-3">
-                            <span class="score [--score:{{ $model->score }}%]" aria-hidden="true"></span>
-                            <span class="num w-6 text-right text-sm text-ink">{{ $model->score }}</span>
-                        </div>
-                    </li>
-                    @endforeach
-                </ol>
-                <p class="console-reason border-t border-line bg-well px-6 py-3.5 text-sm text-pretty text-muted" data-console-reason>{{ $reason }}</p>
-            </div>
         </div>
-
-        @if ($showSecondary)
-        <p class="mt-14 text-center">
-            <a href="{{ $secondaryLink }}" class="text-link inline-flex items-center gap-2 text-base font-medium text-ink">
-                <svg viewBox="0 0 16 16" class="size-4 shrink-0 fill-current" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M2 8a6 6 0 1 1 12 0A6 6 0 0 1 2 8Zm4.5-2.598v5.196a.5.5 0 0 0 .757.429l4.33-2.598a.5.5 0 0 0 0-.858l-4.33-2.598a.5.5 0 0 0-.757.429Z" clip-rule="evenodd"/>
-                </svg>
-                {{ $secondaryText }}
-            </a>
-        </p>
-        @endif
     </div>
 </section>

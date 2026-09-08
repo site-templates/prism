@@ -317,22 +317,22 @@ function createMesh(canvas) {
         'float noise(vec2 p){vec2 i=floor(p);vec2 f=fract(p);f=f*f*(3.0-2.0*f);',
         'return mix(mix(hash(i),hash(i+vec2(1.0,0.0)),f.x),mix(hash(i+vec2(0.0,1.0)),hash(i+vec2(1.0,1.0)),f.x),f.y);}',
         'float blob(vec2 p,vec2 c,float s){vec2 d=p-c;return exp(-dot(d,d)*s);}',
-        'vec3 lift(vec3 c){float l=dot(c,vec3(0.299,0.587,0.114));return clamp(l+(c-l)*1.9,0.0,1.0);}',
+        'vec3 lift(vec3 c){return c;}',
         'void main(){',
         'vec2 uv=gl_FragCoord.xy/u_res;float a=u_res.x/u_res.y;vec2 p=vec2(uv.x*a,uv.y);float t=u_t;',
         'vec2 w=p;w.x+=0.22*sin(p.y*2.6+t*0.9)+0.08*sin(p.y*7.0-t*1.3);w.y+=0.18*sin(p.x*1.9-t*0.7)+0.06*sin(p.x*6.0+t*1.1);w+=0.14*(noise(w*2.2+t*0.35)-0.5);',
-        'vec2 c0=vec2(0.16*a+0.16*sin(t*0.50),0.70+0.14*cos(t*0.42));',
-        'vec2 c1=vec2(0.46*a+0.20*cos(t*0.37),0.30+0.16*sin(t*0.61));',
-        'vec2 c2=vec2(0.84*a+0.16*sin(t*0.44+2.0),0.72+0.14*cos(t*0.53));',
-        'vec2 c3=vec2(0.64*a+0.18*cos(t*0.29+1.0),0.16+0.14*sin(t*0.47));',
+        'vec2 c0=vec2(0.16*a+0.24*sin(t*0.50),0.70+0.22*cos(t*0.42));',
+        'vec2 c1=vec2(0.46*a+0.30*cos(t*0.37),0.30+0.24*sin(t*0.61));',
+        'vec2 c2=vec2(0.84*a+0.24*sin(t*0.44+2.0),0.72+0.22*cos(t*0.53));',
+        'vec2 c3=vec2(0.64*a+0.28*cos(t*0.29+1.0),0.16+0.22*sin(t*0.47));',
         'float ripple=0.62+0.38*sin(dot(w,vec2(1.2,1.6))*4.2-t*0.8);',
         'float ripple2=0.72+0.28*sin(dot(w,vec2(-0.9,1.3))*3.1+t*0.6);',
         'float s=1.9/a;',
         'float w0=blob(w,c0,s)*ripple;float w1=blob(w,c1,s*0.9)*ripple2;float w2=blob(w,c2,s)*(1.24-ripple);float w3=blob(w,c3,s*0.95)*(1.44-ripple2);',
         'float sum=w0+w1+w2+w3+1e-4;',
         'vec3 mixc=lift((u_c0*w0+u_c1*w1+u_c2*w2+u_c3*w3)/sum);',
-        'float cover=clamp(sum*1.6,0.0,1.0);',
-        'vec3 col=mix(u_base,mixc,cover*0.92);',
+        'float cover=clamp(sum*1.5,0.0,1.0);',
+        'vec3 col=mix(u_base,mix(vec3(1.0),mixc,0.62),cover);',
         'gl_FragColor=vec4(col,1.0);}'
     ].join('\n');
 
@@ -393,7 +393,7 @@ function createMesh(canvas) {
     };
 
     var draw = function (now) {
-        gl.uniform1f(uTime, (now - start) / 1000 * 0.12);
+        gl.uniform1f(uTime, (now - start) / 1000 * 0.32);
         gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
 
@@ -477,16 +477,18 @@ function parseColour(value) {
 
 /*
     Prism's signature. Each chip carries a route key, an example prompt and a
-    reason. Pressing one fills the prompt, re-orders the console rows by their
-    data-rank-{key} (moved with a FLIP transition so each row glides to its new
-    place), hands the top row the Routed pill and swaps the reason line.
+    reason. Pressing one fills the prompt, shows the route-strip line for its
+    key and swaps the reason. A page that also carries a routing console
+    ([data-console] beside the form) gets its rows re-ordered by
+    data-rank-{key} with a FLIP transition.
 */
 function composers(root) {
     Array.prototype.forEach.call(root.querySelectorAll('[data-composer]'), function (form) {
         var input = form.querySelector('[data-composer-input]');
         var chips = Array.prototype.slice.call(form.querySelectorAll('.chip[data-route]'));
+        var results = Array.prototype.slice.call(form.querySelectorAll('[data-route-result]'));
         var console_ = form.parentElement.querySelector('[data-console]');
-        var reason = console_ && console_.querySelector('[data-console-reason]');
+        var reason = form.querySelector('[data-console-reason]') || (console_ && console_.querySelector('[data-console-reason]'));
 
         if (!input || !chips.length) {
             return;
@@ -501,8 +503,13 @@ function composers(root) {
                 input.value = chip.getAttribute('data-prompt') || '';
                 input.dispatchEvent(new Event('input', { bubbles: true }));
 
+                var key = chip.getAttribute('data-route');
+                results.forEach(function (line) {
+                    line.hidden = line.getAttribute('data-route-result') !== key;
+                });
+
                 if (console_) {
-                    rerank(console_, chip.getAttribute('data-route'));
+                    rerank(console_, key);
                 }
 
                 if (reason) {
