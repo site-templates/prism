@@ -6,7 +6,7 @@
     The principles: a heading, then three hairline-divided columns — a title
     and one paragraph each. Items come from the principles collection.
 -->
-<section class="border-t border-line py-16 md:py-24">
+<section class="border-t border-line py-20 md:py-28">
     <div class="mx-auto max-w-page px-6">
         <h2 class="display-section max-w-[20ch] font-display text-balance text-ink" data-reveal>{{ $heading }}</h2>
         <dl class="stagger mt-12 grid gap-y-8 md:grid-cols-3 md:gap-y-0" data-reveal>

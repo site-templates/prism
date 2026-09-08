@@ -19,6 +19,7 @@ var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 var revealObserver = null;
 var revealWatched = [];
+var meshes_ = [];
 
 header();
 setUp(document);
@@ -33,13 +34,22 @@ function setUp(root) {
     tearDown();
 
     reveals(root);
+    meshGradients(root);
     composers(root);
     filters(root);
     singleOpenFaq(root);
 }
 
-/* Reveal observers outlive a page, so they are what gets released. */
+/* Reveal observers and mesh render loops outlive a page, so they are what gets released. */
 function tearDown() {
+    meshes_ = meshes_.filter(function (mesh) {
+        if (mesh.canvas.isConnected) {
+            return true;
+        }
+        mesh.stop();
+        return false;
+    });
+
     if (!revealObserver) {
         return;
     }
@@ -267,6 +277,200 @@ function reveals(root) {
         revealObserver.observe(el);
         revealWatched.push(el);
     });
+}
+
+/* ── The mesh gradient ─────────────────────────────────────────────────────── */
+
+/*
+    The four beam colours, drifting. Each <canvas data-mesh> inside a .beams
+    block gets a small WebGL program: four soft colour fields whose centres
+    wander slowly, over a domain warped by two sine waves and a little noise
+    so the whole thing rolls like silk. Colours come from the CSS tokens at
+    runtime — retune --color-beam-* and the mesh follows. It renders at half
+    resolution, only while on screen and the tab is visible, and paints one
+    still frame under reduced motion. Without WebGL the canvas is removed and
+    the CSS beams show.
+*/
+function meshGradients(root) {
+    Array.prototype.forEach.call(root.querySelectorAll('canvas[data-mesh]'), function (canvas) {
+        var mesh = createMesh(canvas);
+        if (mesh) {
+            meshes_.push(mesh);
+        }
+    });
+}
+
+function createMesh(canvas) {
+    var host = canvas.parentElement;
+    var gl = canvas.getContext('webgl', { antialias: false, alpha: false, depth: false, stencil: false, powerPreference: 'low-power' });
+
+    if (!gl) {
+        canvas.remove();
+        return null;
+    }
+
+    var vertex = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.0,1.0);}';
+    var fragment = [
+        'precision mediump float;',
+        'uniform vec2 u_res;uniform float u_t;uniform vec3 u_base;uniform vec3 u_c0;uniform vec3 u_c1;uniform vec3 u_c2;uniform vec3 u_c3;',
+        'float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
+        'float noise(vec2 p){vec2 i=floor(p);vec2 f=fract(p);f=f*f*(3.0-2.0*f);',
+        'return mix(mix(hash(i),hash(i+vec2(1.0,0.0)),f.x),mix(hash(i+vec2(0.0,1.0)),hash(i+vec2(1.0,1.0)),f.x),f.y);}',
+        'float blob(vec2 p,vec2 c,float s){vec2 d=p-c;return exp(-dot(d,d)*s);}',
+        'vec3 lift(vec3 c){float l=dot(c,vec3(0.299,0.587,0.114));return clamp(l+(c-l)*1.9,0.0,1.0);}',
+        'void main(){',
+        'vec2 uv=gl_FragCoord.xy/u_res;float a=u_res.x/u_res.y;vec2 p=vec2(uv.x*a,uv.y);float t=u_t;',
+        'vec2 w=p;w.x+=0.22*sin(p.y*2.6+t*0.9)+0.08*sin(p.y*7.0-t*1.3);w.y+=0.18*sin(p.x*1.9-t*0.7)+0.06*sin(p.x*6.0+t*1.1);w+=0.14*(noise(w*2.2+t*0.35)-0.5);',
+        'vec2 c0=vec2(0.16*a+0.16*sin(t*0.50),0.70+0.14*cos(t*0.42));',
+        'vec2 c1=vec2(0.46*a+0.20*cos(t*0.37),0.30+0.16*sin(t*0.61));',
+        'vec2 c2=vec2(0.84*a+0.16*sin(t*0.44+2.0),0.72+0.14*cos(t*0.53));',
+        'vec2 c3=vec2(0.64*a+0.18*cos(t*0.29+1.0),0.16+0.14*sin(t*0.47));',
+        'float ripple=0.62+0.38*sin(dot(w,vec2(1.2,1.6))*4.2-t*0.8);',
+        'float ripple2=0.72+0.28*sin(dot(w,vec2(-0.9,1.3))*3.1+t*0.6);',
+        'float s=1.9/a;',
+        'float w0=blob(w,c0,s)*ripple;float w1=blob(w,c1,s*0.9)*ripple2;float w2=blob(w,c2,s)*(1.24-ripple);float w3=blob(w,c3,s*0.95)*(1.44-ripple2);',
+        'float sum=w0+w1+w2+w3+1e-4;',
+        'vec3 mixc=lift((u_c0*w0+u_c1*w1+u_c2*w2+u_c3*w3)/sum);',
+        'float cover=clamp(sum*1.6,0.0,1.0);',
+        'vec3 col=mix(u_base,mixc,cover*0.92);',
+        'gl_FragColor=vec4(col,1.0);}'
+    ].join('\n');
+
+    var program = gl.createProgram();
+    var vs = compileShader(gl, gl.VERTEX_SHADER, vertex);
+    var fs = compileShader(gl, gl.FRAGMENT_SHADER, fragment);
+
+    if (!vs || !fs) {
+        canvas.remove();
+        return null;
+    }
+
+    gl.attachShader(program, vs);
+    gl.attachShader(program, fs);
+    gl.linkProgram(program);
+
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        canvas.remove();
+        return null;
+    }
+
+    gl.useProgram(program);
+
+    var buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    var position = gl.getAttribLocation(program, 'p');
+    gl.enableVertexAttribArray(position);
+    gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+
+    var uRes = gl.getUniformLocation(program, 'u_res');
+    var uTime = gl.getUniformLocation(program, 'u_t');
+    var styles = getComputedStyle(document.documentElement);
+    var colour = function (name, fallback) {
+        return parseColour(styles.getPropertyValue(name).trim() || fallback);
+    };
+
+    gl.uniform3fv(gl.getUniformLocation(program, 'u_base'), colour('--color-canvas', '#f4f4f6'));
+    gl.uniform3fv(gl.getUniformLocation(program, 'u_c0'), colour('--color-beam-1', '#c7d2fe'));
+    gl.uniform3fv(gl.getUniformLocation(program, 'u_c1'), colour('--color-beam-3', '#a5f3fc'));
+    gl.uniform3fv(gl.getUniformLocation(program, 'u_c2'), colour('--color-beam-2', '#fbcfe8'));
+    gl.uniform3fv(gl.getUniformLocation(program, 'u_c3'), colour('--color-beam-4', '#fde68a'));
+
+    var frame = null;
+    var visible = true;
+    var start = performance.now() + Math.random() * 60000;
+
+    var resize = function () {
+        var scale = 0.5;
+        var width = Math.max(1, Math.round(host.clientWidth * scale));
+        var height = Math.max(1, Math.round(host.clientHeight * scale));
+        if (canvas.width !== width || canvas.height !== height) {
+            canvas.width = width;
+            canvas.height = height;
+            gl.viewport(0, 0, width, height);
+            gl.uniform2f(uRes, width, height);
+        }
+    };
+
+    var draw = function (now) {
+        gl.uniform1f(uTime, (now - start) / 1000 * 0.12);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+    };
+
+    var loop = function (now) {
+        frame = null;
+        if (!visible || document.hidden) {
+            return;
+        }
+        draw(now);
+        frame = requestAnimationFrame(loop);
+    };
+
+    var play = function () {
+        if (frame === null && visible && !document.hidden && !reduceMotion) {
+            frame = requestAnimationFrame(loop);
+        }
+    };
+
+    resize();
+    draw(performance.now());
+    host.classList.add('has-mesh');
+
+    var observer = new IntersectionObserver(function (entries) {
+        visible = entries.some(function (entry) { return entry.isIntersecting; });
+        if (visible) {
+            play();
+        }
+    }, { rootMargin: '10% 0px' });
+    observer.observe(host);
+
+    var onVisibility = function () { play(); };
+    var onResize = function () { resize(); if (reduceMotion) { draw(performance.now()); } };
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('resize', onResize, { passive: true });
+
+    play();
+
+    return {
+        canvas: canvas,
+        stop: function () {
+            if (frame !== null) {
+                cancelAnimationFrame(frame);
+            }
+            observer.disconnect();
+            document.removeEventListener('visibilitychange', onVisibility);
+            window.removeEventListener('resize', onResize);
+            var lose = gl.getExtension('WEBGL_lose_context');
+            if (lose) {
+                lose.loseContext();
+            }
+        }
+    };
+}
+
+function compileShader(gl, type, source) {
+    var shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    return gl.getShaderParameter(shader, gl.COMPILE_STATUS) ? shader : null;
+}
+
+/* "#rrggbb", "#rgb" or "rgb(r g b / a)" → [r, g, b] in 0–1. */
+function parseColour(value) {
+    var m = value.match(/^#([0-9a-f]{3,8})$/i);
+    if (m) {
+        var hex = m[1];
+        if (hex.length < 6) {
+            hex = hex.split('').map(function (c) { return c + c; }).join('');
+        }
+        return [0, 2, 4].map(function (i) { return parseInt(hex.substr(i, 2), 16) / 255; });
+    }
+    m = value.match(/rgba?\(([^)]+)\)/i);
+    if (m) {
+        var parts = m[1].split(/[\s,\/]+/).filter(Boolean).slice(0, 3);
+        return parts.map(function (n) { return parseFloat(n) / 255; });
+    }
+    return [0.96, 0.96, 0.97];
 }
 
 /* ── The composer and the console ──────────────────────────────────────────── */

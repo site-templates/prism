@@ -9,7 +9,7 @@
     punctuation, the avatar and attribution beneath. It sits on the well tint
     so the page breathes between the use cases and the blog.
 -->
-<section class="border-y border-line bg-well py-16 md:py-24">
+<section class="border-y border-line bg-well py-20 md:py-28">
     <div class="mx-auto max-w-page px-6">
         <figure class="max-w-[30ch] lg:max-w-[44ch]" data-reveal>
             <blockquote class="display-quote relative font-display text-pretty text-ink before:absolute before:inline before:-translate-x-full before:content-['\201C'] after:inline after:content-['\201D']">{{ $quote }}</blockquote>

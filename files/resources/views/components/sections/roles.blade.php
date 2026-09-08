@@ -8,7 +8,7 @@
     Open roles as hairline rows: title, place, and the apply link. Items come
     from the roles collection.
 -->
-<section id="roles" class="border-t border-line py-16 md:py-24">
+<section id="roles" class="border-t border-line py-20 md:py-28">
     <div class="mx-auto max-w-page px-6">
         <div class="grid gap-x-12 gap-y-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
             <div data-reveal>

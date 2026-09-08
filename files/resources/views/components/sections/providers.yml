@@ -21,3 +21,7 @@ fields:
                 type: text
                 label: Initial
                 default: "P"
+            color:
+                type: color
+                label: Brand colour
+                default: "#111114"

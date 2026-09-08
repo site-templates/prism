@@ -12,7 +12,7 @@ fields:
         type: textarea
         label: One paragraph
         rows: 3
-        default: "Prism sits in front of every model you pay for and routes each request to the right one — cheapest, fastest, best, or the one that fits the whole document."
+        default: "One OpenAI-compatible key in front of every model. Each request goes to the right one — cheapest, fastest, best, or the one that fits the whole document."
     worksWith:
         type: text
         label: Provider row label
@@ -160,5 +160,9 @@ fields:
             initial:
                 type: text
                 label: Initial
-                description: One or two letters shown in the dot.
+                description: One or two letters shown in the mark.
                 default: "P"
+            color:
+                type: color
+                label: Brand colour
+                default: "#111114"

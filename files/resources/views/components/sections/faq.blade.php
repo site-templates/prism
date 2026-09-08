@@ -7,7 +7,7 @@
     rows that animate open, one hairline between each. Items come from the
     faqs collection.
 -->
-<section class="border-t border-line py-16 md:py-24">
+<section class="border-t border-line py-20 md:py-28">
     <div class="mx-auto max-w-page px-6">
         <div class="grid gap-x-12 gap-y-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
             <h2 class="display-section max-w-[14ch] font-display text-balance text-ink" data-reveal>{{ $heading }}</h2>

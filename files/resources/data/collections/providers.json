@@ -1,34 +1,42 @@
 [
     {
         "name": "OpenAI",
-        "initial": "O"
+        "initial": "O",
+        "color": "#10a37f"
     },
     {
         "name": "Anthropic",
-        "initial": "A"
+        "initial": "A",
+        "color": "#d97757"
     },
     {
         "name": "Google",
-        "initial": "G"
+        "initial": "G",
+        "color": "#4285f4"
     },
     {
         "name": "Meta",
-        "initial": "M"
+        "initial": "M",
+        "color": "#0866ff"
     },
     {
         "name": "Mistral",
-        "initial": "Mi"
+        "initial": "Mi",
+        "color": "#ff7000"
     },
     {
         "name": "DeepSeek",
-        "initial": "D"
+        "initial": "D",
+        "color": "#4d6bfe"
     },
     {
         "name": "xAI",
-        "initial": "X"
+        "initial": "X",
+        "color": "#1f1f23"
     },
     {
         "name": "Alibaba",
-        "initial": "Q"
+        "initial": "Q",
+        "color": "#615ced"
     }
 ]

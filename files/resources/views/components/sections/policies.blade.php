@@ -15,7 +15,7 @@
     right. Rules come from the policyRules collection. On phones the file
     follows the text.
 -->
-<section id="policies" class="py-16 md:py-24">
+<section id="policies" class="py-20 md:py-28">
     <div class="mx-auto max-w-page px-6">
         <div class="grid gap-x-12 gap-y-10 lg:grid-cols-2 lg:items-center">
             <div data-reveal>

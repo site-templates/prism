@@ -11,7 +11,7 @@
     The company story: a serif heading and two paragraphs on the left, four
     facts in a hairline column on the right.
 -->
-<section class="pb-16 md:pb-24">
+<section class="pb-20 md:pb-28">
     <div class="mx-auto max-w-page px-6">
         <div class="grid gap-x-12 gap-y-10 lg:grid-cols-[minmax(0,8fr)_minmax(0,4fr)]">
             <div data-reveal>

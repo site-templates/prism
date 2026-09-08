@@ -9,10 +9,10 @@
 -->
 <section class="grain relative overflow-hidden pt-16 pb-12 md:pt-24 md:pb-16">
     @if ($showBeams)
-    <div class="beams opacity-60" aria-hidden="true"></div>
+    <div class="beams opacity-70" aria-hidden="true"><canvas data-mesh></canvas></div>
     <div class="beams-fade" aria-hidden="true"></div>
     @endif
-    <div class="arrive relative mx-auto max-w-page px-6">
+    <div class="arrive relative z-10 mx-auto max-w-page px-6">
         <h1 class="display-page max-w-[18ch] font-display text-balance text-ink">{{ $heading }}</h1>
         @if ($body)
         <p class="lede mt-5 max-w-[54ch] text-pretty text-muted">{{ $body }}</p>

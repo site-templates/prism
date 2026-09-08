@@ -6,7 +6,7 @@
     title, the one-line description — the whole row a link. Items come from
     the docs collection, the same entries the article pages read.
 -->
-<section class="pb-16 md:pb-24">
+<section class="pb-20 md:pb-28">
     <div class="mx-auto max-w-page px-6">
         <ol role="list" class="divide-y divide-line border-y border-line" data-reveal>
             @foreach ($items as $doc)

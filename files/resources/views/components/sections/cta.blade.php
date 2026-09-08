@@ -12,8 +12,9 @@
     serif heading, one line, the ink button and a ghost button.
 -->
 <section class="grain relative overflow-hidden py-24 md:py-32">
-    <div class="beams opacity-70" aria-hidden="true"></div>
-    <div class="relative mx-auto flex max-w-page flex-col items-center px-6 text-center" data-reveal>
+    <div class="beams opacity-80" aria-hidden="true"><canvas data-mesh></canvas></div>
+    <div class="beams-fade beams-fade-both" aria-hidden="true"></div>
+    <div class="relative z-10 mx-auto flex max-w-page flex-col items-center px-6 text-center" data-reveal>
         <h2 class="display-section max-w-[24ch] font-display text-balance text-ink">{{ $heading }}</h2>
         <p class="lede mt-5 max-w-[46ch] text-pretty text-muted">{{ $body }}</p>
         <div class="mt-8 flex flex-wrap items-center justify-center gap-3">

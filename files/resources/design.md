@@ -8,9 +8,10 @@ is live: the routed model, links, status dots, the focus ring. The primary
 button is ink, never a colour. Headlines are set in Source Serif at 400 —
 large, tight, unhurried — over Inter for everything a visitor reads or
 presses, and Geist Mono for the data: model ids, prices, latencies, code.
-Four pastel beams — periwinkle, pink, cyan, amber — stream diagonally behind
-the hero and the closing call, the way a prism throws a spectrum across a
-wall, and nowhere else. One dark band leaves the canvas: the endpoint
+Four pastel beams — periwinkle, pink, cyan, amber — drift behind the hero
+and the closing call as a slow, wavy WebGL mesh gradient (the CSS beams stand
+in without WebGL), the way a prism throws a spectrum across a wall, and
+nowhere else. One dark band leaves the canvas: the endpoint
 section. The hero is the signature: a prompt composer whose chips re-rank a
 live routing console under it.
 
@@ -39,11 +40,11 @@ button. Never a beam colour as text or a fill.
 ## Typography
 
 - **Display:** Source Serif 4 at 400 with optical sizing. `.display-hero`
-  clamp(2.75→4.75rem) / 1.05 / −0.02em; `.display-page` clamp(2.5→4rem);
-  `.display-section` clamp(1.875→2.625rem) / 1.1; `.display-quote`
-  clamp(1.5→2.375rem) / 1.3; `.display-stat` clamp(2→2.75rem), tabular.
+  clamp(3→5.75rem) / 1.02 / −0.025em; `.display-page` clamp(2.75→4.5rem);
+  `.display-section` clamp(2→3rem) / 1.08; `.display-quote`
+  clamp(1.5→2.375rem) / 1.3; `.display-stat` clamp(2.5→3.5rem), tabular.
 - **Text and UI:** Inter 400/500/600. `.title-card` 1.125rem/500; `.lede`
-  1.125→1.25rem / 1.55; body 1rem / 1.65; small 0.875rem.
+  1.1875→1.375rem / 1.5; body 1rem / 1.65; small 0.875rem.
 - **Data:** Geist Mono via `.data` — 13px, tabular — for model ids, prices,
   latencies and code. Mono is for measurement, never for mood.
 - No eyebrows. Headlines carry themselves, `text-balance`; paragraphs
@@ -52,11 +53,11 @@ button. Never a beam colour as text or a fill.
 ## Spacing & radius
 
 - Container 1152px (`max-w-page`), page padding `px-6`.
-- Sections `py-24` (96px) on desktop, `py-16` (64px) on phones; the dark band
+- Sections `py-28` (112px) on desktop, `py-20` (80px) on phones; the dark band
   `py-28`; the closing call `py-32`. Column gap `gap-x-12` on every split.
 - Radii: `rounded-lg` (8px) on buttons and fields, `rounded-xl` (12px) on
-  every frame and card, `rounded-[1.25rem]` (20px) on the composer and the
-  mega-menu panel, `rounded-full` on chips and pills.
+  every frame and card, 20px on the composer card and the mega-menu panel,
+  28px on the composer shell, `rounded-full` on chips and pills.
 
 ## Components
 
@@ -65,10 +66,14 @@ button. Never a beam colour as text or a fill.
   Sizes `.btn-sm` / `.btn-lg`. Arrows nudge on hover; buttons lift one pixel.
 - **Frame:** `.frame` — white, hairline, 12px, `--shadow-card` — for every
   drawn mock and card. `.lift` on frames that link.
-- **The composer:** `.composer` — 20px white card, `--shadow-float`, a
-  content-sized textarea, the chip row and the round ink send button.
-- **Chips:** `.chip` pills; `aria-pressed="true"` is the raised fill with an
-  ink ring. Used by the composer and the models filter.
+- **The composer:** `.composer` — a translucent 28px shell holding the white
+  `.composer-card` (tall 2xl-placeholder textarea, round ink send button
+  bottom-right) with the chip row in the shell's band beneath it.
+- **Chips:** `.chip` pills, 40px; `aria-pressed="true"` is the ink fill with
+  canvas text. Used by the composer and the models filter.
+- **Provider marks:** 32px circles in each provider's brand colour (a `color`
+  field on the providers collection — data, not a token) with a white initial
+  and ring, overlapping like the tables.so integration row.
 - **The console:** `[data-console]` — hairline rows of model · provider ·
   latency · price · `.score` bar; `data-routed` tints the row and shows the
   teal pill; `.console-reason` is the line under it. Rows FLIP when re-ranked.
@@ -79,8 +84,10 @@ button. Never a beam colour as text or a fill.
   one-line description each, a dark promo card on the right, 150ms scale-in.
 - **Tables:** on the canvas, hairline rows only, `whitespace-nowrap`
   headings, sideways scroll on phones.
-- **Beams and grain:** `.beams` + `.beams-fade` inside a `.grain` section —
-  the hero, the closing call, inner-page headers.
+- **Beams and grain:** `.beams` (with its `canvas[data-mesh]`) + `.beams-fade`
+  inside a `.grain` section — the hero, the closing call, inner-page headers.
+  main.js paints the mesh at half resolution, only on screen, one still frame
+  under reduced motion; `.has-mesh` hides the CSS fallback beams.
 
 ## Photographs
 
