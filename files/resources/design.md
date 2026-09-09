@@ -8,17 +8,19 @@ is live: the routed model, links, status dots, the focus ring. The primary
 button is ink, never a colour. Headlines are set in Source Serif at 400 —
 large, tight, unhurried — over Inter for everything a visitor reads or
 presses, and Geist Mono for the data: model ids, prices, latencies, code.
-Four colours — violet, pink, orchid and lavender — drift behind the hero as
-a sheet of light seen through fluted glass: a WebGL canvas whose diagonal
-ridges refract the field and split it by channel, so every ridge carries a
-prismatic fringe, and a violet bloom follows the pointer. The same picture is
-drawn in CSS where WebGL is missing. Softer echoes of it sit behind
-inner-page headers and the closing call, and nowhere else. One dark band
-leaves the canvas: the endpoint section. The hero is the signature: a
-two-line serif headline and one pill button over the light, then a strip of
-tasks that tours the router's own screen — a console drawn entirely in
-markup, whose breadcrumb, request table and assistant panel change with the
-tab.
+The hero is a sheet of white light behind fluted glass. A WebGL canvas draws
+the sheet — paper white, crossed by two broad bands that drift — and the
+glass in front of it: forward-leaning ridges that bend the sheet and refract
+each colour channel by a different amount, so every edge carries a faint
+rainbow. The page has no colour of its own. Bring a pointer to it and the
+glass swells under it, splits harder, and blooms electric blue at the core
+running to orchid at the rim; take the pointer away and it goes back to
+white. The same picture, minus the bloom, is drawn in CSS where WebGL is
+missing. Softer echoes sit behind inner-page headers and the closing call,
+and nowhere else. One dark band leaves the canvas: the endpoint section.
+Under the headline, a strip of tasks tours the router's own screen — a
+console drawn entirely in markup, whose sidebar highlight, breadcrumb,
+request table and assistant panel change with the tab.
 
 Adjectives: exact, calm, light, technical, quietly confident.
 Anti-adjectives: hype, glow, neon.
@@ -37,7 +39,8 @@ Anti-adjectives: hype, glow, neon.
 | Line | `--color-line` | `rgb(17 17 20 / 0.08)` | Every hairline; `--color-line-strong` at 0.16 for edges that must be seen. |
 | Accent | `--color-accent` | `#0f766e` | Teal: links, the Routed pill, the pressed chip ring, live dots, score bars, the focus ring. Never a button fill. |
 | Band | `--color-band` | `#111114` | The endpoint section and the mega-menu promo card. Ink `#f4f4f6`, muted `#a1a1aa`. |
-| Light | `--color-beam-left` `-up` `-right` `-down` | `#9448ff` `#ff85ec` `#c39bff` `#dfc2ff` | The four colours the iridescence is painted from, named for the direction each flows in from. Pale on the page — the shader keeps them close to the canvas. Never text, never a fill. |
+| Glass | `--color-glass-a` `--color-glass-b` | `#1e00ff` `#d765e6` | The two colours inside the glass, core and rim. They appear only under a pointer. Never text, never a fill. |
+| Diverted | `--color-diverted` | `#7c3aed` | A pinned or fallen-back leg in the console. 5.7:1 on white. |
 | Alert | `--color-alert` | `#c2410c` | A failed or timed-out leg in the console, and nothing else. |
 
 Accent budget: at most three teal things in any viewport. Never a teal
@@ -99,10 +102,10 @@ button. Never a beam colour as text or a fill.
 - **Light and grain:** `.beams` (with its `canvas[data-iridescence]`) inside
   `.hero-sky` on the home page; `.beams` + `.beams-fade` inside a `.grain`
   section on inner-page headers and the closing call. main.js paints at half
-  resolution, only while on screen, one still frame under reduced motion;
-  `.has-mesh` switches the CSS fallback off. The fallback is the same picture
-  in three layers: the colour field on the element, the glow on `::before`,
-  the flutes on `::after`.
+  resolution, only while on screen, one still frame under reduced motion, and
+  the bloom follows a fine pointer only; `.has-mesh` switches the CSS fallback
+  off. The fallback is the same white picture in three layers: the ground on
+  the element, the two bands on `::before`, the flutes on `::after`.
 
 ## Photographs
 
@@ -120,6 +123,7 @@ at equal quality on summaries"). Sentences are short. Never "powerful",
 
 - No coloured button; no teal as a surface; no gradient text; no glow.
 - No light outside the hero, the closing call and page headers.
+- No colour in the light at rest — it arrives with the pointer and leaves with it.
 - No screenshot where the interface can be drawn in markup.
 - No three-card grid twice on a page; no icon in a coloured circle.
 - No eyebrows or section numbers.
@@ -149,11 +153,10 @@ at equal quality on summaries"). Sentences are short. Never "powerful",
     --color-band-faint: #8a8a94;
     --color-band-line: rgb(255 255 255 / 0.12);
     --color-band-raised: rgb(255 255 255 / 0.06);
+    --color-diverted: #7c3aed;
     --color-alert: #c2410c;
-    --color-beam-left: #9448ff;
-    --color-beam-up: #ff85ec;
-    --color-beam-right: #c39bff;
-    --color-beam-down: #dfc2ff;
+    --color-glass-a: #1e00ff;
+    --color-glass-b: #d765e6;
     --font-display: "Source Serif 4", ui-serif, Georgia, serif;
     --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
     --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;

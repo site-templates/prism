@@ -42,7 +42,8 @@
     --color-accent-ink: #ffffff;
     --color-accent-wash: rgb(15 118 110 / 0.1);
 
-    /* The one warning colour: a failed or timed-out leg in the console. */
+    /* The two status colours in the console: a diverted leg, and a failed one. */
+    --color-diverted: #7c3aed;
     --color-alert: #c2410c;
 
     /* The dark band: the endpoint section, the mega-menu promo card, and nowhere else. */
@@ -52,16 +53,16 @@
     --color-band-faint: #8a8a94;
     --color-band-line: rgb(255 255 255 / 0.12);
     --color-band-raised: rgb(255 255 255 / 0.06);
+    --color-band-string: #a5f3fc;
 
     /*
-        The four colours the iridescence is painted from, named for the
-        direction each one flows from: violet on the left, pink above, orchid
-        on the right, lavender below. Never as text, never as a fill.
+        The two colours inside the glass. They are never on the page at rest —
+        the light is white until a pointer touches it, and then these bloom
+        under it, electric blue at the core running to orchid at the rim.
+        Never as text, never as a fill.
     */
-    --color-beam-left: #9448ff;
-    --color-beam-up: #ff85ec;
-    --color-beam-right: #c39bff;
-    --color-beam-down: #dfc2ff;
+    --color-glass-a: #1e00ff;
+    --color-glass-b: #d765e6;
 
     /* Source Serif for display, Inter for text and UI, Geist Mono for data and code. */
     --font-display: "Source Serif 4", ui-serif, Georgia, "Times New Roman", serif;
@@ -251,12 +252,8 @@
         inset: 0;
         z-index: 0;
         overflow: hidden;
-        pointer-events: none;
         background:
-            radial-gradient(circle at 35% 30%, color-mix(in oklab, var(--color-beam-up) 34%, transparent), transparent 30%),
-            radial-gradient(circle at 68% 42%, color-mix(in oklab, var(--color-beam-left) 34%, transparent), transparent 34%),
-            radial-gradient(circle at 52% 72%, color-mix(in oklab, var(--color-beam-right) 34%, transparent), transparent 38%),
-            linear-gradient(135deg, var(--color-surface) 0%, color-mix(in oklab, var(--color-beam-down) 18%, var(--color-surface)) 48%, color-mix(in oklab, var(--color-beam-down) 70%, var(--color-surface)) 100%);
+            linear-gradient(160deg, var(--color-surface) 0%, var(--color-canvas) 55%, color-mix(in oklab, var(--color-glass-b) 6%, var(--color-canvas)) 100%);
     }
 
     .beams::before,
@@ -266,21 +263,20 @@
         inset: 0;
     }
 
-    /* The glow: two soft diagonal bands and a wash under the headline. */
+    /* The two broad bands of light crossing the sheet. */
     .beams::before {
-        opacity: 0.6;
+        opacity: 0.7;
         filter: blur(18px);
         background:
-            linear-gradient(102deg, transparent 5%, color-mix(in oklab, var(--color-beam-left) 20%, transparent) 24%, transparent 38%),
-            linear-gradient(78deg, transparent 43%, color-mix(in oklab, var(--color-beam-up) 18%, transparent) 58%, transparent 74%),
-            radial-gradient(ellipse at 50% 18%, color-mix(in oklab, var(--color-beam-up) 20%, transparent), transparent 46%);
+            linear-gradient(102deg, transparent 6%, var(--color-surface) 26%, transparent 42%),
+            linear-gradient(78deg, transparent 44%, var(--color-surface) 60%, transparent 76%);
     }
 
-    /* The flutes: the fine diagonal ridges the light is refracted through. */
+    /* The flutes: the fine ridges the light is refracted through, leaning forward. */
     .beams::after {
-        opacity: 0.3;
+        opacity: 0.5;
         filter: blur(0.4px);
-        background: repeating-linear-gradient(124deg, transparent 0 18px, color-mix(in oklab, var(--color-beam-left) 22%, transparent) 19px, transparent 21px);
+        background: repeating-linear-gradient(236deg, transparent 0 18px, color-mix(in oklab, var(--color-ink) 5%, transparent) 19px, transparent 21px);
     }
 
     /*
@@ -649,7 +645,7 @@
         bottom: -1px;
         height: 2px;
         border-radius: 2px;
-        background-color: var(--color-beam-left);
+        background-color: var(--color-accent);
         scale: 0 1;
         transform-origin: left;
         transition: scale 0.35s var(--ease-glide);
@@ -758,7 +754,7 @@
     }
 
     .tone-ok { color: var(--color-accent); }
-    .tone-warn { color: var(--color-beam-left); }
+    .tone-warn { color: var(--color-diverted); }
     .tone-bad { color: var(--color-alert); }
 
     /* The assistant panel beside the table: the question, what it ran, what it found. */
@@ -841,7 +837,7 @@
     }
 
     .code .tok-key { color: var(--color-band-muted); }
-    .code .tok-str { color: var(--color-beam-3); }
+    .code .tok-str { color: var(--color-band-string); }
     .code .tok-fn { color: var(--color-band-ink); }
     .code .tok-cm { color: var(--color-band-faint); }
 

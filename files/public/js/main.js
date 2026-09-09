@@ -292,11 +292,13 @@ function reveals(root) {
 
 /*
     The light behind the hero. Each <canvas data-iridescence> inside a .beams
-    block gets a small WebGL program in two parts: a drifting field of the four
-    beam colours over the canvas colour, and a sheet of fluted glass in front of
-    it — diagonal ridges that bend the field and split it by channel, which is
-    what draws the prismatic streaks. A bloom follows the pointer. Colours come
-    from the CSS tokens at runtime, so retuning --color-beam-* retunes the light.
+    block gets a small WebGL program in two parts: a white sheet of drifting
+    light, and fluted glass in front of it — forward-leaning ridges that bend
+    the sheet and refract each colour channel by a different amount, which is
+    what draws the prismatic edges. The page is white until a pointer touches
+    it; then the glass swells under the pointer, splits harder, and blooms
+    from --color-glass-a at the core to --color-glass-b at the rim. Both come
+    from the CSS tokens at runtime.
 
     It renders at half resolution, only while on screen and the tab is visible,
     and paints one still frame under reduced motion. Without WebGL the canvas
@@ -324,54 +326,53 @@ function createIridescence(canvas) {
     var fragment = [
         'precision mediump float;',
         'uniform vec2 u_res;uniform float u_t;uniform vec3 u_ptr;',
-        'uniform vec3 u_base;uniform vec3 u_left;uniform vec3 u_up;uniform vec3 u_right;uniform vec3 u_down;',
+        'uniform vec3 u_base;uniform vec3 u_glass_a;uniform vec3 u_glass_b;',
         'float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
         'float noise(vec2 p){vec2 i=floor(p);vec2 f=fract(p);f=f*f*(3.0-2.0*f);',
         'return mix(mix(hash(i),hash(i+vec2(1.0,0.0)),f.x),mix(hash(i+vec2(0.0,1.0)),hash(i+vec2(1.0,1.0)),f.x),f.y);}',
         'float fbm(vec2 p){return 0.65*noise(p)+0.35*noise(p*2.1+3.7);}',
         /*
-            The sheet of light: paper white, crossed by two broad soft bands
-            that drift, with two pools of colour and the pointer bloom sitting
-            in it. Nothing here is saturated — the colour a visitor sees comes
-            mostly from the glass in front of it.
+            The sheet of light behind the glass: white paper crossed by two
+            broad soft bands that drift. No colour lives here — what a visitor
+            sees at rest is the glass dispersing this white, and the only
+            colour on the page is the bloom their pointer brings.
         */
         'vec3 shade(vec2 q,float t){',
         'float band=sin(dot(q,vec2(0.9,1.5))*2.6-t*0.35)*0.5+0.5;',
         'float band2=sin(dot(q,vec2(1.7,-0.6))*1.9+t*0.22)*0.5+0.5;',
-        'vec3 c=u_base*(0.945+0.075*band*band+0.04*band2);',
-        'vec2 a=vec2(0.34+0.18*sin(t*0.31),0.62+0.16*cos(t*0.27));',
-        'vec2 b=vec2(1.12+0.16*cos(t*0.23),0.34+0.14*sin(t*0.19));',
-        'vec2 da=q-a;vec2 db=q-b;',
-        'float sky=0.58+0.42*smoothstep(1.15,0.30,q.y);',
-        'c=mix(c,u_left,exp(-dot(da,da)*6.0)*0.40*sky);',
-        'c=mix(c,u_up,exp(-dot(db,db)*6.5)*0.32*sky);',
-        'c=mix(c,u_down,band*band*0.05*sky);',
-        'c=mix(c,u_right,band2*band2*0.03*sky);',
-        'vec2 dp=q-u_ptr.xy;',
-        'c=mix(c,u_left,exp(-dot(dp,dp)*4.0)*0.45*u_ptr.z);',
+        'vec3 c=u_base*(0.930+0.095*band*band+0.055*band2);',
+        /* Under the pointer: electric blue at the core, orchid at the rim. */
+        'vec2 dp=q-u_ptr.xy;float d=length(dp);',
+        'vec3 tint=mix(u_glass_a,u_glass_b,smoothstep(0.0,0.42,d));',
+        'tint=mix(tint,vec3(1.0),0.40);',
+        'c=mix(c,tint,exp(-d*d*9.0)*0.66*u_ptr.z);',
         'return c;}',
         'void main(){',
         'vec2 uv=gl_FragCoord.xy/u_res;float a=u_res.x/u_res.y;vec2 p=vec2(uv.x*a,uv.y);float t=u_t;',
         /* One organic warp for the whole pixel, so the three channel samples stay cheap. */
         'vec2 q=p+0.26*vec2(fbm(p*1.4+t*0.10),fbm(p*1.4+vec2(4.3,1.7)-t*0.08));',
         'float detail=fbm(q*3.4-t*0.12);',
-        /* The fluted glass: ridges at 214 degrees, each one a little lens. */
-        'vec2 axis=vec2(cos(3.735),sin(3.735));',
+        /*
+            The fluted glass. The ridges lean forward, and each one is a little
+            lens: it bends the sheet behind it, and it bends each colour
+            channel by a different amount, which is the whole trick — white
+            light in, a rainbow along every edge out.
+        */
+        'vec2 axis=vec2(cos(-0.593),sin(-0.593));',
         'float s=dot(p,axis)*6.5+t*0.15;',
         'float f=fract(s)*2.0-1.0;',
         'float lens=f*sqrt(max(0.0,1.0-f*f*0.82));',
-        'vec2 off=axis*lens*0.055;',
-        /*
-            Each channel is refracted by a different amount, exactly as glass
-            splits daylight — that difference is the rainbow along every ridge.
-        */
+        /* The glass swells under the pointer, so the ridges bow around it and split harder. */
+        'vec2 dq=q-u_ptr.xy;float bulge=exp(-dot(dq,dq)*7.0)*u_ptr.z;',
+        'vec2 off=axis*lens*0.026*(1.0+2.4*bulge);',
+        'float spread=0.30+1.40*bulge;',
         'vec3 col;',
-        'col.r=shade(q+off*1.75,t).r;',
+        'col.r=shade(q+off*(1.0+spread),t).r;',
         'col.g=shade(q+off,t).g;',
-        'col.b=shade(q+off*0.35,t).b;',
+        'col.b=shade(q+off*(1.0-spread),t).b;',
         'col*=0.985+0.03*detail;',
         /* The glint riding the crest of each ridge, and the grain over everything. */
-        'col+=pow(max(0.0,1.0-abs(f)),9.0)*0.045;',
+        'col+=pow(max(0.0,1.0-abs(f)),9.0)*0.05;',
         'col+=(hash(gl_FragCoord.xy*0.7+t)-0.5)*0.04;',
         'gl_FragColor=vec4(col,1.0);}'
     ].join('\n');
@@ -412,10 +413,8 @@ function createIridescence(canvas) {
     };
 
     gl.uniform3fv(gl.getUniformLocation(program, 'u_base'), colour('--color-canvas', '#f4f4f6'));
-    gl.uniform3fv(gl.getUniformLocation(program, 'u_left'), colour('--color-beam-left', '#9448ff'));
-    gl.uniform3fv(gl.getUniformLocation(program, 'u_up'), colour('--color-beam-up', '#ff85ec'));
-    gl.uniform3fv(gl.getUniformLocation(program, 'u_right'), colour('--color-beam-right', '#c39bff'));
-    gl.uniform3fv(gl.getUniformLocation(program, 'u_down'), colour('--color-beam-down', '#dfc2ff'));
+    gl.uniform3fv(gl.getUniformLocation(program, 'u_glass_a'), colour('--color-glass-a', '#1e00ff'));
+    gl.uniform3fv(gl.getUniformLocation(program, 'u_glass_b'), colour('--color-glass-b', '#d765e6'));
 
     var frame = null;
     var visible = true;
