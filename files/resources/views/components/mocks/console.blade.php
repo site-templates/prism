@@ -24,11 +24,7 @@
 <div class="win">
 
     <div class="win-bar">
-        <span class="flex gap-1.5" aria-hidden="true">
-            <span class="block size-2.5 rounded-full bg-line-strong"></span>
-            <span class="block size-2.5 rounded-full bg-line-strong"></span>
-            <span class="block size-2.5 rounded-full bg-line-strong"></span>
-        </span>
+        <x-mocks.lights />
         <span class="flex items-center gap-2 rounded-lg bg-surface px-2.5 py-1 text-xs font-medium text-ink shadow-[inset_0_0_0_1px_var(--color-line)]">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="size-3.5 shrink-0 opacity-70" aria-hidden="true">
                 <rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/>

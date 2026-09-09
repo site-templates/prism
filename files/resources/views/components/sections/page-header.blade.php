@@ -9,7 +9,7 @@
 -->
 <section class="grain relative overflow-hidden pt-16 pb-12 md:pt-24 md:pb-16">
     @if ($showBeams)
-    <div class="beams opacity-70" aria-hidden="true"><canvas data-iridescence></canvas></div>
+    <div class="beams opacity-70" aria-hidden="true"><canvas data-iridescence data-flutes="4"></canvas></div>
     <div class="beams-fade" aria-hidden="true"></div>
     @endif
     <div class="arrive relative z-10 mx-auto max-w-page px-6">

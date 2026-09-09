@@ -17,7 +17,7 @@
     models. The table sits directly on the canvas with hairline rows only,
     and scrolls sideways on phones.
 -->
-<section class="pb-20 md:pb-28">
+<section class="pb-24 md:pb-32">
     <div class="mx-auto max-w-page px-6">
         <div class="flex flex-wrap gap-2" data-filter>
             @foreach ($families as $family)

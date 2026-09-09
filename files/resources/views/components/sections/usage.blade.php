@@ -16,7 +16,7 @@
     argument on the right. Bars come from the usageBars collection. On phones
     the text comes first and the chart follows.
 -->
-<section id="usage" class="py-20 md:py-28">
+<section id="usage" class="py-24 md:py-32">
     <div class="mx-auto max-w-page px-6">
         <div class="grid gap-x-12 gap-y-10 lg:grid-cols-2 lg:items-center">
             <div class="max-lg:order-2" data-reveal>

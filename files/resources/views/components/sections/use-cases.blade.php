@@ -7,7 +7,7 @@
     sentence and one line of mono showing the setting that makes it work. On
     phones the dividers turn horizontal. Items come from the useCases collection.
 -->
-<section class="py-20 md:py-28">
+<section class="py-24 md:py-32">
     <div class="mx-auto max-w-page px-6">
         <h2 class="display-section max-w-[22ch] font-display text-balance text-ink" data-reveal>{{ $heading }}</h2>
         <dl class="stagger mt-12 grid gap-y-8 md:grid-cols-3 md:gap-y-0" data-reveal>

@@ -293,11 +293,12 @@ function reveals(root) {
 /*
     The light behind the hero. Each <canvas data-iridescence> inside a .beams
     block gets a small WebGL program in two parts: a white sheet of drifting
-    light over a pale mesh of the two glass colours, and fluted glass in front
+    light over a pale mesh of six spectrum colours, and fluted glass in front
     of it — wide forward-leaning ridges that bend the sheet and refract each
     colour channel by a different amount, which is what draws the prismatic
-    seam on every ripple. Nothing here reacts to the pointer; it simply
-    drifts. The colours come from the CSS tokens at runtime.
+    seam on every ripple. A canvas can ask for fewer, wider ripples with
+    data-flutes. Nothing here reacts to the pointer; it simply drifts. Every
+    colour comes from the CSS tokens at runtime.
 
     It renders at half resolution, only while on screen and the tab is visible,
     and paints one still frame under reduced motion. Without WebGL the canvas
@@ -324,29 +325,32 @@ function createIridescence(canvas) {
     var vertex = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.0,1.0);}';
     var fragment = [
         'precision mediump float;',
-        'uniform vec2 u_res;uniform float u_t;',
-        'uniform vec3 u_base;uniform vec3 u_glass_a;uniform vec3 u_glass_b;',
+        'uniform vec2 u_res;uniform float u_t;uniform float u_freq;',
+        'uniform vec3 u_base;',
+        'uniform vec3 u_c1;uniform vec3 u_c2;uniform vec3 u_c3;uniform vec3 u_c4;uniform vec3 u_c5;uniform vec3 u_c6;',
         'float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
         'float noise(vec2 p){vec2 i=floor(p);vec2 f=fract(p);f=f*f*(3.0-2.0*f);',
         'return mix(mix(hash(i),hash(i+vec2(1.0,0.0)),f.x),mix(hash(i+vec2(0.0,1.0)),hash(i+vec2(1.0,1.0)),f.x),f.y);}',
         'float fbm(vec2 p){return 0.65*noise(p)+0.35*noise(p*2.1+3.7);}',
+        'float pool(vec2 q,vec2 c,float r){vec2 d=q-c;return exp(-dot(d,d)*r);}',
         /*
             The sheet behind the glass: white paper crossed by two broad bands
-            of light, and under them a mesh of three colour pools that drift on
-            their own slow clocks. The pools sit at the edges of the frame and
-            never come more than a twelfth of the way from white, so the page
-            reads white and the ripples in front stay the thing you notice.
+            of light, and under them a mesh of six colour pools — violet, blue,
+            green, yellow, orange, rose — drifting at the edges of the frame on
+            their own slow clocks. Each is a whisper, a twelfth of the way
+            from white at most, so the page never reads grey, never reads
+            purple, and never announces itself as a rainbow.
         */
         'vec3 shade(vec2 q,float t){',
         'float band=sin(dot(q,vec2(0.9,1.5))*2.6-t*0.35)*0.5+0.5;',
         'float band2=sin(dot(q,vec2(1.7,-0.6))*1.9+t*0.22)*0.5+0.5;',
         'vec3 c=u_base*(0.965+0.050*band*band+0.030*band2);',
-        'vec2 m1=q-vec2(0.06+0.10*sin(t*0.21),1.02+0.08*cos(t*0.17));',
-        'vec2 m2=q-vec2(1.48+0.12*cos(t*0.19),0.56+0.10*sin(t*0.23));',
-        'vec2 m3=q-vec2(0.86+0.10*sin(t*0.15+1.4),-0.10+0.09*cos(t*0.20));',
-        'c=mix(c,u_glass_a,exp(-dot(m1,m1)*3.0)*0.085);',
-        'c=mix(c,u_glass_b,exp(-dot(m2,m2)*2.8)*0.075);',
-        'c=mix(c,mix(u_glass_a,u_glass_b,0.5),exp(-dot(m3,m3)*3.2)*0.060);',
+        'c=mix(c,u_c1,pool(q,vec2(0.02+0.09*sin(t*0.21),1.00+0.07*cos(t*0.17)),3.1)*0.088);',
+        'c=mix(c,u_c2,pool(q,vec2(0.40+0.10*cos(t*0.16),-0.06+0.08*sin(t*0.19)),3.3)*0.078);',
+        'c=mix(c,u_c3,pool(q,vec2(0.98+0.09*sin(t*0.13+1.1),1.06+0.07*cos(t*0.15)),3.4)*0.070);',
+        'c=mix(c,u_c4,pool(q,vec2(1.52+0.10*cos(t*0.18),0.74+0.09*sin(t*0.14)),3.2)*0.076);',
+        'c=mix(c,u_c5,pool(q,vec2(1.30+0.09*sin(t*0.12+2.2),-0.04+0.08*cos(t*0.20)),3.3)*0.066);',
+        'c=mix(c,u_c6,pool(q,vec2(-0.04+0.08*cos(t*0.15+0.7),0.40+0.09*sin(t*0.18)),3.2)*0.074);',
         'return c;}',
         'void main(){',
         'vec2 uv=gl_FragCoord.xy/u_res;float a=u_res.x/u_res.y;vec2 p=vec2(uv.x*a,uv.y);float t=u_t;',
@@ -357,11 +361,11 @@ function createIridescence(canvas) {
             The fluted glass. The ridges lean forward and each one is a wide,
             shallow lens: it shades the sheet across its whole width, catches a
             light along its seam, and refracts each colour channel by a
-            different amount — so every seam carries a faint rainbow drawn out
-            of the mesh behind it.
+            different amount — so every seam draws a faint rainbow out of the
+            mesh behind it. How many ridges a section gets is its own choice.
         */
         'vec2 axis=vec2(cos(-0.593),sin(-0.593));',
-        'float s=dot(p,axis)*7.0+t*0.15;',
+        'float s=dot(p,axis)*u_freq+t*0.30;',
         'float f=fract(s)*2.0-1.0;',
         'float flute=0.5+0.5*cos(s*6.2831853);',
         'float lens=f*sqrt(max(0.0,1.0-f*f*0.82));',
@@ -413,8 +417,15 @@ function createIridescence(canvas) {
     };
 
     gl.uniform3fv(gl.getUniformLocation(program, 'u_base'), colour('--color-surface', '#ffffff'));
-    gl.uniform3fv(gl.getUniformLocation(program, 'u_glass_a'), colour('--color-glass-a', '#1e00ff'));
-    gl.uniform3fv(gl.getUniformLocation(program, 'u_glass_b'), colour('--color-glass-b', '#d765e6'));
+    gl.uniform3fv(gl.getUniformLocation(program, 'u_c1'), colour('--color-mesh-violet', '#a78bfa'));
+    gl.uniform3fv(gl.getUniformLocation(program, 'u_c2'), colour('--color-mesh-blue', '#7dd3fc'));
+    gl.uniform3fv(gl.getUniformLocation(program, 'u_c3'), colour('--color-mesh-green', '#86efac'));
+    gl.uniform3fv(gl.getUniformLocation(program, 'u_c4'), colour('--color-mesh-yellow', '#fde68a'));
+    gl.uniform3fv(gl.getUniformLocation(program, 'u_c5'), colour('--color-mesh-orange', '#fdba74'));
+    gl.uniform3fv(gl.getUniformLocation(program, 'u_c6'), colour('--color-mesh-rose', '#fda4af'));
+
+    /* How many ripples this canvas draws: data-flutes on the element, 7 by default. */
+    gl.uniform1f(gl.getUniformLocation(program, 'u_freq'), parseFloat(canvas.getAttribute('data-flutes')) || 7);
 
     var frame = null;
     var visible = true;

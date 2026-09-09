@@ -28,11 +28,7 @@
 
             <div class="min-w-0 overflow-hidden rounded-xl bg-band-raised ring-1 ring-band-line" data-reveal>
                 <div class="flex items-center gap-3 border-b border-band-line px-5 py-3">
-                    <span class="flex gap-1.5" aria-hidden="true">
-                        <span class="block size-2.5 rounded-full bg-band-line"></span>
-                        <span class="block size-2.5 rounded-full bg-band-line"></span>
-                        <span class="block size-2.5 rounded-full bg-band-line"></span>
-                    </span>
+                    <x-mocks.lights />
                     <p class="data text-band-muted">{{ $fileName }}</p>
                 </div>
 <pre class="code overflow-x-auto px-5 py-5 text-band-ink"><code><span class="tok-key">from</span> openai <span class="tok-key">import</span> OpenAI

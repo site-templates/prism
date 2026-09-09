@@ -66,3 +66,7 @@ fields:
                 type: text
                 label: Height
                 default: "20%"
+            color:
+                type: color
+                label: Bar colour
+                default: "#0f766e"

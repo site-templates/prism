@@ -6,7 +6,7 @@
     title and paragraph on the right — with a hairline between entries.
     Entries come from the changelog collection, newest first in the file.
 -->
-<section class="pb-20 md:pb-28">
+<section class="pb-24 md:pb-32">
     <div class="mx-auto max-w-page px-6">
         <ol role="list" class="divide-y divide-line border-t border-line" data-reveal>
             @foreach ($items as $entry)

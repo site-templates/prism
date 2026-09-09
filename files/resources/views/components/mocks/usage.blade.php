@@ -26,7 +26,7 @@
         <ol role="list" class="grid h-44 grid-cols-6 items-end gap-3 border-b border-line">
             @foreach ($bars as $bar)
             <li class="flex h-full flex-col justify-end">
-                <span class="bar block w-full rounded-t-sm bg-accent [--h:{{ $bar->height }}]" aria-hidden="true"></span>
+                <span class="bar block w-full rounded-t-sm [--h:{{ $bar->height }}]" style="background-color: {{ $bar->color }}" aria-hidden="true"></span>
             </li>
             @endforeach
         </ol>

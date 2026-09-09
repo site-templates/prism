@@ -10,8 +10,8 @@ large, tight, unhurried — over Inter for everything a visitor reads or
 presses, and Geist Mono for the data: model ids, prices, latencies, code.
 The hero is a sheet of white light behind fluted glass. A WebGL canvas draws
 the sheet — white paper crossed by two broad bands of light, over a mesh of
-three colour pools that drift at the edges of the frame and never come more
-than a twelfth of the way from white — and the glass in front of it: wide
+six colour pools, one per spectrum hue, drifting at the edges of the frame and
+never more than a twelfth of the way from white — and the glass in front of it: wide
 forward-leaning ridges, each a shallow lens that shades the sheet across its
 whole width, catches a light along its seam, and refracts every colour
 channel by a different amount, so each seam draws a faint rainbow out of the
@@ -40,7 +40,8 @@ Anti-adjectives: hype, glow, neon.
 | Line | `--color-line` | `rgb(17 17 20 / 0.08)` | Every hairline; `--color-line-strong` at 0.16 for edges that must be seen. |
 | Accent | `--color-accent` | `#0f766e` | Teal: links, the Routed pill, the pressed chip ring, live dots, score bars, the focus ring. Never a button fill. |
 | Band | `--color-band` | `#111114` | The endpoint section and the mega-menu promo card. Ink `#f4f4f6`, muted `#a1a1aa`. |
-| Glass | `--color-glass-a` `--color-glass-b` | `#1e00ff` `#d765e6` | The two colours in the mesh behind the glass, and the only chromatic tokens on the page. They never appear above a twelfth strength. Never text, never a fill. |
+| Mesh | `--color-mesh-violet` `-blue` `-green` `-yellow` `-orange` `-rose` | `#a78bfa` `#7dd3fc` `#86efac` `#fde68a` `#fdba74` `#fda4af` | The spectrum behind the glass. Six pools, none above a twelfth strength, so the light is never grey, never one hue, and never reads as a rainbow. Never text, never a fill. |
+| Window lights | `--color-light-red` `-amber` `-green` | `#ff5f57` `#febc2e` `#28c840` | The three lights on a drawn window's title bar, and nowhere else. |
 | Diverted | `--color-diverted` | `#7c3aed` | A pinned or fallen-back leg in the console. 5.7:1 on white. |
 | Alert | `--color-alert` | `#c2410c` | A failed or timed-out leg in the console, and nothing else. |
 
@@ -54,7 +55,7 @@ button. Never a beam colour as text or a fill.
   `.display-section` clamp(2→3rem) / 1.08; `.display-quote`
   clamp(1.5→2.375rem) / 1.3; `.display-stat` clamp(2.5→3.5rem), tabular.
 - **Text and UI:** Inter 400/500/600. `.title-card` 1.125rem/500; `.lede`
-  1.1875→1.375rem / 1.5; body 1rem / 1.65; small 0.875rem.
+  1.0625→1.1875rem / 1.6; body 1rem / 1.65; small 0.875rem.
 - **Data:** Geist Mono via `.data` — 13px, tabular — for model ids, prices,
   latencies and code. Mono is for measurement, never for mood.
 - No eyebrows. Headlines carry themselves, `text-balance`; paragraphs
@@ -63,7 +64,7 @@ button. Never a beam colour as text or a fill.
 ## Spacing & radius
 
 - Container 1152px (`max-w-page`), page padding `px-6`.
-- Sections `py-28` (112px) on desktop, `py-20` (80px) on phones; the dark band
+- Sections `py-32` (128px) on desktop, `py-24` (96px) on phones; the dark band
   `py-28`; the closing call `py-32`. Column gap `gap-x-12` on every split.
 - Radii: `rounded-lg` (8px) on buttons and fields, `rounded-xl` (12px) on
   every frame and card, 20px on the composer card and the mega-menu panel,
@@ -100,7 +101,11 @@ button. Never a beam colour as text or a fill.
   one-line description each, a dark promo card on the right, 150ms scale-in.
 - **Tables:** on the canvas, hairline rows only, `whitespace-nowrap`
   headings, sideways scroll on phones.
-- **Light and grain:** `.beams` (with its `canvas[data-iridescence]`) inside
+- **Window lights:** `x-mocks.lights` — the three title-bar lights every drawn
+  window wears, in the console, the policy file and the endpoint band's code.
+- **Light and grain:** `.beams` (with its `canvas[data-iridescence]`, whose
+  `data-flutes` sets how many ripples it draws — 7 in the hero, 4 in the
+  closing call and the page headers, where they run wider) inside
   `.hero-sky` on the home page; `.beams` + `.beams-fade` inside a `.grain`
   section on inner-page headers and the closing call. main.js paints at half
   resolution, only while on screen, and one still frame under reduced motion; `.has-mesh` switches the CSS fallback
@@ -123,7 +128,7 @@ at equal quality on summaries"). Sentences are short. Never "powerful",
 
 - No coloured button; no teal as a surface; no gradient text; no glow.
 - No light outside the hero, the closing call and page headers.
-- No colour in the light at rest — it arrives with the pointer and leaves with it.
+- No hue dominant in the mesh; if the light reads as one colour, it is wrong.
 - No screenshot where the interface can be drawn in markup.
 - No three-card grid twice on a page; no icon in a coloured circle.
 - No eyebrows or section numbers.
@@ -155,8 +160,15 @@ at equal quality on summaries"). Sentences are short. Never "powerful",
     --color-band-raised: rgb(255 255 255 / 0.06);
     --color-diverted: #7c3aed;
     --color-alert: #c2410c;
-    --color-glass-a: #1e00ff;
-    --color-glass-b: #d765e6;
+    --color-mesh-violet: #a78bfa;
+    --color-mesh-blue: #7dd3fc;
+    --color-mesh-green: #86efac;
+    --color-mesh-yellow: #fde68a;
+    --color-mesh-orange: #fdba74;
+    --color-mesh-rose: #fda4af;
+    --color-light-red: #ff5f57;
+    --color-light-amber: #febc2e;
+    --color-light-green: #28c840;
     --font-display: "Source Serif 4", ui-serif, Georgia, serif;
     --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
     --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;

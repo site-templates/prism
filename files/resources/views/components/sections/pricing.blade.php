@@ -10,7 +10,7 @@
     tier's lines come from the planLines collection, matched on the plan key,
     so every line is editable. Buttons align across the row.
 -->
-<section class="pb-20 md:pb-28">
+<section class="pb-24 md:pb-32">
     <div class="mx-auto max-w-page px-6">
         <div class="stagger grid gap-4 lg:grid-cols-3" data-reveal>
             @foreach ($items as $plan)

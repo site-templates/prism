@@ -1,8 +1,38 @@
 [
-    { "model": "Sonnet 5", "spend": "$1,842", "height": "88%" },
-    { "model": "GPT-5.6", "spend": "$1,210", "height": "58%" },
-    { "model": "Gemini Flash", "spend": "$412", "height": "20%" },
-    { "model": "DeepSeek V4", "spend": "$388", "height": "18%" },
-    { "model": "Llama 4", "spend": "$296", "height": "14%" },
-    { "model": "Others", "spend": "$174", "height": "8%" }
+    {
+        "model": "Sonnet 5",
+        "spend": "$1,842",
+        "height": "88%",
+        "color": "#0f766e"
+    },
+    {
+        "model": "GPT-5.6",
+        "spend": "$1,210",
+        "height": "58%",
+        "color": "#2a6f97"
+    },
+    {
+        "model": "Gemini Flash",
+        "spend": "$412",
+        "height": "20%",
+        "color": "#4c51bf"
+    },
+    {
+        "model": "DeepSeek V4",
+        "spend": "$388",
+        "height": "18%",
+        "color": "#7048b6"
+    },
+    {
+        "model": "Llama 4",
+        "spend": "$296",
+        "height": "14%",
+        "color": "#9d7ac4"
+    },
+    {
+        "model": "Others",
+        "spend": "$174",
+        "height": "8%",
+        "color": "#94a3b8"
+    }
 ]

@@ -8,7 +8,7 @@
     steps — Score, Rank, Route — as a hairline list. Items come from the steps
     collection.
 -->
-<section id="scoring" class="border-t border-line py-20 md:py-28">
+<section id="scoring" class="border-t border-line py-24 md:py-32">
     <div class="mx-auto max-w-page px-6">
         <div class="grid gap-x-12 gap-y-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
             <div data-reveal>

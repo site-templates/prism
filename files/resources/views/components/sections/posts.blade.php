@@ -12,7 +12,7 @@
     title, the category. The whole row is the link. Items come from the posts
     collection; the post layout reuses this with showIntro off for "more".
 -->
-<section class="py-20 md:py-28">
+<section class="py-24 md:py-32">
     <div class="mx-auto max-w-page px-6">
         <div class="flex flex-wrap items-end justify-between gap-4" data-reveal>
             <div>
