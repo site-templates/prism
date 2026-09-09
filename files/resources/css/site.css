@@ -239,13 +239,13 @@
 
     /*
         The iridescence. main.js paints it into the canvas with WebGL — a
-        drifting field of the four beam colours seen through fluted glass, so
-        every ridge splits the light into a prismatic streak, with a bloom
-        that follows the pointer. It reads the tokens at runtime.
+        white sheet over a pale mesh of the two glass colours, seen through
+        fluted glass, so every ripple splits the light into a prismatic seam.
+        It reads the tokens at runtime.
 
         Everything below is the no-WebGL fallback, and it is the same picture
-        drawn in CSS: the colour field on the element, the soft glow on
-        ::before, the diagonal flutes on ::after.
+        drawn in CSS: the mesh on the element, the bands of light on ::before,
+        the ripples on ::after.
     */
     .beams {
         position: absolute;
@@ -253,7 +253,10 @@
         z-index: 0;
         overflow: hidden;
         background:
-            linear-gradient(160deg, var(--color-surface) 0%, var(--color-canvas) 55%, color-mix(in oklab, var(--color-glass-b) 6%, var(--color-canvas)) 100%);
+            radial-gradient(55% 50% at 4% 4%, color-mix(in oklab, var(--color-glass-a) 8%, transparent), transparent 70%),
+            radial-gradient(50% 48% at 96% 46%, color-mix(in oklab, var(--color-glass-b) 7%, transparent), transparent 70%),
+            radial-gradient(45% 42% at 60% 104%, color-mix(in oklab, var(--color-glass-a) 6%, transparent), transparent 70%),
+            linear-gradient(160deg, var(--color-surface) 0%, var(--color-surface) 60%, var(--color-canvas) 100%);
     }
 
     .beams::before,

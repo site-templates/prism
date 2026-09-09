@@ -293,12 +293,11 @@ function reveals(root) {
 /*
     The light behind the hero. Each <canvas data-iridescence> inside a .beams
     block gets a small WebGL program in two parts: a white sheet of drifting
-    light, and fluted glass in front of it — forward-leaning ridges that bend
-    the sheet and refract each colour channel by a different amount, which is
-    what draws the prismatic edges. The page is white until a pointer touches
-    it; then the glass swells under the pointer, splits harder, and blooms
-    from --color-glass-a at the core to --color-glass-b at the rim. Both come
-    from the CSS tokens at runtime.
+    light over a pale mesh of the two glass colours, and fluted glass in front
+    of it — wide forward-leaning ridges that bend the sheet and refract each
+    colour channel by a different amount, which is what draws the prismatic
+    seam on every ripple. Nothing here reacts to the pointer; it simply
+    drifts. The colours come from the CSS tokens at runtime.
 
     It renders at half resolution, only while on screen and the tab is visible,
     and paints one still frame under reduced motion. Without WebGL the canvas
@@ -325,66 +324,56 @@ function createIridescence(canvas) {
     var vertex = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.0,1.0);}';
     var fragment = [
         'precision mediump float;',
-        'uniform vec2 u_res;uniform float u_t;uniform vec3 u_trail[12];',
+        'uniform vec2 u_res;uniform float u_t;',
         'uniform vec3 u_base;uniform vec3 u_glass_a;uniform vec3 u_glass_b;',
         'float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
         'float noise(vec2 p){vec2 i=floor(p);vec2 f=fract(p);f=f*f*(3.0-2.0*f);',
         'return mix(mix(hash(i),hash(i+vec2(1.0,0.0)),f.x),mix(hash(i+vec2(0.0,1.0)),hash(i+vec2(1.0,1.0)),f.x),f.y);}',
         'float fbm(vec2 p){return 0.65*noise(p)+0.35*noise(p*2.1+3.7);}',
         /*
-            The sheet of light behind the glass: white paper crossed by two
-            broad soft bands that drift. No colour lives here — what a visitor
-            sees at rest is the glass dispersing this white, and the only
-            colour on the page is the one their pointer leaves behind.
+            The sheet behind the glass: white paper crossed by two broad bands
+            of light, and under them a mesh of three colour pools that drift on
+            their own slow clocks. The pools sit at the edges of the frame and
+            never come more than a twelfth of the way from white, so the page
+            reads white and the ripples in front stay the thing you notice.
         */
         'vec3 shade(vec2 q,float t){',
         'float band=sin(dot(q,vec2(0.9,1.5))*2.6-t*0.35)*0.5+0.5;',
         'float band2=sin(dot(q,vec2(1.7,-0.6))*1.9+t*0.22)*0.5+0.5;',
-        'return u_base*(0.965+0.050*band*band+0.030*band2);}',
+        'vec3 c=u_base*(0.965+0.050*band*band+0.030*band2);',
+        'vec2 m1=q-vec2(0.06+0.10*sin(t*0.21),1.02+0.08*cos(t*0.17));',
+        'vec2 m2=q-vec2(1.48+0.12*cos(t*0.19),0.56+0.10*sin(t*0.23));',
+        'vec2 m3=q-vec2(0.86+0.10*sin(t*0.15+1.4),-0.10+0.09*cos(t*0.20));',
+        'c=mix(c,u_glass_a,exp(-dot(m1,m1)*3.0)*0.085);',
+        'c=mix(c,u_glass_b,exp(-dot(m2,m2)*2.8)*0.075);',
+        'c=mix(c,mix(u_glass_a,u_glass_b,0.5),exp(-dot(m3,m3)*3.2)*0.060);',
+        'return c;}',
         'void main(){',
         'vec2 uv=gl_FragCoord.xy/u_res;float a=u_res.x/u_res.y;vec2 p=vec2(uv.x*a,uv.y);float t=u_t;',
         /* One organic warp for the whole pixel, so the three channel samples stay cheap. */
         'vec2 q=p+0.26*vec2(fbm(p*1.4+t*0.10),fbm(p*1.4+vec2(4.3,1.7)-t*0.08));',
         'float detail=fbm(q*3.4-t*0.12);',
         /*
-            The wake. Twelve points of the pointer's recent path, each fading
-            on its own, are summed into one soft ribbon: how much the glass
-            swells here, and what colour is caught in it — electric blue where
-            the pointer just was, running to orchid at the edges.
-        */
-        'float wake=0.0;vec3 wakeCol=vec3(0.0);',
-        'for(int i=0;i<12;i++){',
-        'vec3 point=u_trail[i];',
-        'vec2 d=q-point.xy;float r2=dot(d,d);',
-        'float w=exp(-r2*26.0)*point.z;',
-        'wake+=w;',
-        'wakeCol+=mix(u_glass_a,u_glass_b,smoothstep(0.0,0.26,sqrt(r2)))*w;}',
-        'wakeCol=wakeCol/max(wake,0.0001);',
-        'wake=min(wake,1.0);',
-        /*
             The fluted glass. The ridges lean forward and each one is a wide,
-            shallow lens: it shades the sheet across its whole width, bends it
-            at the seams, and refracts each colour channel by a different
-            amount — white light in, a rainbow along every seam out. The wake
-            makes the glass swell, so the ridges bow through it and split harder.
+            shallow lens: it shades the sheet across its whole width, catches a
+            light along its seam, and refracts each colour channel by a
+            different amount — so every seam carries a faint rainbow drawn out
+            of the mesh behind it.
         */
         'vec2 axis=vec2(cos(-0.593),sin(-0.593));',
         'float s=dot(p,axis)*7.0+t*0.15;',
         'float f=fract(s)*2.0-1.0;',
         'float flute=0.5+0.5*cos(s*6.2831853);',
         'float lens=f*sqrt(max(0.0,1.0-f*f*0.82));',
-        'vec2 off=axis*lens*0.024*(1.0+2.6*wake);',
-        'float spread=0.55+1.30*wake;',
+        'vec2 off=axis*lens*0.024;',
         'vec3 col;',
-        'col.r=shade(q+off*(1.0+spread),t).r;',
+        'col.r=shade(q+off*1.55,t).r;',
         'col.g=shade(q+off,t).g;',
-        'col.b=shade(q+off*(1.0-spread),t).b;',
-        /* The body of each flute, shaded across its full width, and the soft seam light. */
+        'col.b=shade(q+off*0.45,t).b;',
+        /* The body of each ripple, shaded across its full width, and the seam light. */
         'col*=0.965+0.075*flute;',
         'col+=pow(max(0.0,1.0-abs(f)),3.0)*0.030+pow(max(0.0,1.0-abs(f)),14.0)*0.040;',
         'col*=0.985+0.03*detail;',
-        /* The colour the wake carries, and the grain over everything. */
-        'col=mix(col,mix(wakeCol,vec3(1.0),0.50),wake*0.58);',
         'col+=(hash(gl_FragCoord.xy*0.7+t)-0.5)*0.04;',
         'gl_FragColor=vec4(col,1.0);}'
     ].join('\n');
@@ -418,7 +407,6 @@ function createIridescence(canvas) {
 
     var uRes = gl.getUniformLocation(program, 'u_res');
     var uTime = gl.getUniformLocation(program, 'u_t');
-    var uTrail = gl.getUniformLocation(program, 'u_trail[0]') || gl.getUniformLocation(program, 'u_trail');
     var styles = getComputedStyle(document.documentElement);
     var colour = function (name, fallback) {
         return parseColour(styles.getPropertyValue(name).trim() || fallback);
@@ -431,16 +419,7 @@ function createIridescence(canvas) {
     var frame = null;
     var visible = true;
     var start = performance.now() + Math.random() * 60000;
-    var last = start;
-    /*
-        The pointer's wake: twelve points, each x, y and how much life it has
-        left. A move drops a fresh point at the head; every frame ages all of
-        them, so the colour follows the pointer and dissolves behind it.
-    */
-    var TRAIL = 12;
-    var trail = new Float32Array(TRAIL * 3);
-    var head = 0;
-    var dropped = 0;
+
 
     var resize = function () {
         var width = Math.max(1, Math.round(host.clientWidth * 0.5));
@@ -454,16 +433,6 @@ function createIridescence(canvas) {
     };
 
     var draw = function (now) {
-        /* Age the wake in real time, so it fades at the same rate on any display. */
-        var dt = Math.min(0.1, (now - last) / 1000);
-        last = now;
-        var decay = Math.exp(-dt / 0.42);
-
-        for (var i = 0; i < TRAIL; i++) {
-            trail[i * 3 + 2] *= decay;
-        }
-
-        gl.uniform3fv(uTrail, trail);
         gl.uniform1f(uTime, (now - start) / 1000 * 0.26);
         gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
@@ -500,35 +469,6 @@ function createIridescence(canvas) {
     document.addEventListener('visibilitychange', onVisibility);
     window.addEventListener('resize', onResize, { passive: true });
 
-    /* The wake follows a real pointer only — a fingertip would leave it stranded. */
-    var surface = host.closest('section') || host;
-    var fine = window.matchMedia('(pointer: fine)').matches;
-    var onMove = function (event) {
-        var rect = host.getBoundingClientRect();
-
-        if (!rect.height) {
-            return;
-        }
-
-        var x = (event.clientX - rect.left) / rect.height;
-        var y = 1 - (event.clientY - rect.top) / rect.height;
-        var now = performance.now();
-
-        /* A new point every so often; between those the head just keeps up. */
-        if (now - dropped > 26) {
-            head = (head + 1) % TRAIL;
-            dropped = now;
-        }
-
-        trail[head * 3] = x;
-        trail[head * 3 + 1] = y;
-        trail[head * 3 + 2] = 1;
-    };
-
-    if (fine && !reduceMotion) {
-        surface.addEventListener('pointermove', onMove, { passive: true });
-    }
-
     play();
 
     return {
@@ -540,7 +480,6 @@ function createIridescence(canvas) {
             observer.disconnect();
             document.removeEventListener('visibilitychange', onVisibility);
             window.removeEventListener('resize', onResize);
-            surface.removeEventListener('pointermove', onMove);
             var lose = gl.getExtension('WEBGL_lose_context');
             if (lose) {
                 lose.loseContext();
