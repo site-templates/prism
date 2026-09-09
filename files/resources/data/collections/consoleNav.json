@@ -1,0 +1,42 @@
+[
+    {
+        "group": "Workspace",
+        "label": "Overview"
+    },
+    {
+        "group": "Workspace",
+        "label": "Requests"
+    },
+    {
+        "group": "Workspace",
+        "label": "Logs"
+    },
+    {
+        "group": "Routing",
+        "label": "Policies"
+    },
+    {
+        "group": "Routing",
+        "label": "Models"
+    },
+    {
+        "group": "Routing",
+        "label": "Fallbacks"
+    },
+    {
+        "group": "Routing",
+        "label": "Keys"
+    },
+    {
+        "group": "Spend",
+        "label": "Usage"
+    },
+    {
+        "group": "Spend",
+        "label": "Budgets"
+    },
+    {
+        "group": "Spend",
+        "label": "Invoices"
+    }
+]

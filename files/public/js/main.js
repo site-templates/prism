@@ -19,7 +19,8 @@ var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 var revealObserver = null;
 var revealWatched = [];
-var meshes_ = [];
+var skies = [];
+var strips = [];
 
 header();
 setUp(document);
@@ -34,19 +35,27 @@ function setUp(root) {
     tearDown();
 
     reveals(root);
-    meshGradients(root);
-    composers(root);
+    iridescence(root);
+    tabStrips(root);
     filters(root);
     singleOpenFaq(root);
 }
 
-/* Reveal observers and mesh render loops outlive a page, so they are what gets released. */
+/* Reveal observers, render loops and tab timers outlive a page, so they are what gets released. */
 function tearDown() {
-    meshes_ = meshes_.filter(function (mesh) {
-        if (mesh.canvas.isConnected) {
+    skies = skies.filter(function (sky) {
+        if (sky.canvas.isConnected) {
             return true;
         }
-        mesh.stop();
+        sky.stop();
+        return false;
+    });
+
+    strips = strips.filter(function (entry) {
+        if (entry.strip.isConnected) {
+            return true;
+        }
+        entry.stop();
         return false;
     });
 
@@ -279,28 +288,30 @@ function reveals(root) {
     });
 }
 
-/* ── The mesh gradient ─────────────────────────────────────────────────────── */
+/* ── The iridescence ───────────────────────────────────────────────────────── */
 
 /*
-    The four beam colours, drifting. Each <canvas data-mesh> inside a .beams
-    block gets a small WebGL program: four soft colour fields whose centres
-    wander slowly, over a domain warped by two sine waves and a little noise
-    so the whole thing rolls like silk. Colours come from the CSS tokens at
-    runtime — retune --color-beam-* and the mesh follows. It renders at half
-    resolution, only while on screen and the tab is visible, and paints one
-    still frame under reduced motion. Without WebGL the canvas is removed and
-    the CSS beams show.
+    The light behind the hero. Each <canvas data-iridescence> inside a .beams
+    block gets a small WebGL program in two parts: a drifting field of the four
+    beam colours over the canvas colour, and a sheet of fluted glass in front of
+    it — diagonal ridges that bend the field and split it by channel, which is
+    what draws the prismatic streaks. A bloom follows the pointer. Colours come
+    from the CSS tokens at runtime, so retuning --color-beam-* retunes the light.
+
+    It renders at half resolution, only while on screen and the tab is visible,
+    and paints one still frame under reduced motion. Without WebGL the canvas
+    removes itself and the CSS beams underneath show instead.
 */
-function meshGradients(root) {
-    Array.prototype.forEach.call(root.querySelectorAll('canvas[data-mesh]'), function (canvas) {
-        var mesh = createMesh(canvas);
-        if (mesh) {
-            meshes_.push(mesh);
+function iridescence(root) {
+    Array.prototype.forEach.call(root.querySelectorAll('canvas[data-iridescence]'), function (canvas) {
+        var sky = createIridescence(canvas);
+        if (sky) {
+            skies.push(sky);
         }
     });
 }
 
-function createMesh(canvas) {
+function createIridescence(canvas) {
     var host = canvas.parentElement;
     var gl = canvas.getContext('webgl', { antialias: false, alpha: false, depth: false, stencil: false, powerPreference: 'low-power' });
 
@@ -312,27 +323,56 @@ function createMesh(canvas) {
     var vertex = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.0,1.0);}';
     var fragment = [
         'precision mediump float;',
-        'uniform vec2 u_res;uniform float u_t;uniform vec3 u_base;uniform vec3 u_c0;uniform vec3 u_c1;uniform vec3 u_c2;uniform vec3 u_c3;',
+        'uniform vec2 u_res;uniform float u_t;uniform vec3 u_ptr;',
+        'uniform vec3 u_base;uniform vec3 u_left;uniform vec3 u_up;uniform vec3 u_right;uniform vec3 u_down;',
         'float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
         'float noise(vec2 p){vec2 i=floor(p);vec2 f=fract(p);f=f*f*(3.0-2.0*f);',
         'return mix(mix(hash(i),hash(i+vec2(1.0,0.0)),f.x),mix(hash(i+vec2(0.0,1.0)),hash(i+vec2(1.0,1.0)),f.x),f.y);}',
-        'float blob(vec2 p,vec2 c,float s){vec2 d=p-c;return exp(-dot(d,d)*s);}',
-        'vec3 lift(vec3 c){return c;}',
+        'float fbm(vec2 p){return 0.65*noise(p)+0.35*noise(p*2.1+3.7);}',
+        /*
+            The sheet of light: paper white, crossed by two broad soft bands
+            that drift, with two pools of colour and the pointer bloom sitting
+            in it. Nothing here is saturated — the colour a visitor sees comes
+            mostly from the glass in front of it.
+        */
+        'vec3 shade(vec2 q,float t){',
+        'float band=sin(dot(q,vec2(0.9,1.5))*2.6-t*0.35)*0.5+0.5;',
+        'float band2=sin(dot(q,vec2(1.7,-0.6))*1.9+t*0.22)*0.5+0.5;',
+        'vec3 c=u_base*(0.945+0.075*band*band+0.04*band2);',
+        'vec2 a=vec2(0.34+0.18*sin(t*0.31),0.62+0.16*cos(t*0.27));',
+        'vec2 b=vec2(1.12+0.16*cos(t*0.23),0.34+0.14*sin(t*0.19));',
+        'vec2 da=q-a;vec2 db=q-b;',
+        'float sky=0.58+0.42*smoothstep(1.15,0.30,q.y);',
+        'c=mix(c,u_left,exp(-dot(da,da)*6.0)*0.40*sky);',
+        'c=mix(c,u_up,exp(-dot(db,db)*6.5)*0.32*sky);',
+        'c=mix(c,u_down,band*band*0.05*sky);',
+        'c=mix(c,u_right,band2*band2*0.03*sky);',
+        'vec2 dp=q-u_ptr.xy;',
+        'c=mix(c,u_left,exp(-dot(dp,dp)*4.0)*0.45*u_ptr.z);',
+        'return c;}',
         'void main(){',
         'vec2 uv=gl_FragCoord.xy/u_res;float a=u_res.x/u_res.y;vec2 p=vec2(uv.x*a,uv.y);float t=u_t;',
-        'vec2 w=p;w.x+=0.22*sin(p.y*2.6+t*0.9)+0.08*sin(p.y*7.0-t*1.3);w.y+=0.18*sin(p.x*1.9-t*0.7)+0.06*sin(p.x*6.0+t*1.1);w+=0.14*(noise(w*2.2+t*0.35)-0.5);',
-        'vec2 c0=vec2(0.16*a+0.24*sin(t*0.50),0.70+0.22*cos(t*0.42));',
-        'vec2 c1=vec2(0.46*a+0.30*cos(t*0.37),0.30+0.24*sin(t*0.61));',
-        'vec2 c2=vec2(0.84*a+0.24*sin(t*0.44+2.0),0.72+0.22*cos(t*0.53));',
-        'vec2 c3=vec2(0.64*a+0.28*cos(t*0.29+1.0),0.16+0.22*sin(t*0.47));',
-        'float ripple=0.62+0.38*sin(dot(w,vec2(1.2,1.6))*4.2-t*0.8);',
-        'float ripple2=0.72+0.28*sin(dot(w,vec2(-0.9,1.3))*3.1+t*0.6);',
-        'float s=1.9/a;',
-        'float w0=blob(w,c0,s)*ripple;float w1=blob(w,c1,s*0.9)*ripple2;float w2=blob(w,c2,s)*(1.24-ripple);float w3=blob(w,c3,s*0.95)*(1.44-ripple2);',
-        'float sum=w0+w1+w2+w3+1e-4;',
-        'vec3 mixc=lift((u_c0*w0+u_c1*w1+u_c2*w2+u_c3*w3)/sum);',
-        'float cover=clamp(sum*1.5,0.0,1.0);',
-        'vec3 col=mix(u_base,mix(vec3(1.0),mixc,0.62),cover);',
+        /* One organic warp for the whole pixel, so the three channel samples stay cheap. */
+        'vec2 q=p+0.26*vec2(fbm(p*1.4+t*0.10),fbm(p*1.4+vec2(4.3,1.7)-t*0.08));',
+        'float detail=fbm(q*3.4-t*0.12);',
+        /* The fluted glass: ridges at 214 degrees, each one a little lens. */
+        'vec2 axis=vec2(cos(3.735),sin(3.735));',
+        'float s=dot(p,axis)*6.5+t*0.15;',
+        'float f=fract(s)*2.0-1.0;',
+        'float lens=f*sqrt(max(0.0,1.0-f*f*0.82));',
+        'vec2 off=axis*lens*0.055;',
+        /*
+            Each channel is refracted by a different amount, exactly as glass
+            splits daylight — that difference is the rainbow along every ridge.
+        */
+        'vec3 col;',
+        'col.r=shade(q+off*1.75,t).r;',
+        'col.g=shade(q+off,t).g;',
+        'col.b=shade(q+off*0.35,t).b;',
+        'col*=0.985+0.03*detail;',
+        /* The glint riding the crest of each ridge, and the grain over everything. */
+        'col+=pow(max(0.0,1.0-abs(f)),9.0)*0.045;',
+        'col+=(hash(gl_FragCoord.xy*0.7+t)-0.5)*0.04;',
         'gl_FragColor=vec4(col,1.0);}'
     ].join('\n');
 
@@ -365,25 +405,27 @@ function createMesh(canvas) {
 
     var uRes = gl.getUniformLocation(program, 'u_res');
     var uTime = gl.getUniformLocation(program, 'u_t');
+    var uPtr = gl.getUniformLocation(program, 'u_ptr');
     var styles = getComputedStyle(document.documentElement);
     var colour = function (name, fallback) {
         return parseColour(styles.getPropertyValue(name).trim() || fallback);
     };
 
     gl.uniform3fv(gl.getUniformLocation(program, 'u_base'), colour('--color-canvas', '#f4f4f6'));
-    gl.uniform3fv(gl.getUniformLocation(program, 'u_c0'), colour('--color-beam-1', '#c7d2fe'));
-    gl.uniform3fv(gl.getUniformLocation(program, 'u_c1'), colour('--color-beam-3', '#a5f3fc'));
-    gl.uniform3fv(gl.getUniformLocation(program, 'u_c2'), colour('--color-beam-2', '#fbcfe8'));
-    gl.uniform3fv(gl.getUniformLocation(program, 'u_c3'), colour('--color-beam-4', '#fde68a'));
+    gl.uniform3fv(gl.getUniformLocation(program, 'u_left'), colour('--color-beam-left', '#9448ff'));
+    gl.uniform3fv(gl.getUniformLocation(program, 'u_up'), colour('--color-beam-up', '#ff85ec'));
+    gl.uniform3fv(gl.getUniformLocation(program, 'u_right'), colour('--color-beam-right', '#c39bff'));
+    gl.uniform3fv(gl.getUniformLocation(program, 'u_down'), colour('--color-beam-down', '#dfc2ff'));
 
     var frame = null;
     var visible = true;
     var start = performance.now() + Math.random() * 60000;
+    /* Where the bloom is, where it is heading, and how strong it is. */
+    var ptr = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5, on: 0, want: 0 };
 
     var resize = function () {
-        var scale = 0.5;
-        var width = Math.max(1, Math.round(host.clientWidth * scale));
-        var height = Math.max(1, Math.round(host.clientHeight * scale));
+        var width = Math.max(1, Math.round(host.clientWidth * 0.5));
+        var height = Math.max(1, Math.round(host.clientHeight * 0.5));
         if (canvas.width !== width || canvas.height !== height) {
             canvas.width = width;
             canvas.height = height;
@@ -393,7 +435,12 @@ function createMesh(canvas) {
     };
 
     var draw = function (now) {
-        gl.uniform1f(uTime, (now - start) / 1000 * 0.32);
+        var ease = 0.06;
+        ptr.x += (ptr.tx - ptr.x) * ease;
+        ptr.y += (ptr.ty - ptr.y) * ease;
+        ptr.on += (ptr.want - ptr.on) * 0.04;
+        gl.uniform3f(uPtr, ptr.x, ptr.y, ptr.on);
+        gl.uniform1f(uTime, (now - start) / 1000 * 0.26);
         gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
 
@@ -429,6 +476,25 @@ function createMesh(canvas) {
     document.addEventListener('visibilitychange', onVisibility);
     window.addEventListener('resize', onResize, { passive: true });
 
+    /* The bloom follows a real pointer only — a fingertip would leave it stranded. */
+    var surface = host.closest('section') || host;
+    var fine = window.matchMedia('(pointer: fine)').matches;
+    var onMove = function (event) {
+        var rect = host.getBoundingClientRect();
+        if (!rect.height) {
+            return;
+        }
+        ptr.tx = (event.clientX - rect.left) / rect.height;
+        ptr.ty = 1 - (event.clientY - rect.top) / rect.height;
+        ptr.want = 1;
+    };
+    var onLeave = function () { ptr.want = 0; };
+
+    if (fine && !reduceMotion) {
+        surface.addEventListener('pointermove', onMove, { passive: true });
+        surface.addEventListener('pointerleave', onLeave, { passive: true });
+    }
+
     play();
 
     return {
@@ -440,6 +506,8 @@ function createMesh(canvas) {
             observer.disconnect();
             document.removeEventListener('visibilitychange', onVisibility);
             window.removeEventListener('resize', onResize);
+            surface.removeEventListener('pointermove', onMove);
+            surface.removeEventListener('pointerleave', onLeave);
             var lose = gl.getExtension('WEBGL_lose_context');
             if (lose) {
                 lose.loseContext();
@@ -473,123 +541,88 @@ function parseColour(value) {
     return [0.96, 0.96, 0.97];
 }
 
-/* ── The composer and the console ──────────────────────────────────────────── */
+/* ── The tab strip ─────────────────────────────────────────────────────────── */
 
 /*
-    Prism's signature. Each chip carries a route key, an example prompt and a
-    reason. Pressing one fills the prompt, shows the route-strip line for its
-    key and swaps the reason. A page that also carries a routing console
-    ([data-console] beside the form) gets its rows re-ordered by
-    data-rank-{key} with a FLIP transition.
+    The tasks above the console window. Pressing a tab shows its screen and
+    stops the tour; the pause button stops and restarts it. The tour only runs
+    while the strip is on screen, and never under reduced motion — there the
+    tabs are a plain, manual control.
 */
-function composers(root) {
-    Array.prototype.forEach.call(root.querySelectorAll('[data-composer]'), function (form) {
-        var input = form.querySelector('[data-composer-input]');
-        var chips = Array.prototype.slice.call(form.querySelectorAll('.chip[data-route]'));
-        var results = Array.prototype.slice.call(form.querySelectorAll('[data-route-result]'));
-        var console_ = form.parentElement.querySelector('[data-console]');
-        var reason = form.querySelector('[data-console-reason]') || (console_ && console_.querySelector('[data-console-reason]'));
+function tabStrips(root) {
+    Array.prototype.forEach.call(root.querySelectorAll('[data-tabs]'), function (strip) {
+        var tabs = Array.prototype.slice.call(strip.querySelectorAll('[data-tab-key]'));
+        var panels = Array.prototype.slice.call(strip.querySelectorAll('[data-tab-of]'));
+        var pause = strip.querySelector('[data-tab-pause]');
 
-        if (!input || !chips.length) {
+        if (tabs.length < 2) {
             return;
         }
 
-        chips.forEach(function (chip) {
-            chip.addEventListener('click', function () {
-                chips.forEach(function (other) {
-                    other.setAttribute('aria-pressed', String(other === chip));
-                });
+        var index = 0;
+        var timer = null;
+        var onScreen = true;
+        var wanted = !reduceMotion;
 
-                input.value = chip.getAttribute('data-prompt') || '';
-                input.dispatchEvent(new Event('input', { bubbles: true }));
+        var show = function (next, scroll) {
+            index = (next + tabs.length) % tabs.length;
+            var key = tabs[index].getAttribute('data-tab-key');
 
-                var key = chip.getAttribute('data-route');
-                results.forEach(function (line) {
-                    line.hidden = line.getAttribute('data-route-result') !== key;
-                });
+            tabs.forEach(function (tab, n) {
+                tab.setAttribute('aria-selected', n === index ? 'true' : 'false');
+            });
+            panels.forEach(function (panel) {
+                panel.hidden = panel.getAttribute('data-tab-of') !== key;
+            });
 
-                if (console_) {
-                    rerank(console_, key);
+            if (scroll) {
+                tabs[index].scrollIntoView({ block: 'nearest', inline: 'nearest' });
+            }
+        };
+
+        var stopTimer = function () {
+            if (timer !== null) {
+                clearInterval(timer);
+                timer = null;
+            }
+        };
+
+        var startTimer = function () {
+            stopTimer();
+            if (wanted && onScreen && !reduceMotion) {
+                timer = setInterval(function () { show(index + 1, true); }, 6000);
+            }
+        };
+
+        tabs.forEach(function (tab, n) {
+            tab.addEventListener('click', function () {
+                wanted = false;
+                stopTimer();
+                if (pause) {
+                    pause.setAttribute('data-paused', '');
                 }
-
-                if (reason) {
-                    swapText(reason, chip.getAttribute('data-reason') || '');
-                }
+                show(n, false);
             });
         });
 
-        /* Typing your own prompt releases the chips; the console keeps its last ranking. */
-        input.addEventListener('input', function () {
-            var matches = chips.some(function (chip) {
-                return chip.getAttribute('data-prompt') === input.value;
+        if (pause) {
+            pause.addEventListener('click', function () {
+                wanted = !wanted;
+                pause.toggleAttribute('data-paused', !wanted);
+                startTimer();
             });
-            if (!matches) {
-                chips.forEach(function (chip) { chip.setAttribute('aria-pressed', 'false'); });
-            }
-        });
-
-        form.addEventListener('submit', function (event) {
-            if (!input.value.trim()) {
-                event.preventDefault();
-                input.focus();
-            }
-        });
-    });
-}
-
-function rerank(console_, key) {
-    var list = console_.querySelector('ol');
-
-    if (!list || !key) {
-        return;
-    }
-
-    var rows = Array.prototype.slice.call(list.children);
-    var attr = 'data-rank-' + key;
-
-    var before = new Map();
-    rows.forEach(function (row) {
-        before.set(row, row.getBoundingClientRect().top);
-    });
-
-    rows.sort(function (a, b) {
-        return Number(a.getAttribute(attr) || 99) - Number(b.getAttribute(attr) || 99);
-    });
-
-    rows.forEach(function (row, index) {
-        list.appendChild(row);
-        row.toggleAttribute('data-routed', index === 0);
-    });
-
-    if (reduceMotion) {
-        return;
-    }
-
-    rows.forEach(function (row) {
-        var delta = before.get(row) - row.getBoundingClientRect().top;
-        if (!delta) {
-            return;
+            pause.toggleAttribute('data-paused', !wanted);
         }
-        row.removeAttribute('data-flip');
-        row.style.translate = '0 ' + delta + 'px';
-        requestAnimationFrame(function () {
-            row.setAttribute('data-flip', '');
-            row.style.translate = '0 0';
-        });
+
+        var observer = new IntersectionObserver(function (entries) {
+            onScreen = entries.some(function (entry) { return entry.isIntersecting; });
+            startTimer();
+        }, { threshold: 0.2 });
+        observer.observe(strip);
+
+        strips.push({ strip: strip, stop: function () { stopTimer(); observer.disconnect(); } });
+        startTimer();
     });
-}
-
-function swapText(el, text) {
-    if (reduceMotion) {
-        el.textContent = text;
-        return;
-    }
-
-    el.setAttribute('data-updating', '');
-    setTimeout(function () {
-        el.textContent = text;
-        el.removeAttribute('data-updating');
-    }, 200);
 }
 
 /* ── The models filter ─────────────────────────────────────────────────────── */

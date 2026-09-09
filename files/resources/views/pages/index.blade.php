@@ -1,7 +1,7 @@
 <!-- The home page. Each section's text is set in its own component's defaults; pass an attribute here only to override one. -->
 <x-layouts.main title="Home" description="Prism routes every request to the right model — cheapest, fastest, best or longest context — behind one OpenAI-compatible key." current="/">
 
-    <x-sections.hero :routes="$routes" :models="$console" :providers="$providers" />
+    <x-sections.hero />
 
     <x-sections.providers :items="$providers" />
 

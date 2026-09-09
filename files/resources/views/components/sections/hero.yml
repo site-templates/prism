@@ -1,8 +1,8 @@
 # The visual editor's contract for hero.blade.php.
-# The chips come from the routes collection, the route-strip results from
-# console (the rank-1 model per chip), the provider marks from providers.
+# The tabs come from the workbench collection and the screen beneath them is
+# components/mocks/console.blade.php — its own fields cover the window.
 title: Hero
-description: The two-line serif headline, paragraph, buttons and provider marks beside the prompt composer, over the mesh gradient
+description: The iridescent opening — two-line serif headline, one paragraph, the pill button, the task tabs and the console window
 fields:
     heading:
         type: text
@@ -16,7 +16,7 @@ fields:
         type: textarea
         label: One paragraph
         rows: 3
-        default: "One OpenAI-compatible key in front of every model. Each request goes to the right one — cheapest, fastest, best, or the one that fits the whole document."
+        default: "Prism gives engineering teams one OpenAI-compatible endpoint in front of every model, and a log that says why each request went where it went."
     ctaText:
         type: text
         label: Button text
@@ -37,140 +37,29 @@ fields:
         type: url
         label: Text link URL
         default: "/models"
-    worksWith:
+    pauseLabel:
         type: text
-        label: Provider row label
-        default: "Works with"
-    placeholder:
-        type: text
-        label: Prompt placeholder
-        default: "Describe what you are building…"
-    sendLabel:
-        type: text
-        label: Send button label
+        label: Pause button label
         description: Read by screen readers and shown on hover.
-        default: "Route this prompt"
-    routedLabel:
-        type: text
-        label: Route strip label
-        default: "Routed to"
-    reason:
-        type: textarea
-        label: Reason line
-        description: Shown under the route strip before a chip is pressed — match the first chip's reason.
-        rows: 2
-        default: "6× cheaper than a frontier model at equal quality on summaries."
-    routes:
+        default: "Pause the tour"
+    workbench:
         type: repeater
-        label: Chips
-        description: Each chip fills the prompt, re-ranks the console by its key and shows its reason.
-        add_button_label: "Add chip"
+        label: Tasks
+        description: One tab per task. Edit each screen on the console window below.
+        add_button_label: "Add task"
         item_label: label
-        source: collections.routes
         sub_fields:
             key:
-                type: select
-                label: Ranks by
-                options:
-                    cheap: Cheapest
-                    fast: Fastest
-                    code: Best at code
-                    long: Longest context
-                default: "cheap"
+                type: text
+                label: Key
+                default: "new-task"
             label:
                 type: text
-                label: Chip text
-                default: "New chip"
-            prompt:
+                label: Tab text
+                default: "New task"
+            icon:
                 type: textarea
-                label: Example prompt
-                rows: 2
+                label: Icon (SVG)
+                description: "Raw SVG, 24×24, class=\"size-4 shrink-0\"."
+                rows: 3
                 default: ""
-            reason:
-                type: textarea
-                label: Reason line
-                rows: 2
-                default: ""
-    models:
-        type: repeater
-        label: Route results
-        description: The model ranked 1 for a chip is what its route strip names.
-        add_button_label: "Add model"
-        item_label: name
-        source: collections.console
-        sub_fields:
-            name:
-                type: text
-                label: Model
-                default: "New model"
-            id:
-                type: text
-                label: Model id
-                default: "provider/model"
-            provider:
-                type: text
-                label: Provider
-                default: ""
-            latency:
-                type: text
-                label: Latency
-                default: "500 ms"
-            price:
-                type: text
-                label: Price per million input tokens
-                default: "$1.00"
-            score:
-                type: number
-                label: Quality score
-                min: 0
-                max: 100
-                step: 1
-                default: "80"
-            rankCheap:
-                type: number
-                label: Rank — cheapest
-                min: 1
-                max: 20
-                step: 1
-                default: "1"
-            rankFast:
-                type: number
-                label: Rank — fastest
-                min: 1
-                max: 20
-                step: 1
-                default: "1"
-            rankCode:
-                type: number
-                label: Rank — code
-                min: 1
-                max: 20
-                step: 1
-                default: "1"
-            rankLong:
-                type: number
-                label: Rank — context
-                min: 1
-                max: 20
-                step: 1
-                default: "1"
-    providers:
-        type: repeater
-        label: Provider dots
-        add_button_label: "Add provider"
-        item_label: name
-        source: collections.providers
-        sub_fields:
-            name:
-                type: text
-                label: Provider
-                default: "New provider"
-            initial:
-                type: text
-                label: Initial
-                description: One or two letters shown in the mark.
-                default: "P"
-            color:
-                type: color
-                label: Brand colour
-                default: "#111114"

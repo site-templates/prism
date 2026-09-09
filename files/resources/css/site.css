@@ -42,6 +42,9 @@
     --color-accent-ink: #ffffff;
     --color-accent-wash: rgb(15 118 110 / 0.1);
 
+    /* The one warning colour: a failed or timed-out leg in the console. */
+    --color-alert: #c2410c;
+
     /* The dark band: the endpoint section, the mega-menu promo card, and nowhere else. */
     --color-band: #111114;
     --color-band-ink: #f4f4f6;
@@ -50,11 +53,15 @@
     --color-band-line: rgb(255 255 255 / 0.12);
     --color-band-raised: rgb(255 255 255 / 0.06);
 
-    /* The four beams the mesh is painted from — Stripe's spectrum: violet, coral, sky, gold. Never as text. */
-    --color-beam-1: #a960ee;
-    --color-beam-2: #ff6a7a;
-    --color-beam-3: #7cd4ff;
-    --color-beam-4: #ffcb57;
+    /*
+        The four colours the iridescence is painted from, named for the
+        direction each one flows from: violet on the left, pink above, orchid
+        on the right, lavender below. Never as text, never as a fill.
+    */
+    --color-beam-left: #9448ff;
+    --color-beam-up: #ff85ec;
+    --color-beam-right: #c39bff;
+    --color-beam-down: #dfc2ff;
 
     /* Source Serif for display, Inter for text and UI, Geist Mono for data and code. */
     --font-display: "Source Serif 4", ui-serif, Georgia, "Times New Roman", serif;
@@ -64,7 +71,7 @@
     /* 1152px — the page container. */
     --container-page: 72rem;
 
-    /* Two shadow recipes: the card that stands on the canvas, and the composer / menu that float. */
+    /* Two shadow recipes: the card that stands on the canvas, and the window / menu that float. */
     --shadow-card: 0 1px 2px rgb(17 17 20 / 0.04), 0 8px 24px -12px rgb(17 17 20 / 0.12);
     --shadow-float: 0 1px 2px rgb(17 17 20 / 0.05), 0 12px 40px -12px rgb(17 17 20 / 0.18), 0 32px 80px -32px rgb(17 17 20 / 0.16);
 
@@ -140,9 +147,9 @@
         carries everything a visitor reads or presses.
     */
     .display-hero {
-        font-size: clamp(3rem, 6.2vw, 5.75rem);
-        line-height: 1.02;
-        letter-spacing: -0.025em;
+        font-size: clamp(2.75rem, 4.6vw, 4.25rem);
+        line-height: 1.08;
+        letter-spacing: -0.02em;
         font-weight: 400;
         font-optical-sizing: auto;
     }
@@ -230,9 +237,14 @@
     }
 
     /*
-        The beams: four blurred diagonal bands of pastel light, the way a prism
-        throws a spectrum across a wall. They live behind the hero and the
-        closing call only. Pure CSS — no image, zero bytes, recolour by token.
+        The iridescence. main.js paints it into the canvas with WebGL — a
+        drifting field of the four beam colours seen through fluted glass, so
+        every ridge splits the light into a prismatic streak, with a bloom
+        that follows the pointer. It reads the tokens at runtime.
+
+        Everything below is the no-WebGL fallback, and it is the same picture
+        drawn in CSS: the colour field on the element, the soft glow on
+        ::before, the diagonal flutes on ::after.
     */
     .beams {
         position: absolute;
@@ -240,12 +252,40 @@
         z-index: 0;
         overflow: hidden;
         pointer-events: none;
+        background:
+            radial-gradient(circle at 35% 30%, color-mix(in oklab, var(--color-beam-up) 34%, transparent), transparent 30%),
+            radial-gradient(circle at 68% 42%, color-mix(in oklab, var(--color-beam-left) 34%, transparent), transparent 34%),
+            radial-gradient(circle at 52% 72%, color-mix(in oklab, var(--color-beam-right) 34%, transparent), transparent 38%),
+            linear-gradient(135deg, var(--color-surface) 0%, color-mix(in oklab, var(--color-beam-down) 18%, var(--color-surface)) 48%, color-mix(in oklab, var(--color-beam-down) 70%, var(--color-surface)) 100%);
+    }
+
+    .beams::before,
+    .beams::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+    }
+
+    /* The glow: two soft diagonal bands and a wash under the headline. */
+    .beams::before {
+        opacity: 0.6;
+        filter: blur(18px);
+        background:
+            linear-gradient(102deg, transparent 5%, color-mix(in oklab, var(--color-beam-left) 20%, transparent) 24%, transparent 38%),
+            linear-gradient(78deg, transparent 43%, color-mix(in oklab, var(--color-beam-up) 18%, transparent) 58%, transparent 74%),
+            radial-gradient(ellipse at 50% 18%, color-mix(in oklab, var(--color-beam-up) 20%, transparent), transparent 46%);
+    }
+
+    /* The flutes: the fine diagonal ridges the light is refracted through. */
+    .beams::after {
+        opacity: 0.3;
+        filter: blur(0.4px);
+        background: repeating-linear-gradient(124deg, transparent 0 18px, color-mix(in oklab, var(--color-beam-left) 22%, transparent) 19px, transparent 21px);
     }
 
     /*
-        The mesh: main.js paints a slow, wavy gradient of the four beam colours
-        into this canvas with WebGL, reading the tokens at runtime. Until it
-        does — or where WebGL is unavailable — the CSS beams below show instead.
+        The canvas: hidden until main.js has painted a first frame, then it
+        crossfades in and the CSS fallback beneath it is switched off.
     */
     .beams canvas {
         position: absolute;
@@ -261,51 +301,26 @@
         opacity: 1;
     }
 
+    .beams.has-mesh {
+        background: none;
+    }
+
     .beams.has-mesh::before,
     .beams.has-mesh::after {
         display: none;
     }
 
-    .beams::before,
-    .beams::after {
-        content: "";
-        position: absolute;
-        inset: -30% -20%;
-        filter: blur(40px);
-        opacity: 0.8;
-    }
-
-    .beams::before {
-        background:
-            linear-gradient(115deg, transparent 18%, var(--color-beam-1) 26%, transparent 34%),
-            linear-gradient(115deg, transparent 44%, var(--color-beam-3) 51%, transparent 58%),
-            linear-gradient(115deg, transparent 66%, var(--color-beam-2) 73%, transparent 80%);
-    }
-
-    .beams::after {
-        background:
-            linear-gradient(115deg, transparent 30%, var(--color-beam-4) 35%, transparent 40%),
-            linear-gradient(115deg, transparent 56%, var(--color-beam-2) 60%, transparent 64%),
-            linear-gradient(115deg, transparent 82%, var(--color-beam-1) 86%, transparent 90%);
-        opacity: 0.55;
-    }
-
     /*
-        The hero's sky: the mesh fills the top of the page and ends in a
-        diagonal edge, the way Stripe cuts its gradient, with the composer
-        floating over the edge. The grain rides inside it.
+        The hero's sky: the iridescence fills the whole opening section and
+        fades into the canvas over its last sixth, so the section below starts
+        clean. The grain rides inside it.
     */
     .hero-sky {
         position: absolute;
         inset: 0;
         z-index: 0;
-        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 86%);
-    }
-
-    @media (max-width: 63.99rem) {
-        .hero-sky {
-            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 92%);
-        }
+        -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 84%, transparent 100%);
+        mask-image: linear-gradient(to bottom, #000 0%, #000 84%, transparent 100%);
     }
 
     .hero-sky .beams {
@@ -321,7 +336,7 @@
         background: linear-gradient(to bottom, transparent 55%, var(--color-canvas) 100%);
     }
 
-    /* The closing call fades the mesh at both edges so it sits between two canvas sections. */
+    /* The closing call fades the iridescence at both edges so it sits between two canvas sections. */
     .beams-fade-both {
         background: linear-gradient(to bottom, var(--color-canvas) 0%, transparent 30%, transparent 70%, var(--color-canvas) 100%);
     }
@@ -527,49 +542,9 @@
         translate: 0 -2px;
     }
 
-    /* ── The composer and the router console ───────────────────────────────── */
+    /* ── Chips, bars and dots ─────────────────────────────────────────────── */
 
-    /*
-        Prism's signature. A prompt composer — the 20px white card, the
-        textarea, the send button, four chips — and under it the routing
-        console, a table of models. Pressing a chip fills the prompt, re-ranks
-        the rows (main.js moves them with a FLIP transition) and hands the top
-        row the teal Routed pill. The first chip ships pressed and the rows
-        ship in its order, so the whole thing reads complete before any script.
-    */
-    .composer {
-        padding: 0.5rem;
-        border-radius: 1.75rem;
-        background-color: rgb(255 255 255 / 0.6);
-        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.8), var(--shadow-float);
-        backdrop-filter: blur(24px);
-    }
-
-    .composer-card {
-        border-radius: 1.25rem;
-        background-color: var(--color-surface);
-        box-shadow: inset 0 0 0 1px var(--color-line), 0 1px 2px rgb(17 17 20 / 0.04);
-    }
-
-    .composer textarea {
-        resize: none;
-        field-sizing: content;
-        min-height: 9.5rem;
-        line-height: 1.4;
-    }
-
-    .composer textarea::placeholder {
-        color: var(--color-faint);
-    }
-
-    .composer textarea:focus-visible {
-        outline: none;
-    }
-
-    .composer:has(textarea:focus-visible) .composer-card {
-        box-shadow: inset 0 0 0 1px var(--color-line-strong), 0 1px 2px rgb(17 17 20 / 0.04);
-    }
-
+    /* The pill the models table filters by. Pressed is the ink fill. */
     .chip {
         display: inline-flex;
         align-items: center;
@@ -597,39 +572,7 @@
         box-shadow: none;
     }
 
-    /* The console rows: a hairline between each, the routed one tinted. */
-    .console-row {
-        transition: background-color 0.3s ease;
-    }
-
-    .console-row[data-routed] {
-        background-color: var(--color-accent-wash);
-    }
-
-    .console-row .routed-pill {
-        display: none;
-    }
-
-    .console-row[data-routed] .routed-pill {
-        display: inline-flex;
-    }
-
-    /* The route strip's lines swap with the pressed chip (main.js); the reason settles in from one step below. */
-    .route-strip [data-route-result][hidden] {
-        display: none;
-    }
-
-    /* The reason line under the route strip settles in from one step below when it changes. */
-    .console-reason {
-        transition: opacity 0.2s ease, translate 0.2s var(--ease-glide);
-    }
-
-    .console-reason[data-updating] {
-        opacity: 0;
-        translate: 0 0.25rem;
-    }
-
-    /* The quality bar in the console and the models table: a hairline track, teal fill at --score. */
+    /* The quality bar in the models table: a hairline track, teal fill at --score. */
     .score {
         --score: 0%;
         position: relative;
@@ -673,6 +616,206 @@
     @keyframes live-pulse {
         0% { scale: 0.6; opacity: 0.7; }
         70%, 100% { scale: 1.3; opacity: 0; }
+    }
+
+    /* ── The tab strip ─────────────────────────────────────────────────────── */
+
+    /*
+        The row of tasks above the console window. The pressed one takes the
+        ink and grows an underline; the rest sit muted. It scrolls sideways on
+        phones rather than wrapping, and the pause button stops the auto-advance.
+    */
+    .tab {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0 0.125rem 0.75rem;
+        font-size: 0.9375rem;
+        font-weight: 500;
+        color: var(--color-muted);
+        white-space: nowrap;
+        transition: color 0.2s ease;
+    }
+
+    .tab:hover {
+        color: var(--color-ink);
+    }
+
+    .tab::after {
+        content: "";
+        position: absolute;
+        inset-inline: 0;
+        bottom: -1px;
+        height: 2px;
+        border-radius: 2px;
+        background-color: var(--color-beam-left);
+        scale: 0 1;
+        transform-origin: left;
+        transition: scale 0.35s var(--ease-glide);
+    }
+
+    .tab[aria-selected="true"] {
+        color: var(--color-ink);
+    }
+
+    .tab[aria-selected="true"]::after {
+        scale: 1 1;
+    }
+
+    .tab svg {
+        opacity: 0.7;
+    }
+
+    /* The tour button carries both icons and shows the one that says what pressing it does. */
+    [data-tab-pause] .tab-play,
+    [data-tab-pause][data-paused] .tab-pause {
+        display: none;
+    }
+
+    [data-tab-pause][data-paused] .tab-play {
+        display: block;
+    }
+
+    [data-tab-pause]::after {
+        display: none;
+    }
+
+    /* ── The console window ────────────────────────────────────────────────── */
+
+    /*
+        Prism's signature: the router's own screen, drawn in markup. A title
+        bar, a sidebar of sections, and per task a breadcrumb, the request
+        table and the assistant panel that explains the routing decision. The
+        tab strip above swaps the panels; without JavaScript the first one
+        shows and the rest stay hidden.
+    */
+    .win {
+        border-radius: 0.875rem;
+        background-color: var(--color-surface);
+        box-shadow: inset 0 0 0 1px var(--color-line), var(--shadow-float);
+        overflow: hidden;
+    }
+
+    .win-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.625rem 0.875rem;
+        border-bottom: 1px solid var(--color-line);
+        background-color: var(--color-well);
+    }
+
+    .win-side {
+        border-right: 1px solid var(--color-line);
+        background-color: var(--color-well);
+    }
+
+    .win-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-radius: 0.375rem;
+        padding: 0.3125rem 0.5rem;
+        font-size: 0.8125rem;
+        color: var(--color-muted);
+        transition: color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .win-link:hover {
+        color: var(--color-ink);
+        background-color: var(--color-raised);
+    }
+
+    .win-link[aria-current="page"] {
+        color: var(--color-ink);
+        background-color: var(--color-raised);
+        font-weight: 500;
+    }
+
+    .win-group {
+        font-size: 0.6875rem;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-faint);
+    }
+
+    /* The status cell: three tones, and only the bad one is loud. */
+    .win-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        white-space: nowrap;
+    }
+
+    .win-status::before {
+        content: "";
+        width: 0.375rem;
+        height: 0.375rem;
+        border-radius: 9999px;
+        background-color: currentColor;
+    }
+
+    .tone-ok { color: var(--color-accent); }
+    .tone-warn { color: var(--color-beam-left); }
+    .tone-bad { color: var(--color-alert); }
+
+    /* The assistant panel beside the table: the question, what it ran, what it found. */
+    .win-panel {
+        border-top: 1px solid var(--color-line);
+        background-color: var(--color-well);
+    }
+
+    @media (min-width: 64rem) {
+        .win-panel {
+            border-top: 0;
+            border-left: 1px solid var(--color-line);
+        }
+    }
+
+    .win-ask {
+        border-radius: 0.75rem;
+        border-end-end-radius: 0.25rem;
+        background-color: var(--color-raised);
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8125rem;
+        color: var(--color-ink);
+    }
+
+    /* One tool call the assistant ran, with how long it took. */
+    .win-run {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--color-muted);
+    }
+
+    /* The prompt field at the foot of the panel — the one thing here you can type in. */
+    .win-input {
+        width: 100%;
+        border-radius: 0.625rem;
+        background-color: var(--color-surface);
+        box-shadow: inset 0 0 0 1px var(--color-line-strong);
+        padding: 0.625rem 2.5rem 0.625rem 0.75rem;
+        font-size: 0.875rem;
+        color: var(--color-ink);
+    }
+
+    .win-input::placeholder {
+        color: var(--color-faint);
+    }
+
+    .win-input:focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 0;
+    }
+
+    /* A tab's panel is shown one at a time; the rest carry hidden. */
+    [data-tab-of][hidden] {
+        display: none;
     }
 
     /* ── Drawn mocks ───────────────────────────────────────────────────────── */
@@ -778,8 +921,9 @@
     /* ── Motion ────────────────────────────────────────────────────────────── */
 
     /*
-        The hero cascades in on load: the headline group first, the composer a
-        beat later, the console after that. Only when JavaScript is present.
+        The hero cascades in on load: the headline group first, the tab strip
+        a beat later, the console window after that. Only when JavaScript is
+        present.
     */
     html.js .arrive,
     html.js .arrive-late,
@@ -820,11 +964,6 @@
     html.js .stagger > *:nth-child(2) { transition-delay: 0.08s; }
     html.js .stagger > *:nth-child(3) { transition-delay: 0.16s; }
     html.js .stagger > *:nth-child(4) { transition-delay: 0.24s; }
-
-    /* The console rows carry a transform while main.js FLIPs them into their new order. */
-    .console-row[data-flip] {
-        transition: translate 0.35s var(--ease-glide), background-color 0.3s ease;
-    }
 
     /* ── Prose ─────────────────────────────────────────────────────────────── */
 
@@ -1001,10 +1140,9 @@
             animation: none;
         }
 
-        .console-row[data-flip],
+        .tab::after,
         .score::after,
         .bar,
-        .console-reason,
         [data-dropdown-panel],
         .faq-answer,
         .faq-sign,

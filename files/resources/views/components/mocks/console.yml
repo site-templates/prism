@@ -1,0 +1,187 @@
+# The visual editor's contract for mocks/console.blade.php.
+# Every list here is a collection the component reads by name — consoleGroups,
+# consoleNav, workbench and workbenchRows — so a row edited in the builder is
+# written straight back to its file — each field key IS the collection's name,
+# which is what the builder writes to. Each table row belongs to the task whose
+# key it carries.
+title: Console window
+description: The drawn router screen — title bar, sidebar, breadcrumb, request table and the assistant panel
+fields:
+    workspace:
+        type: text
+        label: Workspace name
+        default: "Acme AI"
+    initials:
+        type: text
+        label: Workspace initials
+        description: Two letters in the coloured square.
+        default: "AA"
+    colTime:
+        type: text
+        label: Column — time
+        default: "Time"
+    colModel:
+        type: text
+        label: Column — model
+        default: "Model"
+    colTask:
+        type: text
+        label: Column — task
+        default: "Task"
+    colStatus:
+        type: text
+        label: Column — status
+        default: "Status"
+    colLatency:
+        type: text
+        label: Column — latency
+        default: "Latency"
+    colCost:
+        type: text
+        label: Column — cost
+        default: "Cost"
+    askPlaceholder:
+        type: text
+        label: Prompt placeholder
+        default: "Ask about a request…"
+    askLabel:
+        type: text
+        label: Prompt button label
+        description: Read by screen readers.
+        default: "Ask the router"
+    consoleGroups:
+        type: repeater
+        label: Sidebar sections
+        add_button_label: "Add section"
+        item_label: label
+        sub_fields:
+            label:
+                type: text
+                label: Section
+                default: "New section"
+    consoleNav:
+        type: repeater
+        label: Sidebar links
+        description: The section name must match one of the sidebar sections above. Which link is lit is set per task, below.
+        add_button_label: "Add link"
+        item_label: label
+        sub_fields:
+            group:
+                type: text
+                label: Section
+                default: "Workspace"
+            label:
+                type: text
+                label: Link
+                default: "New link"
+    workbench:
+        type: repeater
+        label: Tasks
+        description: One tab and one screen each. The first is shown before any tab is pressed.
+        add_button_label: "Add task"
+        item_label: label
+        sub_fields:
+            key:
+                type: text
+                label: Key
+                description: Rows carrying this key show on this task's screen.
+                default: "new-task"
+            label:
+                type: text
+                label: Tab text
+                default: "New task"
+            icon:
+                type: textarea
+                label: Icon (SVG)
+                description: "Raw SVG, 24×24, class=\"size-4 shrink-0\"."
+                rows: 3
+                default: ""
+            navActive:
+                type: text
+                label: Sidebar link to light
+                description: Must match one of the sidebar links.
+                default: "Requests"
+            crumbTwo:
+                type: text
+                label: Breadcrumb, middle
+                default: "production"
+            crumbThree:
+                type: text
+                label: Breadcrumb, last
+                default: "Requests"
+            filterLabel:
+                type: text
+                label: Filter pill
+                default: "All policies"
+            countLabel:
+                type: text
+                label: Count
+                default: "0 today"
+            question:
+                type: text
+                label: Question
+                default: "Why did this request go there?"
+            commandOne:
+                type: text
+                label: First command
+                default: ""
+            commandOneTime:
+                type: text
+                label: First command, time
+                default: "1s"
+            commandTwo:
+                type: text
+                label: Second command
+                default: ""
+            commandTwoTime:
+                type: text
+                label: Second command, time
+                default: "1s"
+            answer:
+                type: textarea
+                label: Answer
+                rows: 4
+                default: ""
+    workbenchRows:
+        type: repeater
+        label: Request rows
+        description: Each row shows on the task whose key it carries.
+        add_button_label: "Add row"
+        item_label: model
+        sub_fields:
+            tab:
+                type: text
+                label: Task key
+                default: "summaries"
+            time:
+                type: text
+                label: Time
+                default: "09:00:00"
+            model:
+                type: text
+                label: Model
+                default: "provider/model"
+            task:
+                type: text
+                label: Task
+                default: "chat"
+            status:
+                type: text
+                label: Status
+                default: "Routed"
+            tone:
+                type: select
+                label: Tone
+                options:
+                    ok: Routed — teal
+                    warn: Pinned or fallback — violet
+                    bad: Failed — alert
+                default: "ok"
+            latency:
+                type: text
+                label: Latency
+                default: "500 ms"
+            cost:
+                type: text
+                label: Cost
+                default: "$0.0000"

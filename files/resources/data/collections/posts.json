@@ -34,7 +34,7 @@
         "readTime": "5 min read",
         "author": "Rowan Achebe",
         "authorRole": "Infrastructure",
-        "avatar": "https://assets.ui.sh/avatars/21.webp?size=160",
+        "avatar": "https://assets.ui.sh/avatars/11.webp?size=160",
         "link": "/blog/fallbacks-that-do-not-wake-you-up",
         "content": "<p>Provider incidents rarely arrive as a clean outage. They arrive as a p95 that doubles at two in the morning, then a trickle of 529s, then a status page that catches up an hour later. A fallback that waits for the status page is a fallback that already paged you.</p>\n<h2>The signal</h2>\n<p>Prism watches first-token latency and error rate per provider region over a sliding two-minute window, using every request it routes — yours and everyone else's. When a region drifts past your policy's threshold, new requests skip it. Nothing waits for a human.</p>\n<h2>The hand-off</h2>\n<p>For a non-streaming call the retry is invisible: the second provider answers the same request. For a streaming call the router resumes the completion on the second provider with the tokens already sent as context, so the client sees one stream. The log records both legs.</p>\n<h2>Coming back</h2>\n<p>Recovery is gradual. A region that degraded gets one percent of eligible traffic, then ten, then all of it, as long as its numbers hold. A provider that flaps does not get to flap your users.</p>"
     }
