@@ -19,9 +19,8 @@
 
             <div class="flex flex-col items-start gap-6">
                 <a href="/" aria-label="Homepage" class="brand flex items-center gap-2 text-ink">
-                    <svg viewBox="0 0 24 24" class="size-6 shrink-0" aria-hidden="true">
-                        <path fill="currentColor" d="M12 2.25 22.5 21H1.5Z"/>
-                        <path class="stroke-canvas" fill="none" stroke-width="1.5" stroke-linecap="round" d="M9 14h7.5M9 17h5"/>
+                    <svg viewBox="0 0 48 37" class="h-5 w-auto shrink-0 fill-current" aria-hidden="true">
+                        <path d="M24.1 0 0 36.1l31.5-24.4zM37.4 21.2l-2.7-4.7L.5 36.2zM40.5 26 .6 36.4h46.8z"/>
                     </svg>
                     <span class="text-[1.0625rem] font-semibold tracking-[-0.02em]">{{ $brand }}</span>
                 </a>

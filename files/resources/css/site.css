@@ -349,9 +349,14 @@
         background: linear-gradient(to bottom, transparent 55%, var(--color-canvas) 100%);
     }
 
-    /* The closing call fades the iridescence at both edges so it sits between two canvas sections. */
-    .beams-fade-both {
-        background: linear-gradient(to bottom, var(--color-canvas) 0%, transparent 30%, transparent 70%, var(--color-canvas) 100%);
+    /*
+        A band that carries its light in one corner rather than across the
+        whole width — the closing call and the not-found page, where the
+        content is centred and a full sheet behind it would crowd it.
+    */
+    .beams-corner {
+        -webkit-mask-image: radial-gradient(120% 150% at 100% 0%, #000 0%, #000 42%, transparent 88%);
+        mask-image: radial-gradient(120% 150% at 100% 0%, #000 0%, #000 42%, transparent 88%);
     }
 
     /* ── Header ────────────────────────────────────────────────────────────── */

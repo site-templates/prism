@@ -94,6 +94,9 @@ button. Never a beam colour as text or a fill.
   and ring, overlapping like the tables.so integration row.
 - **The hero sky:** `.hero-sky` — absolute, masked to fade into the canvas over
   its last sixth, grain inside, the iridescence canvas under it.
+- **The corner light:** `.beams-corner` — a radial mask that gathers the sheet
+  into the top-right corner, for the two centred bands (the closing call and
+  the not-found page) where a full sheet would crowd the words.
 - **Mocks:** `x-mocks.policy` (a rules file), `x-mocks.usage` (a bar chart),
   `x-mocks.promo` (the tiny console in the mega-menu card). Drawn on white
   with `.data` figures; zero images.
@@ -101,11 +104,17 @@ button. Never a beam colour as text or a fill.
   one-line description each, a dark promo card on the right, 150ms scale-in.
 - **Tables:** on the canvas, hairline rows only, `whitespace-nowrap`
   headings, sideways scroll on phones.
+- **The mark:** three tapered beams fanning out of one point — a prism
+  splitting light — inline in the header and the footer at `h-5 w-auto`,
+  `fill-current` so it takes `text-ink`. `public/favicon.svg` carries the same
+  three paths with explicit fills and a `prefers-color-scheme` block, since a
+  favicon inherits no colour.
 - **Window lights:** `x-mocks.lights` — the three title-bar lights every drawn
   window wears, in the console, the policy file and the endpoint band's code.
 - **Light and grain:** `.beams` (with its `canvas[data-iridescence]`, whose
-  `data-flutes` sets how many ripples it draws — 7 in the hero, 4 in the
-  closing call and the page headers, where they run wider) inside
+  `data-flutes` sets how many ripples it draws across the width — 8 in the
+  hero, 5 on page headers, 4 in the closing call and the not-found page, where
+  they run widest) inside
   `.hero-sky` on the home page; `.beams` + `.beams-fade` inside a `.grain`
   section on inner-page headers and the closing call. main.js paints at half
   resolution, only while on screen, and one still frame under reduced motion; `.has-mesh` switches the CSS fallback

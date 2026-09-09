@@ -8,12 +8,12 @@
     'secondaryLink' => '/pricing',
 ])
 <!--
-    The closing call: the beams from the hero return, faded, behind a centered
-    serif heading, one line, the ink button and a ghost button.
+    The closing call: the light returns from the hero, four wide ripples of it,
+    gathered into the top-right corner so the centred serif heading, the line
+    under it and the two buttons keep the room to themselves.
 -->
 <section class="grain relative overflow-hidden py-24 md:py-32">
-    <div class="beams opacity-80" aria-hidden="true"><canvas data-iridescence data-flutes="4"></canvas></div>
-    <div class="beams-fade beams-fade-both" aria-hidden="true"></div>
+    <div class="beams beams-corner" aria-hidden="true"><canvas data-iridescence data-flutes="4"></canvas></div>
     <div class="relative z-10 mx-auto flex max-w-page flex-col items-center px-6 text-center" data-reveal>
         <h2 class="display-section max-w-[24ch] font-display text-balance text-ink">{{ $heading }}</h2>
         <p class="lede mt-5 max-w-[46ch] text-pretty text-muted">{{ $body }}</p>

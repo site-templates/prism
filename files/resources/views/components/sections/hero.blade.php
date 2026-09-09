@@ -21,7 +21,7 @@
 -->
 <section id="router" class="relative overflow-hidden pt-20 pb-16 md:pt-28 md:pb-24">
     <div class="hero-sky grain" aria-hidden="true">
-        <div class="beams"><canvas data-iridescence></canvas></div>
+        <div class="beams"><canvas data-iridescence data-flutes="8"></canvas></div>
     </div>
 
     <div class="relative z-10 mx-auto max-w-page px-6">

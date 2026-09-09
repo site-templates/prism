@@ -424,8 +424,14 @@ function createIridescence(canvas) {
     gl.uniform3fv(gl.getUniformLocation(program, 'u_c5'), colour('--color-mesh-orange', '#fdba74'));
     gl.uniform3fv(gl.getUniformLocation(program, 'u_c6'), colour('--color-mesh-rose', '#fda4af'));
 
-    /* How many ripples this canvas draws: data-flutes on the element, 7 by default. */
-    gl.uniform1f(gl.getUniformLocation(program, 'u_freq'), parseFloat(canvas.getAttribute('data-flutes')) || 7);
+    /*
+        How many ripples this canvas draws across its width: data-flutes on the
+        element, 8 by default. The shader counts them along the ridge axis, so
+        the figure is divided by the element's own aspect in resize() — without
+        that a short wide band would draw three times as many as a tall one.
+    */
+    var uFreq = gl.getUniformLocation(program, 'u_freq');
+    var flutes = parseFloat(canvas.getAttribute('data-flutes')) || 8;
 
     var frame = null;
     var visible = true;
@@ -440,6 +446,7 @@ function createIridescence(canvas) {
             canvas.height = height;
             gl.viewport(0, 0, width, height);
             gl.uniform2f(uRes, width, height);
+            gl.uniform1f(uFreq, flutes / (width / height));
         }
     };
 
