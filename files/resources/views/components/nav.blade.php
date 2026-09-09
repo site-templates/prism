@@ -55,40 +55,13 @@
             <ul role="list" class="flex items-center gap-1">
                 @foreach ($links as $link)
                 @if ($link->children ?? false)
-                <li class="relative" data-dropdown>
-                    <button type="button" data-dropdown-trigger aria-expanded="false" class="nav-link flex cursor-pointer items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-muted hover:bg-well hover:text-ink">
+                <li>
+                    <button type="button" data-menu-trigger="{{ $loop->index }}" aria-expanded="false" class="nav-link flex cursor-pointer items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-muted hover:bg-well hover:text-ink">
                         {{ $link->text }}
                         <svg viewBox="0 0 16 16" class="dropdown-caret size-3.5 shrink-0 fill-current opacity-60" aria-hidden="true">
                             <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/>
                         </svg>
                     </button>
-
-                    <!-- The mega-menu panel: link grid on the left, the dark promo card on the right. -->
-                    <div data-dropdown-panel class="absolute top-full left-0 w-[46rem] pt-2">
-                        <div class="grid grid-cols-[minmax(0,1fr)_15rem] gap-2 rounded-[1.25rem] bg-surface p-2 shadow-float ring-1 ring-line">
-                            <div class="grid grid-cols-2 gap-x-2 gap-y-0.5 p-2">
-                                @foreach ($link->children as $child)
-                                <a href="{{ $child->url }}" class="group flex items-start rounded-xl p-3 hover:bg-well">
-                                    <span class="min-w-0">
-                                        <span class="block text-sm font-medium text-ink">{{ $child->text }}</span>
-                                        @if ($child->description ?? false)
-                                        <span class="mt-0.5 block text-[0.8125rem]/5 text-pretty text-muted">{{ $child->description }}</span>
-                                        @endif
-                                    </span>
-                                </a>
-                                @endforeach
-                            </div>
-
-                            <a href="{{ $promoLink }}" class="group flex flex-col rounded-[0.875rem] bg-band p-4 text-band-ink">
-                                <span class="block overflow-hidden rounded-lg bg-band-raised ring-1 ring-band-line">
-                                    <x-mocks.promo />
-                                </span>
-                                <span class="mt-3 block text-sm font-medium">{{ $promoLabel }}</span>
-                                <span class="mt-1 block text-[0.8125rem]/5 text-pretty text-band-muted">{{ $promoBody }}</span>
-                                <span class="btn-band btn-sm mt-4 self-start">{{ $promoButtonText }}</span>
-                            </a>
-                        </div>
-                    </div>
                 </li>
                 @else
                 <li>
@@ -115,6 +88,47 @@
                     <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
                 </svg>
             </button>
+        </div>
+
+        <!--
+            The menu stage: one card for every dropdown. It sits under the bar,
+            glides to the pressed trigger and resizes to the panel it is
+            showing, while the panels cross-fade inside it — so moving from one
+            menu to the next reads as a single object changing shape rather
+            than two panels swapping. main.js drives it.
+        -->
+        <div data-menu-stage class="absolute top-full right-6 left-6 z-40 max-lg:hidden">
+            <div data-menu-card class="menu-card">
+                @foreach ($links as $link)
+                @if ($link->children ?? false)
+                <div data-menu-panel="{{ $loop->index }}" class="menu-panel">
+                    <div class="grid w-[46rem] grid-cols-[minmax(0,1fr)_15rem] gap-2 p-2">
+                        <div class="grid content-start grid-cols-2 gap-x-2 gap-y-0.5 p-2">
+                            @foreach ($link->children as $child)
+                            <a href="{{ $child->url }}" class="group flex items-start rounded-lg p-3 hover:bg-well">
+                                <span class="min-w-0">
+                                    <span class="block text-sm font-medium text-ink">{{ $child->text }}</span>
+                                    @if ($child->description ?? false)
+                                    <span class="mt-0.5 block text-[0.8125rem]/5 text-pretty text-muted">{{ $child->description }}</span>
+                                    @endif
+                                </span>
+                            </a>
+                            @endforeach
+                        </div>
+
+                        <a href="{{ $promoLink }}" class="group flex flex-col rounded-lg bg-band p-4 text-band-ink">
+                            <span class="block overflow-hidden rounded-md bg-band-raised ring-1 ring-band-line">
+                                <x-mocks.promo />
+                            </span>
+                            <span class="mt-3 block text-sm font-medium">{{ $promoLabel }}</span>
+                            <span class="mt-1 block text-[0.8125rem]/5 text-pretty text-band-muted">{{ $promoBody }}</span>
+                            <span class="btn-band btn-sm mt-4 self-start">{{ $promoButtonText }}</span>
+                        </a>
+                    </div>
+                </div>
+                @endif
+                @endforeach
+            </div>
         </div>
 
     </div>

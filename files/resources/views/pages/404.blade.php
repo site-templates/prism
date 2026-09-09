@@ -1,7 +1,7 @@
 <!-- The not-found page. -->
 <x-layouts.main title="Page not found" description="That page does not exist.">
 
-    <section class="grain relative overflow-hidden py-32 md:py-44">
+    <section class="relative overflow-hidden py-32 md:py-44">
         <div class="beams beams-corner" aria-hidden="true"><canvas data-iridescence data-flutes="4"></canvas></div>
         <div class="relative z-10 mx-auto flex max-w-page flex-col items-center px-6 text-center">
             <p class="data text-faint">404 · no route</p>

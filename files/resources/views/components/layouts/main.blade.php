@@ -24,7 +24,7 @@
 </head>
 <body data-instant-navigation class="min-h-dvh bg-canvas font-sans text-ink antialiased">
 <!--
-    One cool, grained canvas from the first pixel to the last. The header opens
+    One cool, smooth canvas from the first pixel to the last. The header opens
     every page the same way; the footer closes it with the status dot.
 -->
 

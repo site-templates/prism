@@ -2,8 +2,7 @@
 
 ## Atmosphere
 
-A cool, grained light page. Prism is an off-white canvas with a fine film
-grain, white cards with a hairline, near-black ink and one teal for whatever
+A cool, smooth light page. Prism is an off-white canvas, white cards with a hairline, near-black ink and one teal for whatever
 is live: the routed model, links, status dots, the focus ring. The primary
 button is ink, never a colour. Headlines are set in Source Serif at 400 —
 large, tight, unhurried — over Inter for everything a visitor reads or
@@ -100,8 +99,11 @@ button. Never a beam colour as text or a fill.
 - **Mocks:** `x-mocks.policy` (a rules file), `x-mocks.usage` (a bar chart),
   `x-mocks.promo` (the tiny console in the mega-menu card). Drawn on white
   with `.data` figures; zero images.
-- **Mega-menu:** `[data-dropdown]` — two link columns with 16px marks and a
-  one-line description each, a dark promo card on the right, 150ms scale-in.
+- **Mega-menu:** one card, `.menu-card`, holding a `.menu-panel` per dropdown
+  — two link columns with a one-line description each and a dark promo card on
+  the right. main.js measures the showing panel and sets the card's width,
+  height and offset, so moving between menus glides and reshapes a single
+  object while the panels cross-fade. `rounded-xl`, like every other panel.
 - **Tables:** on the canvas, hairline rows only, `whitespace-nowrap`
   headings, sideways scroll on phones.
 - **The mark:** three tapered beams fanning out of one point — a prism
@@ -111,7 +113,7 @@ button. Never a beam colour as text or a fill.
   favicon inherits no colour.
 - **Window lights:** `x-mocks.lights` — the three title-bar lights every drawn
   window wears, in the console, the policy file and the endpoint band's code.
-- **Light and grain:** `.beams` (with its `canvas[data-iridescence]`, whose
+- **The light:** `.beams` (with its `canvas[data-iridescence]`, whose
   `data-flutes` sets how many ripples it draws across the width — 8 in the
   hero, 5 on page headers, 4 in the closing call and the not-found page, where
   they run widest) inside
@@ -138,6 +140,7 @@ at equal quality on summaries"). Sentences are short. Never "powerful",
 - No coloured button; no teal as a surface; no gradient text; no glow.
 - No light outside the hero, the closing call and page headers.
 - No hue dominant in the mesh; if the light reads as one colour, it is wrong.
+- No film grain over the light; no panel rounder than `rounded-xl`.
 - No screenshot where the interface can be drawn in markup.
 - No three-card grid twice on a page; no icon in a coloured circle.
 - No eyebrows or section numbers.

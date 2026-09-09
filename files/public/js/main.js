@@ -27,7 +27,7 @@ setUp(document);
 
 document.addEventListener('instant:navigated', function (event) {
     closeMobileMenu();
-    closeDropdowns();
+    closeMegaMenu();
     setUp(event.detail.main);
 });
 
@@ -83,7 +83,7 @@ function header() {
 
     announcement(el);
     mobileMenu(el);
-    dropdowns(el);
+    megaMenu(el);
 }
 
 /* The announcement line: the × hides it for the rest of the session. */
@@ -149,105 +149,159 @@ function closeMobileMenu() {
 }
 
 /*
-    The mega-menus. Hover opens with a short intent delay so diagonal pointer
-    travel toward the panel never slams it shut; click toggles for touch and
-    keyboards; Escape and a click outside close. Only one is open at a time.
-*/
-function dropdowns(header) {
-    var items = Array.prototype.slice.call(header.querySelectorAll('[data-dropdown]'));
+    The mega-menu. Every dropdown's contents live in one card below the bar, so
+    moving from one menu to the next is a single object gliding sideways and
+    changing shape rather than one panel vanishing and another appearing. Each
+    panel is laid out at its natural size inside the card, which is what gets
+    measured; the card takes that width, that height and the pressed trigger's
+    offset, and the panels cross-fade.
 
-    if (!items.length) {
+    Hover opens with a short intent delay so a diagonal pointer never opens a
+    menu on the way past; once one is open the next opens instantly, which is
+    what makes the morph feel continuous. Click toggles for touch and
+    keyboards, Escape and a click outside close.
+*/
+function megaMenu(header) {
+    var stage = header.querySelector('[data-menu-stage]');
+    var card = stage && stage.querySelector('[data-menu-card]');
+    var triggers = Array.prototype.slice.call(header.querySelectorAll('[data-menu-trigger]'));
+
+    if (!stage || !card || !triggers.length) {
         return;
     }
 
+    var panels = Array.prototype.slice.call(stage.querySelectorAll('[data-menu-panel]'));
+    var openKey = null;
+    var openTimer = null;
     var closeTimer = null;
 
-    items.forEach(function (item) {
-        var trigger = item.querySelector('[data-dropdown-trigger]');
+    var find = function (list, attribute, key) {
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].getAttribute(attribute) === key) {
+                return list[i];
+            }
+        }
+        return null;
+    };
 
-        if (!trigger) {
+    var show = function (key) {
+        var panel = find(panels, 'data-menu-panel', key);
+        var trigger = find(triggers, 'data-menu-trigger', key);
+
+        if (!panel || !trigger) {
             return;
         }
 
-        item.addEventListener('pointerenter', function (event) {
-            if (event.pointerType === 'touch') {
-                return;
-            }
-            clearTimeout(closeTimer);
-            openDropdown(item, items);
-        });
+        /* Opening from closed places the card without animating, so it never slides in from the last menu. */
+        var settle = openKey === null;
 
-        item.addEventListener('pointerleave', function (event) {
+        if (settle) {
+            card.setAttribute('data-instant', '');
+        }
+
+        var stageBox = stage.getBoundingClientRect();
+        var triggerBox = trigger.getBoundingClientRect();
+        var width = panel.offsetWidth;
+        var height = panel.offsetHeight;
+        var x = triggerBox.left - stageBox.left - 12;
+
+        x = Math.max(0, Math.min(x, Math.max(0, stageBox.width - width)));
+
+        card.style.setProperty('--menu-w', width + 'px');
+        card.style.setProperty('--menu-h', height + 'px');
+        card.style.setProperty('--menu-x', x + 'px');
+
+        panels.forEach(function (item) { item.toggleAttribute('data-active', item === panel); });
+        triggers.forEach(function (item) { item.setAttribute('aria-expanded', item === trigger ? 'true' : 'false'); });
+        stage.setAttribute('data-open', '');
+        openKey = key;
+
+        if (settle) {
+            void card.offsetWidth;
+            card.removeAttribute('data-instant');
+        }
+    };
+
+    var hide = function () {
+        openKey = null;
+        stage.removeAttribute('data-open');
+        panels.forEach(function (item) { item.removeAttribute('data-active'); });
+        triggers.forEach(function (item) { item.setAttribute('aria-expanded', 'false'); });
+    };
+
+    var scheduleClose = function () {
+        clearTimeout(closeTimer);
+        closeTimer = setTimeout(hide, 160);
+    };
+
+    var hold = function () {
+        clearTimeout(closeTimer);
+    };
+
+    triggers.forEach(function (trigger) {
+        var key = trigger.getAttribute('data-menu-trigger');
+
+        trigger.addEventListener('pointerenter', function (event) {
             if (event.pointerType === 'touch') {
                 return;
             }
-            closeTimer = setTimeout(function () {
-                closeDropdown(item);
-            }, 140);
+            hold();
+            clearTimeout(openTimer);
+            openTimer = setTimeout(function () { show(key); }, openKey === null ? 90 : 0);
         });
 
         trigger.addEventListener('click', function () {
-            if (item.hasAttribute('data-open')) {
-                closeDropdown(item);
+            clearTimeout(openTimer);
+            if (openKey === key) {
+                hide();
             } else {
-                openDropdown(item, items);
+                show(key);
             }
         });
     });
 
+    /*
+        The close is scheduled when the pointer leaves the header altogether —
+        the card is a descendant of it, so travelling from a trigger down into
+        the menu, or across to the next trigger, never schedules one. That is
+        what lets the card morph instead of blinking out between menus.
+    */
+    header.addEventListener('pointerenter', hold);
+    header.addEventListener('pointerleave', function (event) {
+        if (event.pointerType === 'touch') {
+            return;
+        }
+        clearTimeout(openTimer);
+        scheduleClose();
+    });
+
+    header.addEventListener('focusout', function (event) {
+        if (!header.contains(event.relatedTarget)) {
+            hide();
+        }
+    });
+
     document.addEventListener('click', function (event) {
         if (!header.contains(event.target)) {
-            closeDropdowns();
+            hide();
         }
     });
 
     document.addEventListener('keydown', function (event) {
         if (event.key === 'Escape') {
-            closeDropdowns();
-        }
-    });
-}
-
-function openDropdown(item, all) {
-    all.forEach(function (other) {
-        if (other !== item) {
-            closeDropdown(other);
+            hide();
         }
     });
 
-    if (item.hasAttribute('data-open')) {
-        return;
-    }
+    /* A resize moves the triggers, so an open card is measured and placed again. */
+    window.addEventListener('resize', function () {
+        if (openKey !== null) {
+            show(openKey);
+        }
+    }, { passive: true });
 
-    item.setAttribute('data-open', '');
-    item.querySelector('[data-dropdown-trigger]').setAttribute('aria-expanded', 'true');
-
-    /* Two frames: display flips first, then the transition to visible runs. */
-    requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-            item.setAttribute('data-shown', '');
-        });
-    });
-}
-
-function closeDropdown(item) {
-    if (!item.hasAttribute('data-open')) {
-        return;
-    }
-
-    item.removeAttribute('data-shown');
-    item.removeAttribute('data-open');
-    item.querySelector('[data-dropdown-trigger]').setAttribute('aria-expanded', 'false');
-}
-
-function closeDropdowns() {
-    var header = document.getElementById('header');
-
-    if (!header) {
-        return;
-    }
-
-    Array.prototype.forEach.call(header.querySelectorAll('[data-dropdown][data-open]'), closeDropdown);
+    /* The instant-navigation handler closes the menu through this. */
+    header.closeMegaMenu = hide;
 }
 
 /* ── Scroll reveals ────────────────────────────────────────────────────────── */
@@ -377,8 +431,8 @@ function createIridescence(canvas) {
         /* The body of each ripple, shaded across its full width, and the seam light. */
         'col*=0.965+0.075*flute;',
         'col+=pow(max(0.0,1.0-abs(f)),3.0)*0.030+pow(max(0.0,1.0-abs(f)),14.0)*0.040;',
-        'col*=0.985+0.03*detail;',
-        'col+=(hash(gl_FragCoord.xy*0.7+t)-0.5)*0.04;',
+        'col*=0.992+0.016*detail;',
+        'col+=(hash(gl_FragCoord.xy+t)-0.5)*0.008;',
         'gl_FragColor=vec4(col,1.0);}'
     ].join('\n');
 

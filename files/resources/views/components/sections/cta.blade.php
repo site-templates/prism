@@ -12,7 +12,7 @@
     gathered into the top-right corner so the centred serif heading, the line
     under it and the two buttons keep the room to themselves.
 -->
-<section class="grain relative overflow-hidden py-24 md:py-32">
+<section class="relative overflow-hidden py-24 md:py-32">
     <div class="beams beams-corner" aria-hidden="true"><canvas data-iridescence data-flutes="4"></canvas></div>
     <div class="relative z-10 mx-auto flex max-w-page flex-col items-center px-6 text-center" data-reveal>
         <h2 class="display-section max-w-[24ch] font-display text-balance text-ink">{{ $heading }}</h2>

@@ -20,7 +20,7 @@
     strip advances on its own until you press a tab or the pause button.
 -->
 <section id="router" class="relative overflow-hidden pt-20 pb-16 md:pt-28 md:pb-24">
-    <div class="hero-sky grain" aria-hidden="true">
+    <div class="hero-sky" aria-hidden="true">
         <div class="beams"><canvas data-iridescence data-flutes="8"></canvas></div>
     </div>
 
