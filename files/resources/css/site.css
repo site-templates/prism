@@ -272,11 +272,11 @@
             linear-gradient(78deg, transparent 44%, var(--color-surface) 60%, transparent 76%);
     }
 
-    /* The flutes: the fine ridges the light is refracted through, leaning forward. */
+    /* The flutes: the wide ridges the light is refracted through, leaning forward. */
     .beams::after {
         opacity: 0.5;
         filter: blur(0.4px);
-        background: repeating-linear-gradient(236deg, transparent 0 18px, color-mix(in oklab, var(--color-ink) 5%, transparent) 19px, transparent 21px);
+        background: repeating-linear-gradient(236deg, transparent 0 13px, color-mix(in oklab, var(--color-ink) 4%, transparent) 17px, transparent 34px);
     }
 
     /*
