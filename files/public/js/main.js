@@ -149,24 +149,38 @@ function closeMobileMenu() {
 }
 
 /*
-    The mega-menu. Every dropdown's contents live in one card below the bar, so
-    moving from one menu to the next is a single object gliding sideways and
-    changing shape rather than one panel vanishing and another appearing. Each
-    panel is laid out at its natural size inside the card, which is what gets
-    measured; the card takes that width, that height and the pressed trigger's
-    offset, and the panels cross-fade.
+    The mega-menu, on the shape a navigation menu has settled into: one card
+    below the bar holding every dropdown's contents, so moving from one menu to
+    the next is a single object gliding sideways and changing shape rather than
+    one panel vanishing and another appearing. Each panel is laid out at its
+    natural size inside the card, which is what gets measured; the card takes
+    that width, that height and the trigger's offset, a notch slides to point
+    at the trigger, and the contents slide the way the pointer travelled.
 
-    Hover opens with a short intent delay so a diagonal pointer never opens a
-    menu on the way past; once one is open the next opens instantly, which is
-    what makes the morph feel continuous. Click toggles for touch and
-    keyboards, Escape and a click outside close.
+    The rules that make it feel right, all of them borrowed from how the good
+    ones behave:
+
+      · Hover opens after a short intent delay, so crossing a trigger on the
+        way somewhere else never opens a menu.
+      · Once one menu is open the next opens instantly — that instant swap is
+        what makes the morph read as one object, and the delay would break it.
+      · A menu that closed a moment ago also reopens instantly, so passing
+        back over the bar does not feel sticky.
+      · Hovering anything in the bar WITHOUT a menu — a plain link, the logo,
+        the buttons, the space between them — closes immediately. Leaving the
+        header closes after a beat, which is what lets the pointer travel down
+        into the card.
+      · Keyboard: triggers open on press, moving focus between triggers while
+        open switches the menu, focus reaching anything else closes it, and
+        Escape closes and hands focus back to the trigger.
 */
 function megaMenu(header) {
     var stage = header.querySelector('[data-menu-stage]');
     var card = stage && stage.querySelector('[data-menu-card]');
+    var region = header.querySelector('[data-menu-region]');
     var triggers = Array.prototype.slice.call(header.querySelectorAll('[data-menu-trigger]'));
 
-    if (!stage || !card || !triggers.length) {
+    if (!stage || !card || !region || !triggers.length) {
         return;
     }
 
@@ -174,6 +188,11 @@ function megaMenu(header) {
     var openKey = null;
     var openTimer = null;
     var closeTimer = null;
+    var closedAt = -Infinity;
+
+    var INTENT = 150;
+    var REOPEN = 300;
+    var LINGER = 160;
 
     var find = function (list, attribute, key) {
         for (var i = 0; i < list.length; i++) {
@@ -188,15 +207,18 @@ function megaMenu(header) {
         var panel = find(panels, 'data-menu-panel', key);
         var trigger = find(triggers, 'data-menu-trigger', key);
 
-        if (!panel || !trigger) {
+        if (!panel || !trigger || openKey === key) {
             return;
         }
 
-        /* Opening from closed places the card without animating, so it never slides in from the last menu. */
-        var settle = openKey === null;
+        clearTimeout(openTimer);
+        clearTimeout(closeTimer);
 
-        if (settle) {
-            card.setAttribute('data-instant', '');
+        var leaving = openKey === null ? null : find(panels, 'data-menu-panel', openKey);
+
+        /* Nothing is on screen to move, so place it all without animating. */
+        if (!leaving) {
+            stage.setAttribute('data-instant', '');
         }
 
         var stageBox = stage.getBoundingClientRect();
@@ -210,48 +232,110 @@ function megaMenu(header) {
         card.style.setProperty('--menu-w', width + 'px');
         card.style.setProperty('--menu-h', height + 'px');
         card.style.setProperty('--menu-x', x + 'px');
+        stage.style.setProperty('--menu-arrow-x', (triggerBox.left - stageBox.left + triggerBox.width / 2 - 6) + 'px');
+
+        /* Which way the contents travel: later trigger means the new panel arrives from the right. */
+        if (leaving) {
+            var forward = Number(key) > Number(openKey);
+            leaving.setAttribute('data-motion', forward ? 'to-start' : 'to-end');
+            panel.setAttribute('data-motion', forward ? 'from-end' : 'from-start');
+        } else {
+            panels.forEach(function (item) { item.removeAttribute('data-motion'); });
+        }
 
         panels.forEach(function (item) { item.toggleAttribute('data-active', item === panel); });
         triggers.forEach(function (item) { item.setAttribute('aria-expanded', item === trigger ? 'true' : 'false'); });
         stage.setAttribute('data-open', '');
         openKey = key;
 
-        if (settle) {
+        if (!leaving) {
             void card.offsetWidth;
-            card.removeAttribute('data-instant');
+            stage.removeAttribute('data-instant');
         }
     };
 
+    /*
+        The card fades out whole, so the panel it is showing keeps its contents
+        on the way out — they are cleared by the next open, not by this.
+    */
     var hide = function () {
+        clearTimeout(openTimer);
+        clearTimeout(closeTimer);
+
+        if (openKey === null) {
+            return;
+        }
+
         openKey = null;
+        closedAt = performance.now();
         stage.removeAttribute('data-open');
-        panels.forEach(function (item) { item.removeAttribute('data-active'); });
         triggers.forEach(function (item) { item.setAttribute('aria-expanded', 'false'); });
     };
 
-    var scheduleClose = function () {
+    var request = function (key) {
+        if (openKey === key) {
+            clearTimeout(openTimer);
+            clearTimeout(closeTimer);
+            return;
+        }
+
+        clearTimeout(openTimer);
         clearTimeout(closeTimer);
-        closeTimer = setTimeout(hide, 160);
+
+        if (openKey !== null || performance.now() - closedAt < REOPEN) {
+            show(key);
+            return;
+        }
+
+        openTimer = setTimeout(function () { show(key); }, INTENT);
     };
 
-    var hold = function () {
+    /*
+        One listener routes every hover across the whole top of the page — the
+        announcement line included. pointerover bubbles, so the card, a
+        descendant of it whatever it looks like on screen, arrives here too and
+        holds the menu open.
+    */
+    region.addEventListener('pointerover', function (event) {
+        if (event.pointerType === 'touch') {
+            return;
+        }
+
+        var trigger = event.target.closest('[data-menu-trigger]');
+
+        if (trigger) {
+            request(trigger.getAttribute('data-menu-trigger'));
+            return;
+        }
+
+        if (event.target.closest('[data-menu-stage]')) {
+            clearTimeout(closeTimer);
+            return;
+        }
+
+        hide();
+    });
+
+    /* Leaving the header takes a beat, so the pointer can cross into the card. */
+    header.addEventListener('pointerleave', function (event) {
+        if (event.pointerType === 'touch') {
+            return;
+        }
+
+        clearTimeout(openTimer);
         clearTimeout(closeTimer);
-    };
+        closeTimer = setTimeout(hide, LINGER);
+    });
+
+    header.addEventListener('pointerenter', function () {
+        clearTimeout(closeTimer);
+    });
 
     triggers.forEach(function (trigger) {
-        var key = trigger.getAttribute('data-menu-trigger');
-
-        trigger.addEventListener('pointerenter', function (event) {
-            if (event.pointerType === 'touch') {
-                return;
-            }
-            hold();
-            clearTimeout(openTimer);
-            openTimer = setTimeout(function () { show(key); }, openKey === null ? 90 : 0);
-        });
-
         trigger.addEventListener('click', function () {
+            var key = trigger.getAttribute('data-menu-trigger');
             clearTimeout(openTimer);
+
             if (openKey === key) {
                 hide();
             } else {
@@ -260,19 +344,22 @@ function megaMenu(header) {
         });
     });
 
-    /*
-        The close is scheduled when the pointer leaves the header altogether —
-        the card is a descendant of it, so travelling from a trigger down into
-        the menu, or across to the next trigger, never schedules one. That is
-        what lets the card morph instead of blinking out between menus.
-    */
-    header.addEventListener('pointerenter', hold);
-    header.addEventListener('pointerleave', function (event) {
-        if (event.pointerType === 'touch') {
+    /* Focus follows the same rules as the pointer, except it never opens a closed menu. */
+    region.addEventListener('focusin', function (event) {
+        var trigger = event.target.closest('[data-menu-trigger]');
+
+        if (trigger) {
+            if (openKey !== null) {
+                show(trigger.getAttribute('data-menu-trigger'));
+            }
             return;
         }
-        clearTimeout(openTimer);
-        scheduleClose();
+
+        if (event.target.closest('[data-menu-stage]')) {
+            return;
+        }
+
+        hide();
     });
 
     header.addEventListener('focusout', function (event) {
@@ -288,16 +375,27 @@ function megaMenu(header) {
     });
 
     document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape') {
-            hide();
+        if (event.key !== 'Escape' || openKey === null) {
+            return;
+        }
+
+        var trigger = find(triggers, 'data-menu-trigger', openKey);
+        hide();
+
+        if (trigger) {
+            trigger.focus();
         }
     });
 
     /* A resize moves the triggers, so an open card is measured and placed again. */
     window.addEventListener('resize', function () {
-        if (openKey !== null) {
-            show(openKey);
+        if (openKey === null) {
+            return;
         }
+
+        var key = openKey;
+        openKey = null;
+        show(key);
     }, { passive: true });
 
     /* The instant-navigation handler closes the menu through this. */

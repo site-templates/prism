@@ -26,7 +26,7 @@
     hamburger opens a full sheet. A dismissible announcement line sits above it.
 -->
 <header id="header" class="sticky top-0 z-50">
-    <div class="header-chrome relative z-10">
+    <div data-menu-region class="header-chrome relative z-10">
     @if ($showAnnounce)
     <div id="announce" class="relative border-b border-line bg-well">
         <div class="mx-auto flex h-10 max-w-page items-center justify-center gap-2 px-6 pr-14 text-sm text-muted">
@@ -56,7 +56,7 @@
                 @foreach ($links as $link)
                 @if ($link->children ?? false)
                 <li>
-                    <button type="button" data-menu-trigger="{{ $loop->index }}" aria-expanded="false" class="nav-link flex cursor-pointer items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-muted hover:bg-well hover:text-ink">
+                    <button type="button" data-menu-trigger="{{ $loop->index }}" aria-expanded="false" aria-controls="menu-panel-{{ $loop->index }}" class="nav-link flex cursor-pointer items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-muted hover:bg-well hover:text-ink">
                         {{ $link->text }}
                         <svg viewBox="0 0 16 16" class="dropdown-caret size-3.5 shrink-0 fill-current opacity-60" aria-hidden="true">
                             <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/>
@@ -76,32 +76,22 @@
             </ul>
         </nav>
 
-        <div class="ml-auto flex items-center gap-3">
-            <a href="{{ $signInLink }}" class="btn-ghost btn-sm max-lg:hidden">{{ $signInText }}</a>
-            <a href="{{ $ctaLink }}" class="btn-solid btn-sm max-lg:hidden">{{ $ctaText }}</a>
-
-            <button type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label="Menu" class="relative flex size-11 items-center justify-center rounded-lg text-ink shadow-[inset_0_0_0_1px_var(--color-line-strong)] hover:bg-well lg:hidden">
-                <svg viewBox="0 0 20 20" class="menu-icon-open size-5 fill-current" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M2 5.75A.75.75 0 0 1 2.75 5h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 5.75Zm0 8.5a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd"/>
-                </svg>
-                <svg viewBox="0 0 20 20" class="menu-icon-close size-5 fill-current" aria-hidden="true">
-                    <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
-                </svg>
-            </button>
-        </div>
-
         <!--
-            The menu stage: one card for every dropdown. It sits under the bar,
-            glides to the pressed trigger and resizes to the panel it is
-            showing, while the panels cross-fade inside it — so moving from one
-            menu to the next reads as a single object changing shape rather
-            than two panels swapping. main.js drives it.
+            The menu stage: one card for every dropdown. It sits just under the
+            bar behind a notch that points at whichever trigger opened it,
+            glides to that trigger and resizes to the panel it is showing,
+            while the panels slide the way the pointer travelled — so moving
+            from one menu to the next reads as a single object changing shape.
+            It sits here, straight after the list, so tabbing reaches its links
+            in the order a reader expects. main.js drives it.
         -->
         <div data-menu-stage class="absolute top-full right-6 left-6 z-40 max-lg:hidden">
+            <div data-menu-bridge aria-hidden="true"></div>
+            <div data-menu-arrow aria-hidden="true"><span></span></div>
             <div data-menu-card class="menu-card">
                 @foreach ($links as $link)
                 @if ($link->children ?? false)
-                <div data-menu-panel="{{ $loop->index }}" class="menu-panel">
+                <div id="menu-panel-{{ $loop->index }}" data-menu-panel="{{ $loop->index }}" class="menu-panel">
                     <div class="grid w-[46rem] grid-cols-[minmax(0,1fr)_15rem] gap-2 p-2">
                         <div class="grid content-start grid-cols-2 gap-x-2 gap-y-0.5 p-2">
                             @foreach ($link->children as $child)
@@ -129,6 +119,20 @@
                 @endif
                 @endforeach
             </div>
+        </div>
+
+        <div class="ml-auto flex items-center gap-3">
+            <a href="{{ $signInLink }}" class="btn-ghost btn-sm max-lg:hidden">{{ $signInText }}</a>
+            <a href="{{ $ctaLink }}" class="btn-solid btn-sm max-lg:hidden">{{ $ctaText }}</a>
+
+            <button type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label="Menu" class="relative flex size-11 items-center justify-center rounded-lg text-ink shadow-[inset_0_0_0_1px_var(--color-line-strong)] hover:bg-well lg:hidden">
+                <svg viewBox="0 0 20 20" class="menu-icon-open size-5 fill-current" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M2 5.75A.75.75 0 0 1 2.75 5h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 5.75Zm0 8.5a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd"/>
+                </svg>
+                <svg viewBox="0 0 20 20" class="menu-icon-close size-5 fill-current" aria-hidden="true">
+                    <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
+                </svg>
+            </button>
         </div>
 
     </div>

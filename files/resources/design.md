@@ -99,11 +99,19 @@ button. Never a beam colour as text or a fill.
 - **Mocks:** `x-mocks.policy` (a rules file), `x-mocks.usage` (a bar chart),
   `x-mocks.promo` (the tiny console in the mega-menu card). Drawn on white
   with `.data` figures; zero images.
-- **Mega-menu:** one card, `.menu-card`, holding a `.menu-panel` per dropdown
-  — two link columns with a one-line description each and a dark promo card on
-  the right. main.js measures the showing panel and sets the card's width,
-  height and offset, so moving between menus glides and reshapes a single
-  object while the panels cross-fade. `rounded-xl`, like every other panel.
+- **Mega-menu:** one `.menu-card`, `rounded-xl` like every other panel, sitting
+  6px under the bar behind a `[data-menu-arrow]` notch that points at whichever
+  trigger opened it. It holds a `.menu-panel` per dropdown — two link columns
+  with a one-line description each and a dark promo card on the right. main.js
+  measures the showing panel and sets the card's width, height and offset, so
+  moving between menus glides and reshapes a single object; the panels slide
+  the way the pointer travelled (`data-motion` `from-end` / `to-start` and
+  their mirrors), and opening from closed is a zoom, never a slide. Hover opens
+  after a 150ms intent delay, instantly once a menu is already open or if one
+  closed in the last 300ms; hovering anything in the header without a menu
+  closes it at once, leaving the header closes it after 160ms, and a
+  `[data-menu-bridge]` strip makes the gap hoverable so travelling down into
+  the card never crosses dead space.
 - **Tables:** on the canvas, hairline rows only, `whitespace-nowrap`
   headings, sideways scroll on phones.
 - **The mark:** three tapered beams fanning out of one point — a prism
