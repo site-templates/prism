@@ -366,72 +366,21 @@
     }
 
     /*
-        The mega menu is one card, not several panels. It sits just under the
-        bar behind a notch pointing at whichever trigger opened it, and carries
-        every dropdown's contents stacked inside. main.js sets its width,
-        height and offset to match the panel it is showing, so moving between
-        menus glides and reshapes a single object; the contents slide the way
-        the pointer travelled. Opening from closed is a zoom, not a slide —
-        there is nowhere for it to have come from.
+        The mega menu is one card, not several panels. It tucks under the bar's
+        bottom edge and carries every dropdown's contents stacked inside.
+        main.js sets its width, height and offset to match the panel it is
+        showing, so moving between menus glides and reshapes a single object;
+        the contents slide in from the side the pointer came from. Opening from
+        closed is a zoom, not a slide — there is nowhere for it to have come
+        from.
+    */
+    /*
+        The card overlaps the bar's bottom edge rather than floating below it,
+        so it reads as part of the header rather than a sheet hovering under it
+        — and there is no gap for the pointer to cross on its way in.
     */
     [data-menu-stage] {
-        --menu-top: 0.375rem;
-    }
-
-    /*
-        The strip of dead space between the bar and the card, made hoverable
-        while the menu is open, so travelling down into it never crosses a gap
-        that would schedule a close.
-    */
-    [data-menu-bridge] {
-        position: absolute;
-        top: calc(var(--menu-top) * -1);
-        inset-inline: 0;
-        height: calc(var(--menu-top) + 0.5rem);
-        pointer-events: none;
-    }
-
-    [data-menu-stage][data-open] [data-menu-bridge] {
-        pointer-events: auto;
-    }
-
-    /*
-        The notch: a small square, turned on its corner and clipped to the
-        height of the gap, so only its tip shows. It slides to sit under the
-        open trigger, which is what ties the card to the word that opened it.
-    */
-    [data-menu-arrow] {
-        position: absolute;
-        top: calc(var(--menu-top) - 0.375rem);
-        left: 0;
-        z-index: 1;
-        display: flex;
-        align-items: flex-end;
-        justify-content: center;
-        width: 0.75rem;
-        height: 0.375rem;
-        overflow: hidden;
-        opacity: 0;
-        translate: var(--menu-arrow-x, 0) 0;
-        pointer-events: none;
-        transition:
-            opacity 0.16s ease,
-            translate 0.3s var(--ease-glide);
-    }
-
-    [data-menu-arrow] span {
-        position: relative;
-        top: 60%;
-        width: 0.5rem;
-        height: 0.5rem;
-        rotate: 45deg;
-        border-start-start-radius: 0.125rem;
-        background-color: var(--color-surface);
-        box-shadow: inset 1px 1px 0 0 var(--color-line);
-    }
-
-    [data-menu-stage][data-open] [data-menu-arrow] {
-        opacity: 1;
+        --menu-top: -0.25rem;
     }
 
     .menu-card {
@@ -473,9 +422,8 @@
         animation: menu-card-in 0.2s var(--ease-glide);
     }
 
-    /* Opening from closed places the card and its notch without animating, so neither slides in from the last menu. */
-    [data-menu-stage][data-instant] .menu-card,
-    [data-menu-stage][data-instant] [data-menu-arrow] {
+    /* Opening from closed places the card without animating, so it never slides in from the last menu. */
+    [data-menu-stage][data-instant] .menu-card {
         transition: none;
     }
 
@@ -503,43 +451,44 @@
 
     /*
         Switching menus slides the contents the way the pointer travelled: the
-        panel being left exits toward the trigger it belonged to, the one
-        arriving comes in from the other side.
+        panel being left exits toward the trigger it belonged to and goes
+        quickly, the one arriving comes in from the other side and takes its
+        time settling — which is what makes the direction legible.
     */
     .menu-panel[data-motion="from-end"] {
-        animation: menu-panel-from-end 0.26s var(--ease-glide) both;
+        animation: menu-panel-from-end 0.32s var(--ease-glide) both;
     }
 
     .menu-panel[data-motion="from-start"] {
-        animation: menu-panel-from-start 0.26s var(--ease-glide) both;
+        animation: menu-panel-from-start 0.32s var(--ease-glide) both;
     }
 
     .menu-panel[data-motion="to-end"] {
-        animation: menu-panel-to-end 0.2s ease-in both;
+        animation: menu-panel-to-end 0.18s ease-in both;
     }
 
     .menu-panel[data-motion="to-start"] {
-        animation: menu-panel-to-start 0.2s ease-in both;
+        animation: menu-panel-to-start 0.18s ease-in both;
     }
 
     @keyframes menu-panel-from-end {
-        from { opacity: 0; translate: 2.5rem 0; }
+        from { opacity: 0; translate: 3.5rem 0; }
         to { opacity: 1; translate: 0 0; }
     }
 
     @keyframes menu-panel-from-start {
-        from { opacity: 0; translate: -2.5rem 0; }
+        from { opacity: 0; translate: -3.5rem 0; }
         to { opacity: 1; translate: 0 0; }
     }
 
     @keyframes menu-panel-to-end {
         from { opacity: 1; translate: 0 0; }
-        to { opacity: 0; translate: 2.5rem 0; }
+        to { opacity: 0; translate: 3.5rem 0; }
     }
 
     @keyframes menu-panel-to-start {
         from { opacity: 1; translate: 0 0; }
-        to { opacity: 0; translate: -2.5rem 0; }
+        to { opacity: 0; translate: -3.5rem 0; }
     }
 
     [data-menu-trigger][aria-expanded="true"] {
@@ -802,6 +751,13 @@
         color: var(--color-ink);
     }
 
+    /*
+        The underline is the tour's clock. While the tour is running it fills
+        the tab from left to right over one dwell, and reaching the end is what
+        advances to the next task — one timer, and it is the one you can see.
+        Stopped, whether by the pause button or by pressing a tab, it is simply
+        the underline of the tab you are on.
+    */
     .tab::after {
         content: "";
         position: absolute;
@@ -812,7 +768,7 @@
         background-color: var(--color-accent);
         scale: 0 1;
         transform-origin: left;
-        transition: scale 0.35s var(--ease-glide);
+        transition: scale 0.25s var(--ease-glide);
     }
 
     .tab[aria-selected="true"] {
@@ -821,6 +777,16 @@
 
     .tab[aria-selected="true"]::after {
         scale: 1 1;
+    }
+
+    [data-tabs][data-touring] .tab[aria-selected="true"]::after {
+        animation: tab-progress var(--tab-dwell, 6s) linear forwards;
+        transition: none;
+    }
+
+    @keyframes tab-progress {
+        from { scale: 0 1; }
+        to { scale: 1 1; }
     }
 
     .tab svg {
@@ -1298,14 +1264,14 @@
 
         .live-dot::after,
         [data-menu-stage][data-open] .menu-card,
-        .menu-panel[data-motion] {
+        .menu-panel[data-motion],
+        [data-tabs][data-touring] .tab[aria-selected="true"]::after {
             animation: none;
         }
 
         .tab::after,
         .menu-card,
         .menu-panel,
-        [data-menu-arrow],
         .score::after,
         .bar,
         [data-dropdown-panel],

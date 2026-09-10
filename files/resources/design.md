@@ -83,9 +83,13 @@ button. Never a beam colour as text or a fill.
   workbenchRows, `.win-status` in one of three tones) and the `.win-panel`
   assistant column — the question, the two `.win-run` commands, the answer and
   the `.win-input` prompt field.
-- **The tab strip:** `.tab` — one task per tab with a 16px mark, a violet
-  underline on the pressed one, and the tour button that stops the
-  auto-advance. It scrolls sideways rather than wrapping.
+- **The tab strip:** `.tab` — one task per tab with a 16px mark and the button
+  that stops the tour. It scrolls sideways rather than wrapping. The selected
+  tab's underline is the tour's clock: `[data-tabs][data-touring]` runs
+  `tab-progress` across it over `--tab-dwell` (6s), and the animation ending is
+  what advances to the next task — the visible meter and the timer are the same
+  thing. Stopped, by the pause button or by pressing a tab, it settles into a
+  plain full underline.
 - **Chips:** `.chip` pills, 40px; `aria-pressed="true"` is the ink fill with
   canvas text. Used by the models filter.
 - **Provider marks:** 32px circles in each provider's brand colour (a `color`
@@ -99,19 +103,18 @@ button. Never a beam colour as text or a fill.
 - **Mocks:** `x-mocks.policy` (a rules file), `x-mocks.usage` (a bar chart),
   `x-mocks.promo` (the tiny console in the mega-menu card). Drawn on white
   with `.data` figures; zero images.
-- **Mega-menu:** one `.menu-card`, `rounded-xl` like every other panel, sitting
-  6px under the bar behind a `[data-menu-arrow]` notch that points at whichever
-  trigger opened it. It holds a `.menu-panel` per dropdown — two link columns
-  with a one-line description each and a dark promo card on the right. main.js
-  measures the showing panel and sets the card's width, height and offset, so
-  moving between menus glides and reshapes a single object; the panels slide
-  the way the pointer travelled (`data-motion` `from-end` / `to-start` and
-  their mirrors), and opening from closed is a zoom, never a slide. Hover opens
-  after a 150ms intent delay, instantly once a menu is already open or if one
-  closed in the last 300ms; hovering anything in the header without a menu
-  closes it at once, leaving the header closes it after 160ms, and a
-  `[data-menu-bridge]` strip makes the gap hoverable so travelling down into
-  the card never crosses dead space.
+- **Mega-menu:** one `.menu-card`, `rounded-xl` like every other panel, tucked
+  4px under the bar's bottom edge so it reads as part of the header. It holds a
+  `.menu-panel` per dropdown — two link columns with a one-line description
+  each and a dark promo card on the right. main.js measures the showing panel
+  and sets the card's width, height and offset, so moving between menus glides
+  and reshapes a single object; the panels slide in from the side the pointer
+  came from (`data-motion` `from-end` / `to-start` and their mirrors, 3.5rem of
+  travel, the one leaving going faster than the one arriving), and opening from
+  closed is a zoom, never a slide. Hover opens after a 150ms intent delay,
+  instantly once a menu is already open or if one closed in the last 300ms;
+  hovering anything in the header without a menu closes it at once, and leaving
+  the header closes it after 160ms.
 - **Tables:** on the canvas, hairline rows only, `whitespace-nowrap`
   headings, sideways scroll on phones.
 - **The mark:** three tapered beams fanning out of one point — a prism

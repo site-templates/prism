@@ -77,17 +77,15 @@
         </nav>
 
         <!--
-            The menu stage: one card for every dropdown. It sits just under the
-            bar behind a notch that points at whichever trigger opened it,
-            glides to that trigger and resizes to the panel it is showing,
-            while the panels slide the way the pointer travelled — so moving
-            from one menu to the next reads as a single object changing shape.
-            It sits here, straight after the list, so tabbing reaches its links
-            in the order a reader expects. main.js drives it.
+            The menu stage: one card for every dropdown. It tucks under the
+            bar's bottom edge, glides to whichever trigger opened it and
+            resizes to the panel it is showing, while the panels slide the way
+            the pointer travelled — so moving from one menu to the next reads
+            as a single object changing shape. It sits here, straight after the
+            list, so tabbing reaches its links in the order a reader expects.
+            main.js drives it.
         -->
         <div data-menu-stage class="absolute top-full right-6 left-6 z-40 max-lg:hidden">
-            <div data-menu-bridge aria-hidden="true"></div>
-            <div data-menu-arrow aria-hidden="true"><span></span></div>
             <div data-menu-card class="menu-card">
                 @foreach ($links as $link)
                 @if ($link->children ?? false)

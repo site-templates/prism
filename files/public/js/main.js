@@ -150,12 +150,12 @@ function closeMobileMenu() {
 
 /*
     The mega-menu, on the shape a navigation menu has settled into: one card
-    below the bar holding every dropdown's contents, so moving from one menu to
-    the next is a single object gliding sideways and changing shape rather than
-    one panel vanishing and another appearing. Each panel is laid out at its
-    natural size inside the card, which is what gets measured; the card takes
-    that width, that height and the trigger's offset, a notch slides to point
-    at the trigger, and the contents slide the way the pointer travelled.
+    tucked under the bar holding every dropdown's contents, so moving from one
+    menu to the next is a single object gliding sideways and changing shape
+    rather than one panel vanishing and another appearing. Each panel is laid
+    out at its natural size inside the card, which is what gets measured; the
+    card takes that width, that height and the trigger's offset, and the
+    contents slide in from the side the pointer came from.
 
     The rules that make it feel right, all of them borrowed from how the good
     ones behave:
@@ -232,7 +232,6 @@ function megaMenu(header) {
         card.style.setProperty('--menu-w', width + 'px');
         card.style.setProperty('--menu-h', height + 'px');
         card.style.setProperty('--menu-x', x + 'px');
-        stage.style.setProperty('--menu-arrow-x', (triggerBox.left - stageBox.left + triggerBox.width / 2 - 6) + 'px');
 
         /* Which way the contents travel: later trigger means the new panel arrives from the right. */
         if (leaving) {
@@ -686,10 +685,15 @@ function parseColour(value) {
 /* ── The tab strip ─────────────────────────────────────────────────────────── */
 
 /*
-    The tasks above the console window. Pressing a tab shows its screen and
-    stops the tour; the pause button stops and restarts it. The tour only runs
-    while the strip is on screen, and never under reduced motion — there the
-    tabs are a plain, manual control.
+    The tasks above the console window, and the tour that walks them.
+
+    There is no timer here. The selected tab's underline fills across it over
+    one dwell (site.css, --tab-dwell), and the animation reaching its end is
+    what advances to the next task — so the thing the visitor watches IS the
+    clock, and the two can never disagree. Pressing a tab or the pause button
+    stops the tour, which leaves that underline sitting full beneath the tab
+    you chose; pressing play starts the next dwell from empty. Under reduced
+    motion the tour never runs and the tabs are a plain, manual control.
 */
 function tabStrips(root) {
     Array.prototype.forEach.call(root.querySelectorAll('[data-tabs]'), function (strip) {
@@ -702,9 +706,8 @@ function tabStrips(root) {
         }
 
         var index = 0;
-        var timer = null;
         var onScreen = true;
-        var wanted = !reduceMotion;
+        var playing = !reduceMotion;
 
         var show = function (next, scroll) {
             index = (next + tabs.length) % tabs.length;
@@ -722,48 +725,51 @@ function tabStrips(root) {
             }
         };
 
-        var stopTimer = function () {
-            if (timer !== null) {
-                clearInterval(timer);
-                timer = null;
+        /*
+            data-touring is the whole state: it starts the meter on whichever
+            tab is selected, and taking it away stops the tour and leaves the
+            underline whole. The meter restarts by itself whenever a different
+            tab becomes the selected one.
+        */
+        var sync = function () {
+            strip.toggleAttribute('data-touring', playing && onScreen && !reduceMotion);
+
+            if (pause) {
+                pause.toggleAttribute('data-paused', !playing);
             }
         };
 
-        var startTimer = function () {
-            stopTimer();
-            if (wanted && onScreen && !reduceMotion) {
-                timer = setInterval(function () { show(index + 1, true); }, 6000);
+        strip.addEventListener('animationend', function (event) {
+            if (event.animationName !== 'tab-progress' || !strip.hasAttribute('data-touring')) {
+                return;
             }
-        };
+
+            show(index + 1, true);
+        });
 
         tabs.forEach(function (tab, n) {
             tab.addEventListener('click', function () {
-                wanted = false;
-                stopTimer();
-                if (pause) {
-                    pause.setAttribute('data-paused', '');
-                }
+                playing = false;
+                sync();
                 show(n, false);
             });
         });
 
         if (pause) {
             pause.addEventListener('click', function () {
-                wanted = !wanted;
-                pause.toggleAttribute('data-paused', !wanted);
-                startTimer();
+                playing = !playing;
+                sync();
             });
-            pause.toggleAttribute('data-paused', !wanted);
         }
 
         var observer = new IntersectionObserver(function (entries) {
             onScreen = entries.some(function (entry) { return entry.isIntersecting; });
-            startTimer();
+            sync();
         }, { threshold: 0.2 });
         observer.observe(strip);
 
-        strips.push({ strip: strip, stop: function () { stopTimer(); observer.disconnect(); } });
-        startTimer();
+        strips.push({ strip: strip, stop: function () { observer.disconnect(); } });
+        sync();
     });
 }
 
